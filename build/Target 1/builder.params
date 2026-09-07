@@ -1,0 +1,133 @@
+{
+    "name": "template",
+    "target": "Target 1",
+    "toolchain": "AC5",
+    "toolchainLocation": "d:\\keilc\\ARM\\ARMCC",
+    "toolchainCfgFile": "c:\\Users\\Gigabyte\\.vscode\\extensions\\cl.eide-3.27.2\\res\\data\\models/arm.v5.model.json",
+    "buildMode": "fast|multhread",
+    "showRepathOnLog": true,
+    "threadNum": 16,
+    "rootDir": "d:\\CODE STM\\BTL_NMDKTM",
+    "dumpPath": "build\\Target 1",
+    "outDir": "build\\Target 1",
+    "ram": 131072,
+    "rom": 1048576,
+    "incDirs": [
+        "../Template_rtos",
+        "MDK_ARM",
+        "Libraries/CMSIS/Device/ST/STM32F4xx/Include",
+        "Libraries/STM32F4xx_StdPeriph_Driver/inc",
+        "Libraries/CMSIS/Include",
+        "FreeRTOS/include",
+        "FreeRTOS",
+        "FreeRTOS/portable/RVDS/ARM_CM4F",
+        "MY_LIB",
+        ".cmsis/include",
+        "MDK_ARM/RTE/_Target 1"
+    ],
+    "libDirs": [],
+    "defines": [
+        "STM32F40_41xxx",
+        "USE_STDPERIPH_DRIVER",
+        "HSE_VALUE=8000000"
+    ],
+    "sourceList": [
+        "FreeRTOS/list.c",
+        "FreeRTOS/portable/MemMang/heap_4.c",
+        "FreeRTOS/portable/RVDS/ARM_CM4F/port.c",
+        "FreeRTOS/queue.c",
+        "FreeRTOS/tasks.c",
+        "Libraries/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f40_41xxx.s",
+        "Libraries/STM32F4xx_StdPeriph_Driver/src/misc.c",
+        "Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_adc.c",
+        "Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_can.c",
+        "Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma.c",
+        "Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_flash.c",
+        "Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.c",
+        "Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_i2c.c",
+        "Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_iwdg.c",
+        "Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rcc.c",
+        "Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.c",
+        "Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_syscfg.c",
+        "Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_tim.c",
+        "Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_usart.c",
+        "Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c",
+        "MDK_ARM/main.c",
+        "MY_LIB/encoder.c",
+        "MY_LIB/fuzzy.c",
+        "MY_LIB/gpio.c",
+        "MY_LIB/imu.c",
+        "MY_LIB/kalman.c",
+        "MY_LIB/managetask.c",
+        "MY_LIB/motor.c",
+        "MY_LIB/pid.c",
+        "stm32f4xx_it.c",
+        "system_stm32f4xx.c"
+    ],
+    "alwaysInBuildSources": [],
+    "sourceParams": {},
+    "options": {
+        "version": 4,
+        "afterBuildTasks": [],
+        "asm-compiler": {
+            "defines": []
+        },
+        "beforeBuildTasks": [],
+        "c/cpp-compiler": {
+            "CXX_FLAGS": "--diag_suppress=1 --diag_suppress=1295",
+            "C_FLAGS": "--diag_suppress=1 --diag_suppress=1295",
+            "c99-mode": true,
+            "one-elf-section-per-function": true,
+            "optimization": "level-0",
+            "warnings": "all-warnings"
+        },
+        "global": {
+            "output-debug-info": "enable",
+            "use-microLIB": false,
+            "microcontroller-cpu": "cortex-m4-sp",
+            "microcontroller-fpu": "cortex-m4-sp",
+            "microcontroller-float": "cortex-m4-sp",
+            "$arch-extensions": "",
+            "$clang-arch-extensions": "",
+            "$armlink-arch-extensions": ""
+        },
+        "linker": {
+            "$outputTaskExcludes": [
+                ".bin"
+            ],
+            "output-format": "elf",
+            "ro-base": "0x08000000",
+            "rw-base": "0x20000000",
+            "xo-base": "",
+            "link-scatter": [
+                "\"d:/CODE STM/BTL_NMDKTM/build/Target 1/template.sct\""
+            ]
+        }
+    },
+    "env": {
+        "KEIL_OUTPUT_DIR": "Objects",
+        "workspaceFolder": "d:\\CODE STM\\BTL_NMDKTM",
+        "workspaceFolderBasename": "BTL_NMDKTM",
+        "OutDir": "d:\\CODE STM\\BTL_NMDKTM\\build\\Target 1",
+        "OutDirRoot": "build",
+        "OutDirBase": "build\\Target 1",
+        "ProjectName": "template",
+        "ConfigName": "Target 1",
+        "ProjectRoot": "d:\\CODE STM\\BTL_NMDKTM",
+        "ExecutableName": "d:\\CODE STM\\BTL_NMDKTM\\build\\Target 1\\template",
+        "ChipPackDir": "",
+        "ChipName": "",
+        "SYS_Platform": "win32",
+        "SYS_DirSep": "\\",
+        "SYS_DirSeparator": "\\",
+        "SYS_PathSep": ";",
+        "SYS_PathSeparator": ";",
+        "SYS_EOL": "\r\n",
+        "EIDE_BUILDER_DIR": "c:\\Users\\Gigabyte\\.vscode\\extensions\\cl.eide-3.27.2\\res\\tools\\win32\\unify_builder",
+        "EIDE_BINARIES_VER": "12.1.1",
+        "EIDE_MSYS": "C:\\Users\\Gigabyte\\.eide\\bin\\builder\\msys\\bin",
+        "EIDE_PY3_CMD": "C:\\Users\\Gigabyte\\.eide\\bin\\python36\\python3.exe",
+        "ToolchainRoot": "d:\\keilc\\ARM\\ARMCC"
+    },
+    "sysPaths": []
+}
