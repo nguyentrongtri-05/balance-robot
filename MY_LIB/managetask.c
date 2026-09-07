@@ -51,21 +51,21 @@ void System_Tasks_Init(void) {
 static void vTaskIMU(void *pvParameters) {
     (void)pvParameters;
     TickType_t xLastWakeTime = xTaskGetTickCount();
-    const TickType_t xFrequency = pdMS_TO_TICKS(5); 
+    const TickType_t xFrequency = pdMS_TO_TICKS(5000); 
 
     while (1) {
         vTaskDelayUntil(&xLastWakeTime, xFrequency);
 
-        float accAngle, gyroRate;
+        // float accAngle, gyroRate;
         
-        /* Gọi hàm đọc dữ liệu thanh ghi từ IMU (I2C/SPI) */
-        IMU_Read(&accAngle, &gyroRate);
+        // /* Gọi hàm đọc dữ liệu thanh ghi từ IMU (I2C/SPI) */
+        // IMU_Read(&accAngle, &gyroRate);
         
-        g_rawAccPitch = accAngle;
-        g_rawGyroRate = gyroRate;
+        // g_rawAccPitch = accAngle;
+        // g_rawGyroRate = gyroRate;
 
-        /* Đưa qua bộ lọc Kalman khử nhiễu (dt = 0.005s) */
-        g_filteredPitch = Kalman_GetAngle(&kalmanFilter, accAngle, gyroRate, 0.005f);
+        // /* Đưa qua bộ lọc Kalman khử nhiễu (dt = 0.005s) */
+        // g_filteredPitch = Kalman_GetAngle(&kalmanFilter, accAngle, gyroRate, 0.005f);
 
         GPIO_ToggleBits(GPIOD, GPIO_Pin_12); 
     }
@@ -77,20 +77,20 @@ static void vTaskIMU(void *pvParameters) {
 static void vTaskEncoder(void *pvParameters) {
     (void)pvParameters;
     TickType_t xLastWakeTime = xTaskGetTickCount();
-    const TickType_t xFrequency = pdMS_TO_TICKS(10); 
+    const TickType_t xFrequency = pdMS_TO_TICKS(1000); 
 
     while (1) {
         vTaskDelayUntil(&xLastWakeTime, xFrequency);
 
-        float speed;
-        Encoder_Read(&speed);
-        g_motorSpeed = speed;
+        // float speed;
+        // Encoder_Read(&speed);
+        // g_motorSpeed = speed;
         
-        /* Chạy khâu PID Vòng Ngoài: 
-         * Lấy Tốc độ mong muốn (g_targetSpeed) trừ Tốc độ thực tế (g_motorSpeed)
-         * -> Suy luận ra: Xe cần nghiêng bao nhiêu độ (g_targetAngle) để bám được tốc độ đó.
-         * dt = 0.01s (100Hz) */
-        g_targetAngle = PID_Compute(&speedPID, g_targetSpeed, g_motorSpeed, 0.010f);
+        // /* Chạy khâu PID Vòng Ngoài: 
+        //  * Lấy Tốc độ mong muốn (g_targetSpeed) trừ Tốc độ thực tế (g_motorSpeed)
+        //  * -> Suy luận ra: Xe cần nghiêng bao nhiêu độ (g_targetAngle) để bám được tốc độ đó.
+        //  * dt = 0.01s (100Hz) */
+        // g_targetAngle = PID_Compute(&speedPID, g_targetSpeed, g_motorSpeed, 0.010f);
         
         GPIO_ToggleBits(GPIOD, GPIO_Pin_13);
     }
@@ -102,7 +102,7 @@ static void vTaskEncoder(void *pvParameters) {
 static void vTaskControl(void *pvParameters) {
     (void)pvParameters;
     TickType_t xLastWakeTime = xTaskGetTickCount();
-    const TickType_t xFrequency = pdMS_TO_TICKS(5); 
+    const TickType_t xFrequency = pdMS_TO_TICKS(500); 
     
     /* Vùng chết của động cơ (Deadband) - Tùy chỉnh theo phần cứng thực tế (Ví dụ 15%) */
     const float DEADBAND_OFFSET = 15.0f; 
@@ -110,25 +110,25 @@ static void vTaskControl(void *pvParameters) {
     while (1) {
         vTaskDelayUntil(&xLastWakeTime, xFrequency);
 
-        /* 1. Tính toán sai số (Error) dựa trên Target Angle được cấp từ vòng PID Tốc độ */
-        float errorAngle = g_targetAngle - g_filteredPitch;
-        float dErrorAngle = -kalmanFilter.rate; 
+        // /* 1. Tính toán sai số (Error) dựa trên Target Angle được cấp từ vòng PID Tốc độ */
+        // float errorAngle = g_targetAngle - g_filteredPitch;
+        // float dErrorAngle = -kalmanFilter.rate; 
         
-        /* 2. Đưa vào hệ Fuzzy Logic (Vòng trong phản ứng cực nhanh 200Hz xuất thẳng PWM) */
-        float outputPWM = Fuzzy_Compute(&fuzzyControl, errorAngle, dErrorAngle);
+        // /* 2. Đưa vào hệ Fuzzy Logic (Vòng trong phản ứng cực nhanh 200Hz xuất thẳng PWM) */
+        // float outputPWM = Fuzzy_Compute(&fuzzyControl, errorAngle, dErrorAngle);
 
-        /* 3. Khâu bù Vùng Chết (Deadband Compensation) để chống hiện tượng Jitter (Lắc lư xe) */
-        if (outputPWM > 0.5f) {
-            outputPWM += DEADBAND_OFFSET; // Xe có xu hướng tiến -> Cộng thêm bù chết phần tiến
-        } else if (outputPWM < -0.5f) {
-            outputPWM -= DEADBAND_OFFSET; // Xe có xu hướng lùi -> Trừ đi bù chết phần lùi
-        } else {
-            outputPWM = 0.0f;
-        }
+        // /* 3. Khâu bù Vùng Chết (Deadband Compensation) để chống hiện tượng Jitter (Lắc lư xe) */
+        // if (outputPWM > 0.5f) {
+        //     outputPWM += DEADBAND_OFFSET; // Xe có xu hướng tiến -> Cộng thêm bù chết phần tiến
+        // } else if (outputPWM < -0.5f) {
+        //     outputPWM -= DEADBAND_OFFSET; // Xe có xu hướng lùi -> Trừ đi bù chết phần lùi
+        // } else {
+        //     outputPWM = 0.0f;
+        // }
 
-        /* 4. Đưa ra lệnh điều khiển động cơ qua PWM (TIMx->CCR) */
-        Motor_SetPWM(outputPWM);
-        g_motorPWM = outputPWM;
+        // /* 4. Đưa ra lệnh điều khiển động cơ qua PWM (TIMx->CCR) */
+        // Motor_SetPWM(outputPWM);
+        // g_motorPWM = outputPWM;
         
         GPIO_ToggleBits(GPIOD, GPIO_Pin_14);
     }

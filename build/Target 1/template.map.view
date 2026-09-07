@@ -1,0 +1,6 @@
+tool: AC5
+fileName: 'template.map'
+elfName: 'template.axf'
+compilerName: 'ARM Compiler'
+compilerFullName: 'Component: ARM Compiler 5.06 update 6 (build 750)'
+compilerPath: 'd:\keilc\ARM\ARMCC\bin\armcc.exe'

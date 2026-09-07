@@ -1,0 +1,66 @@
+[2026-09-07 09:59:14]	[info] incremental build: 31 source files changed
+These source files will be recompiled
+---
+'d:\CODE STM\BTL_NMDKTM\FreeRTOS\list.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\FreeRTOS\portable\MemMang\heap_4.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\FreeRTOS\portable\RVDS\ARM_CM4F\port.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\FreeRTOS\queue.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\FreeRTOS\tasks.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\Libraries\CMSIS\Device\ST\STM32F4xx\Source\Templates\arm\startup_stm32f40_41xxx.s': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\misc.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_can.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_flash.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_gpio.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_i2c.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_iwdg.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_rcc.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_spi.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_syscfg.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_tim.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_usart.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_wwdg.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\MDK_ARM\main.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\MY_LIB\encoder.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\MY_LIB\fuzzy.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\MY_LIB\gpio.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\MY_LIB\imu.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\MY_LIB\kalman.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\MY_LIB\managetask.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\MY_LIB\motor.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\MY_LIB\pid.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\stm32f4xx_it.c': object (.o) file not exist
+'d:\CODE STM\BTL_NMDKTM\system_stm32f4xx.c': object (.o) file not exist
+
+[2026-09-07 09:59:16]	[done]
+	build successfully !
+
+[2026-09-07 10:08:32]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'d:\CODE STM\BTL_NMDKTM\MY_LIB\managetask.c': source file has been changed.
+
+[2026-09-07 10:08:33]	[done]
+	build successfully !
+
+[2026-09-07 10:09:19]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'d:\CODE STM\BTL_NMDKTM\MY_LIB\managetask.c': source file has been changed.
+
+[2026-09-07 10:09:20]	[done]
+	build successfully !
+
+[2026-09-07 10:12:36]	[done]
+	build successfully !
+
+[2026-09-07 10:17:18]	[done]
+	build successfully !
+
+[2026-09-07 10:20:08]	[done]
+	build successfully !
+
+[2026-09-07 10:21:02]	[done]
+	build successfully !
+

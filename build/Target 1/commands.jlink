@@ -1,0 +1,6 @@
+r
+halt
+loadfile "d:\CODE STM\BTL_NMDKTM\build\Target 1\template.hex"
+r
+go
+exit

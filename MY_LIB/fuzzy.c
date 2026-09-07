@@ -76,40 +76,61 @@ static void Fuzzify(float x, float limit_nb_ns, float limit_ns_ze, float limit_z
 }
 
 float Fuzzy_Compute(FuzzyController_t *fc, float error, float dError) {
+    /* ----------------------------------------------------
+     * 1. TIỀN XỬ LÝ (Pre-processing)
+     * Nhân tín hiệu đầu vào với các hệ số ke, kde
+     * ---------------------------------------------------- */
     float e_scaled = error * fc->ke;
     float de_scaled = dError * fc->kde;
 
     float mu_e[5];
     float mu_de[5];
 
-    /* 1. Fuzzification */
+    /* ----------------------------------------------------
+     * 2. MỜ HÓA (Fuzzification)
+     * Chuyển đổi giá trị rõ thành các mức độ phụ thuộc (mu)
+     * dựa vào các hàm liên thuộc (Membership Functions)
+     * ---------------------------------------------------- */
     Fuzzify(e_scaled, fc->e_limit_nb_ns, fc->e_limit_ns_ze, fc->e_limit_ze_ps, fc->e_limit_ps_pb, mu_e);
     Fuzzify(de_scaled, fc->de_limit_nb_ns, fc->de_limit_ns_ze, fc->de_limit_ze_ps, fc->de_limit_ps_pb, mu_de);
 
-    /* 2. Rule Evaluation and Defuzzification (Weighted Average / Sugeno) */
     float num = 0.0f;
     float den = 0.0f;
-    
     float out_vals[5] = {fc->out_nb, fc->out_ns, fc->out_ze, fc->out_ps, fc->out_pb};
 
+    /* ----------------------------------------------------
+     * 3. HỆ QUI TẮC & PHƯƠNG PHÁP SUY LUẬN (Rule Base & Inference)
+     * Kết hợp cả 4. GIẢI MỜ (Defuzzification) theo phương pháp Fuzzy Mean
+     * (Trung bình có trọng số) trong cùng 1 vòng lặp để tối ưu tốc độ
+     * ---------------------------------------------------- */
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j < 5; j++) {
-            /* AND operator -> Min */
+            /* Phương pháp suy luận: Dùng phép AND (Lấy giá trị Min) */
             float weight = mu_e[i] < mu_de[j] ? mu_e[i] : mu_de[j];
             
             if (weight > 0.0f) {
+                /* Hệ qui tắc: Tra bảng luật RuleBase để lấy đầu ra */
                 FuzzyState_t out_state = RuleBase[i][j];
+                
+                /* Tích lũy tử số và mẫu số cho công thức Fuzzy Mean */
                 num += weight * out_vals[out_state];
                 den += weight;
             }
         }
     }
 
-    float output = 0.0f;
+    /* 4. Hoàn tất quá trình giải mờ (Fuzzy Mean) */
+    float defuzzified_output = 0.0f;
     if (den > 0.0f) {
-        output = num / den;
+        defuzzified_output = num / den; // Công thức: Tổng (weight * giá trị) / Tổng (weight)
     }
 
-    return output * fc->ku;
+    /* ----------------------------------------------------
+     * 5. HẬU XỬ LÝ (Post-processing)
+     * Nhân kết quả giải mờ với hệ số ngõ ra ku
+     * ---------------------------------------------------- */
+    float final_output = defuzzified_output * fc->ku;
+    
+    return final_output;
 }
 
