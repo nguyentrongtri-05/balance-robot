@@ -1,0 +1,391 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: µVision V5.31.0.0
+Copyright (C) 2020 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: 12 Gig, OEM, LIC=QF82M-XTQBS-9UE4U-SYM66-ENB0J-J6A63
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Plus  Version: 5.31.0.0
+Toolchain Path:  D:\keilc\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 6 (build 750)
+Assembler:       Armasm.exe V5.06 update 6 (build 750)
+Linker/Locator:  ArmLink.exe V5.06 update 6 (build 750)
+Library Manager: ArmAr.exe V5.06 update 6 (build 750)
+Hex Converter:   FromElf.exe V5.06 update 6 (build 750)
+CPU DLL:         SARMCM3.DLL V5.31.0.0
+Dialog DLL:      DCM.DLL V1.17.3.0
+Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.0.7.0
+Dialog DLL:      TCM.DLL V1.46.0.0
+ 
+<h2>Project:</h2>
+D:\CODE STM\BTL_NMDKTM\MDK_ARM\template.uvprojx
+Project File Date:  09/06/2026
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\keilc\ARM\ARMCC\Bin'
+Build target 'Target 1'
+compiling stm32f4xx_it.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\stm32f4xx_it.c: 5 warnings, 0 errors
+compiling system_stm32f4xx.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\system_stm32f4xx.c: 5 warnings, 0 errors
+compiling stm32f4xx_iwdg.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_iwdg.c: 5 warnings, 0 errors
+compiling misc.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\Libraries\STM32F4xx_StdPeriph_Driver\src\misc.c: 5 warnings, 0 errors
+compiling stm32f4xx_gpio.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_gpio.c: 5 warnings, 0 errors
+compiling stm32f4xx_dma.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c: 5 warnings, 0 errors
+compiling stm32f4xx_flash.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_flash.c: 5 warnings, 0 errors
+compiling stm32f4xx_can.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_can.c: 5 warnings, 0 errors
+compiling stm32f4xx_adc.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c: 5 warnings, 0 errors
+compiling main.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\FreeRTOS\FreeRTOSConfig.h(72): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+main.c(40): warning:  #1-D: last line of file ends without a newline
+  }
+main.c: 7 warnings, 0 errors
+compiling stm32f4xx_i2c.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_i2c.c: 5 warnings, 0 errors
+compiling stm32f4xx_rcc.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_rcc.c: 5 warnings, 0 errors
+compiling fuzzy.c...
+compiling stm32f4xx_spi.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_spi.c: 5 warnings, 0 errors
+compiling kalman.c...
+compiling stm32f4xx_syscfg.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_syscfg.c: 5 warnings, 0 errors
+compiling stm32f4xx_tim.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_tim.c: 5 warnings, 0 errors
+compiling stm32f4xx_usart.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_usart.c: 5 warnings, 0 errors
+compiling pid.c...
+compiling stm32f4xx_wwdg.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_wwdg.c: 5 warnings, 0 errors
+compiling encoder.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\MY_LIB\encoder.c: 5 warnings, 0 errors
+compiling gpio.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\MY_LIB\gpio.c: 5 warnings, 0 errors
+compiling imu.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\MY_LIB\imu.c: 5 warnings, 0 errors
+compiling motor.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\MY_LIB\motor.c: 5 warnings, 0 errors
+compiling managetask.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\FreeRTOS\FreeRTOSConfig.h(72): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\MY_LIB\managetask.c: 6 warnings, 0 errors
+compiling list.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\FreeRTOS\FreeRTOSConfig.h(72): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\FreeRTOS\list.c: 6 warnings, 0 errors
+compiling port.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\FreeRTOS\FreeRTOSConfig.h(72): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\FreeRTOS\portable\RVDS\ARM_CM4F\port.c: 6 warnings, 0 errors
+compiling queue.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\FreeRTOS\FreeRTOSConfig.h(72): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\FreeRTOS\queue.c: 6 warnings, 0 errors
+compiling heap_4.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\FreeRTOS\FreeRTOSConfig.h(72): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\FreeRTOS\portable\MemMang\heap_4.c: 6 warnings, 0 errors
+compiling tasks.c...
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+..\FreeRTOS\FreeRTOSConfig.h(72): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\FreeRTOS\tasks.c: 6 warnings, 0 errors
+linking...
+Program Size: Code=7514 RO-data=450 RW-data=144 ZI-data=34736  
+FromELF: creating hex file...
+".\Objects\template.axf" - 0 Error(s), 143 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: Keil
+                https://www.keil.com/pack/Keil.STM32F4xx_DFP.3.1.1.pack
+                Keil.STM32F4xx_DFP.3.1.1
+                STMicroelectronics STM32F4 Series Device Support
+
+<h2>Collection of Component include folders:</h2>
+
+<h2>Collection of Component Files used:</h2>
+Build Time Elapsed:  00:00:03
+</pre>
+</body>
+</html>
