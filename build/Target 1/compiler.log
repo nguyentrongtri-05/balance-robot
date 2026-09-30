@@ -4,4 +4,8 @@
 
 >>> ld
 
-Program Size: Code=5100 RO-data=424 RW-data=96 ZI-data=34736  
+Error: L6218E: Undefined symbol I2C1_MPU6050_Init (referred from managetask.o).
+Error: L6218E: Undefined symbol MPU6050_GetPitch (referred from managetask.o).
+Error: L6218E: Undefined symbol MPU6050_ReadRawData (referred from managetask.o).
+Not enough information to list image symbols.
+Finished: 1 information, 0 warning and 3 error messages.

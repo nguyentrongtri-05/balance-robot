@@ -64,3 +64,64 @@ These source files will be recompiled
 [2026-09-07 10:21:02]	[done]
 	build successfully !
 
+[2026-09-09 01:33:27]	[done]
+	build successfully !
+
+[2026-09-15 08:41:13]	[done]
+	build successfully !
+
+[2026-09-15 08:41:31]	[done]
+	build successfully !
+
+[2026-09-15 09:06:57]	[info] incremental build: 3 source files changed
+These source files will be recompiled
+---
+'d:\CODE STM\BTL_NMDKTM\MDK_ARM\main.c': dependence 'd:\CODE STM\BTL_NMDKTM\MY_LIB\encoder.h' has been changed.
+'d:\CODE STM\BTL_NMDKTM\MY_LIB\encoder.c': source file has been changed.
+'d:\CODE STM\BTL_NMDKTM\MY_LIB\managetask.c': source file has been changed.
+
+[2026-09-15 09:06:58]	link failed !, exit code: 1
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6218E: Undefined symbol I2C1_MPU6050_Init (referred from managetask.o).
+Error: L6218E: Undefined symbol MPU6050_GetPitch (referred from managetask.o).
+Error: L6218E: Undefined symbol MPU6050_ReadRawData (referred from managetask.o).
+Not enough information to list image symbols.
+Finished: 1 information, 0 warning and 3 error messages.
+
+
+[2026-09-15 09:08:08]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'d:\CODE STM\BTL_NMDKTM\MY_LIB\managetask.c': source file has been changed.
+
+[2026-09-15 09:08:08]	link failed !, exit code: 1
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6218E: Undefined symbol I2C1_MPU6050_Init (referred from managetask.o).
+Error: L6218E: Undefined symbol MPU6050_GetPitch (referred from managetask.o).
+Error: L6218E: Undefined symbol MPU6050_ReadRawData (referred from managetask.o).
+Not enough information to list image symbols.
+Finished: 1 information, 0 warning and 3 error messages.
+
+
+[2026-09-15 09:08:51]	link failed !, exit code: 1
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6218E: Undefined symbol I2C1_MPU6050_Init (referred from managetask.o).
+Error: L6218E: Undefined symbol MPU6050_GetPitch (referred from managetask.o).
+Error: L6218E: Undefined symbol MPU6050_ReadRawData (referred from managetask.o).
+Not enough information to list image symbols.
+Finished: 1 information, 0 warning and 3 error messages.
+
+
+[2026-09-15 09:08:58]	link failed !, exit code: 1
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6218E: Undefined symbol I2C1_MPU6050_Init (referred from managetask.o).
+Error: L6218E: Undefined symbol MPU6050_GetPitch (referred from managetask.o).
+Error: L6218E: Undefined symbol MPU6050_ReadRawData (referred from managetask.o).
+Not enough information to list image symbols.
+Finished: 1 information, 0 warning and 3 error messages.
+
+

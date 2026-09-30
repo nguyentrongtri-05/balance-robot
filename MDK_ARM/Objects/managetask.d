@@ -47,8 +47,8 @@
 .\objects\managetask.o: ..\FreeRTOS\include\list.h
 .\objects\managetask.o: ..\MY_LIB\gpio.h
 .\objects\managetask.o: ..\MY_LIB\motor.h
-.\objects\managetask.o: ..\MY_LIB\imu.h
 .\objects\managetask.o: ..\MY_LIB\encoder.h
+.\objects\managetask.o: ..\MY_LIB\driver_i2c.h
 .\objects\managetask.o: ..\MY_LIB\fuzzy.h
-.\objects\managetask.o: ..\MY_LIB\kalman.h
 .\objects\managetask.o: ..\MY_LIB\pid.h
+.\objects\managetask.o: ..\MY_LIB\kalman.h

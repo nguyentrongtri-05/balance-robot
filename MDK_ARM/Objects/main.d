@@ -46,7 +46,7 @@
 .\objects\main.o: ..\FreeRTOS\include\list.h
 .\objects\main.o: ..\MY_LIB\gpio.h
 .\objects\main.o: ..\MY_LIB\motor.h
-.\objects\main.o: ..\MY_LIB\imu.h
 .\objects\main.o: ..\MY_LIB\encoder.h
 .\objects\main.o: ..\MY_LIB\fuzzy.h
 .\objects\main.o: ..\MY_LIB\managetask.h
+.\objects\main.o: ..\MY_LIB\driver_i2c.h
