@@ -2,18 +2,18 @@
     "name": "template",
     "target": "Target 1",
     "toolchain": "AC5",
-    "toolchainLocation": "E:\\keilc\\ARM\\ARMCC",
+    "toolchainLocation": "C:\\Keil_v5\\ARM\\ARMCC",
     "toolchainCfgFile": "c:\\Users\\Gigabyte\\.vscode\\extensions\\cl.eide-3.27.2\\res\\data\\models/arm.v5.model.json",
     "buildMode": "fast|multhread",
     "showRepathOnLog": true,
     "threadNum": 16,
-    "rootDir": "e:\\CODE STM\\BTL_NMDKTM",
+    "rootDir": "e:\\NMDKTMN\\BTL\\BTL_NMDKTM",
     "dumpPath": "build\\Target 1",
     "outDir": "build\\Target 1",
     "ram": 131072,
     "rom": 1048576,
     "incDirs": [
-        "../Template_rtos",
+        ".",
         "MDK_ARM",
         "Libraries/CMSIS/Device/ST/STM32F4xx/Include",
         "Libraries/STM32F4xx_StdPeriph_Driver/inc",
@@ -53,10 +53,11 @@
         "Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_usart.c",
         "Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c",
         "MDK_ARM/main.c",
+        "MY_LIB/driver_i2c.c",
         "MY_LIB/encoder.c",
         "MY_LIB/fuzzy.c",
         "MY_LIB/gpio.c",
-        "MY_LIB/imu.c",
+        "MY_LIB/imu_calib.c",
         "MY_LIB/kalman.c",
         "MY_LIB/managetask.c",
         "MY_LIB/motor.c",
@@ -74,8 +75,8 @@
         },
         "beforeBuildTasks": [],
         "c/cpp-compiler": {
-            "CXX_FLAGS": "--diag_suppress=1 --diag_suppress=1295",
-            "C_FLAGS": "--diag_suppress=1 --diag_suppress=1295",
+            "CXX_FLAGS": "--diag_suppress=1 --diag_suppress=1295 --diag_suppress=47",
+            "C_FLAGS": "--diag_suppress=1 --diag_suppress=1295 --diag_suppress=47",
             "c99-mode": true,
             "one-elf-section-per-function": true,
             "optimization": "level-0",
@@ -100,21 +101,21 @@
             "rw-base": "0x20000000",
             "xo-base": "",
             "link-scatter": [
-                "\"e:/CODE STM/BTL_NMDKTM/build/Target 1/template.sct\""
+                "\"e:/NMDKTMN/BTL/BTL_NMDKTM/build/Target 1/template.sct\""
             ]
         }
     },
     "env": {
         "KEIL_OUTPUT_DIR": "Objects",
-        "workspaceFolder": "e:\\CODE STM\\BTL_NMDKTM",
+        "workspaceFolder": "e:\\NMDKTMN\\BTL\\BTL_NMDKTM",
         "workspaceFolderBasename": "BTL_NMDKTM",
-        "OutDir": "e:\\CODE STM\\BTL_NMDKTM\\build\\Target 1",
+        "OutDir": "e:\\NMDKTMN\\BTL\\BTL_NMDKTM\\build\\Target 1",
         "OutDirRoot": "build",
         "OutDirBase": "build\\Target 1",
         "ProjectName": "template",
         "ConfigName": "Target 1",
-        "ProjectRoot": "e:\\CODE STM\\BTL_NMDKTM",
-        "ExecutableName": "e:\\CODE STM\\BTL_NMDKTM\\build\\Target 1\\template",
+        "ProjectRoot": "e:\\NMDKTMN\\BTL\\BTL_NMDKTM",
+        "ExecutableName": "e:\\NMDKTMN\\BTL\\BTL_NMDKTM\\build\\Target 1\\template",
         "ChipPackDir": "",
         "ChipName": "",
         "SYS_Platform": "win32",
@@ -127,7 +128,7 @@
         "EIDE_BINARIES_VER": "12.1.1",
         "EIDE_MSYS": "C:\\Users\\Gigabyte\\.eide\\bin\\builder\\msys\\bin",
         "EIDE_PY3_CMD": "C:\\Users\\Gigabyte\\.eide\\bin\\python36\\python3.exe",
-        "ToolchainRoot": "E:\\keilc\\ARM\\ARMCC"
+        "ToolchainRoot": "C:\\Keil_v5\\ARM\\ARMCC"
     },
     "sysPaths": []
 }

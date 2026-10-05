@@ -1,8 +1,8 @@
 .\objects\managetask.o: ..\MY_LIB\managetask.c
 .\objects\managetask.o: ..\MY_LIB\managetask.h
 .\objects\managetask.o: ..\FreeRTOS\include\FreeRTOS.h
-.\objects\managetask.o: D:\keilc\ARM\ARMCC\Bin\..\include\stddef.h
-.\objects\managetask.o: D:\keilc\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\managetask.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\managetask.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\managetask.o: ..\FreeRTOS\FreeRTOSConfig.h
 .\objects\managetask.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 .\objects\managetask.o: ..\Libraries\CMSIS\Include\core_cm4.h
@@ -10,7 +10,7 @@
 .\objects\managetask.o: ..\Libraries\CMSIS\Include\core_cmFunc.h
 .\objects\managetask.o: ..\Libraries\CMSIS\Include\core_cmSimd.h
 .\objects\managetask.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h
-.\objects\managetask.o: ..\..\Template_rtos\stm32f4xx_conf.h
+.\objects\managetask.o: ..\..\BTL_NMDKTM\stm32f4xx_conf.h
 .\objects\managetask.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h
 .\objects\managetask.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 .\objects\managetask.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_crc.h
@@ -52,3 +52,4 @@
 .\objects\managetask.o: ..\MY_LIB\fuzzy.h
 .\objects\managetask.o: ..\MY_LIB\pid.h
 .\objects\managetask.o: ..\MY_LIB\kalman.h
+.\objects\managetask.o: ..\MY_LIB\imu_calib.h

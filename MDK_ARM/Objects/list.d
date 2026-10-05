@@ -1,8 +1,8 @@
 .\objects\list.o: ..\FreeRTOS\list.c
-.\objects\list.o: D:\keilc\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\list.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\objects\list.o: ..\FreeRTOS\include\FreeRTOS.h
-.\objects\list.o: D:\keilc\ARM\ARMCC\Bin\..\include\stddef.h
-.\objects\list.o: D:\keilc\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\list.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\list.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\list.o: ..\FreeRTOS\FreeRTOSConfig.h
 .\objects\list.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 .\objects\list.o: ..\Libraries\CMSIS\Include\core_cm4.h
@@ -10,7 +10,7 @@
 .\objects\list.o: ..\Libraries\CMSIS\Include\core_cmFunc.h
 .\objects\list.o: ..\Libraries\CMSIS\Include\core_cmSimd.h
 .\objects\list.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h
-.\objects\list.o: ..\..\Template_rtos\stm32f4xx_conf.h
+.\objects\list.o: ..\..\BTL_NMDKTM\stm32f4xx_conf.h
 .\objects\list.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h
 .\objects\list.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 .\objects\list.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_crc.h

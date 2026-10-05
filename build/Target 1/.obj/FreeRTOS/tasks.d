@@ -7,7 +7,7 @@
 .\build\Target 1\.obj\FreeRTOS\tasks.o: Libraries/CMSIS/Include/core_cmFunc.h
 .\build\Target 1\.obj\FreeRTOS\tasks.o: Libraries/CMSIS/Include/core_cmSimd.h
 .\build\Target 1\.obj\FreeRTOS\tasks.o: Libraries/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
-.\build\Target 1\.obj\FreeRTOS\tasks.o: ../Template_rtos/stm32f4xx_conf.h
+.\build\Target 1\.obj\FreeRTOS\tasks.o: .\stm32f4xx_conf.h
 .\build\Target 1\.obj\FreeRTOS\tasks.o: Libraries/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_adc.h
 .\build\Target 1\.obj\FreeRTOS\tasks.o: Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
 .\build\Target 1\.obj\FreeRTOS\tasks.o: Libraries/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_crc.h

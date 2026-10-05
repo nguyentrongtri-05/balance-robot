@@ -1,9 +1,9 @@
 .\objects\tasks.o: ..\FreeRTOS\tasks.c
-.\objects\tasks.o: D:\keilc\ARM\ARMCC\Bin\..\include\stdlib.h
-.\objects\tasks.o: D:\keilc\ARM\ARMCC\Bin\..\include\string.h
+.\objects\tasks.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\tasks.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 .\objects\tasks.o: ..\FreeRTOS\include\FreeRTOS.h
-.\objects\tasks.o: D:\keilc\ARM\ARMCC\Bin\..\include\stddef.h
-.\objects\tasks.o: D:\keilc\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\tasks.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\tasks.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\tasks.o: ..\FreeRTOS\FreeRTOSConfig.h
 .\objects\tasks.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 .\objects\tasks.o: ..\Libraries\CMSIS\Include\core_cm4.h
@@ -11,7 +11,7 @@
 .\objects\tasks.o: ..\Libraries\CMSIS\Include\core_cmFunc.h
 .\objects\tasks.o: ..\Libraries\CMSIS\Include\core_cmSimd.h
 .\objects\tasks.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h
-.\objects\tasks.o: ..\..\Template_rtos\stm32f4xx_conf.h
+.\objects\tasks.o: ..\..\BTL_NMDKTM\stm32f4xx_conf.h
 .\objects\tasks.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h
 .\objects\tasks.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 .\objects\tasks.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_crc.h

@@ -1,9 +1,9 @@
 .\objects\queue.o: ..\FreeRTOS\queue.c
-.\objects\queue.o: D:\keilc\ARM\ARMCC\Bin\..\include\stdlib.h
-.\objects\queue.o: D:\keilc\ARM\ARMCC\Bin\..\include\string.h
+.\objects\queue.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\queue.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 .\objects\queue.o: ..\FreeRTOS\include\FreeRTOS.h
-.\objects\queue.o: D:\keilc\ARM\ARMCC\Bin\..\include\stddef.h
-.\objects\queue.o: D:\keilc\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\queue.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\queue.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\queue.o: ..\FreeRTOS\FreeRTOSConfig.h
 .\objects\queue.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 .\objects\queue.o: ..\Libraries\CMSIS\Include\core_cm4.h
@@ -11,7 +11,7 @@
 .\objects\queue.o: ..\Libraries\CMSIS\Include\core_cmFunc.h
 .\objects\queue.o: ..\Libraries\CMSIS\Include\core_cmSimd.h
 .\objects\queue.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h
-.\objects\queue.o: ..\..\Template_rtos\stm32f4xx_conf.h
+.\objects\queue.o: ..\..\BTL_NMDKTM\stm32f4xx_conf.h
 .\objects\queue.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h
 .\objects\queue.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 .\objects\queue.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_crc.h

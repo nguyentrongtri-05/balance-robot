@@ -1,3 +1,5 @@
 {
-    "cmake.sourceDirectory": "E:/CODE STM/BTL_NMDKTM/FreeRTOS/include"
+    "cmake.sourceDirectory": "E:/CODE STM/BTL_NMDKTM/FreeRTOS/include",
+    "EIDE.ARM.ARMCC5.InstallDirectory": "C:\\Keil_v5\\ARM\\ARMCC",
+    "EIDE.ARM.INI.Path": "C:\\Keil_v5\\UV4\\UV4.exe"
 }

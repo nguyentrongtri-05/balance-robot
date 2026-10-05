@@ -2,12 +2,12 @@
 .\objects\driver_i2c.o: ..\MY_LIB\driver_i2c.h
 .\objects\driver_i2c.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 .\objects\driver_i2c.o: ..\Libraries\CMSIS\Include\core_cm4.h
-.\objects\driver_i2c.o: D:\keilc\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\driver_i2c.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\driver_i2c.o: ..\Libraries\CMSIS\Include\core_cmInstr.h
 .\objects\driver_i2c.o: ..\Libraries\CMSIS\Include\core_cmFunc.h
 .\objects\driver_i2c.o: ..\Libraries\CMSIS\Include\core_cmSimd.h
 .\objects\driver_i2c.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h
-.\objects\driver_i2c.o: ..\..\Template_rtos\stm32f4xx_conf.h
+.\objects\driver_i2c.o: ..\..\BTL_NMDKTM\stm32f4xx_conf.h
 .\objects\driver_i2c.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h
 .\objects\driver_i2c.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 .\objects\driver_i2c.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_crc.h
@@ -35,4 +35,4 @@
 .\objects\driver_i2c.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dac.h
 .\objects\driver_i2c.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dcmi.h
 .\objects\driver_i2c.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_fsmc.h
-.\objects\driver_i2c.o: D:\keilc\ARM\ARMCC\Bin\..\include\math.h
+.\objects\driver_i2c.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

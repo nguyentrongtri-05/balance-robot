@@ -82,6 +82,17 @@ volatile uint8_t  g_calibFaces   = 0;      /* Bitmask 6 mặt đã thu (0x3F = �
 volatile uint32_t g_calibFlags   = 0;      /* IMU_CALIB_HAS_x đang có trong Flash           */
 volatile float    g_angleOffset  = BAL_ANGLE_OFFSET;  /* Góc cân bằng đang dùng [deg]       */
 
+/* ---- Phím ngắt ngoài PC0..PC3 ---- */
+#define TRIM_SAMPLES            (400u)    /* Set target khi đang chạy: trung bình pitch 2 s   */
+volatile uint32_t g_keySpareShort = 0;     /* PC3 (dự phòng): số lần nhấn ngắn / giữ 2 s     */
+volatile uint32_t g_keySpareLong  = 0;
+volatile uint8_t  g_trimActive    = 0;     /* 1 = đang lấy trung bình góc (set target lúc chạy) */
+
+/* Control -> Speed: góc cân bằng mới khi ĐANG CHẠY. Speed task là nơi duy nhất tính
+ * g_targetAngle và chạy speedPID => đổi offset + bù PID ở đó để góc đặt không bị nhảy. */
+static volatile float   s_newOffset    = 0.0f;
+static volatile uint8_t s_newOffsetReq = 0u;
+
 /* Các biến liên kết giữa 2 vòng lặp (Cascaded Loop) */
 volatile float g_targetSpeed = 0.0f;   /* [RPM] đặt từ remote sau này      */
 volatile float g_targetAngle = 0.0f;   /* [deg] = offset + đầu ra vòng tốc độ */
@@ -229,10 +240,23 @@ static void vTaskSpeed(void *pvParameters)
 
         if (g_balanceState == BAL_RUNNING)
         {
+            /* Set target lúc đang chạy: góc đặt hiện tại = offset_cũ + u. Đổi offset thành
+             * offset_mới và trừ đúng phần chênh khỏi u(k-1) => góc đặt liên tục, không giật */
+            if (s_newOffsetReq)
+            {
+                speedPID.pre_Output -= (s_newOffset - g_angleOffset);
+                g_angleOffset  = s_newOffset;
+                s_newOffsetReq = 0u;
+            }
             speedOut = PID_Compute(&speedPID, g_targetSpeed, g_motorSpeed, SPEED_DT);
         }
         else
         {
+            if (s_newOffsetReq)
+            {
+                g_angleOffset  = s_newOffset;
+                s_newOffsetReq = 0u;
+            }
             /* Không chạy => xóa trạng thái để lần bật sau bắt đầu sạch */
             PID_Reset(&speedPID);
             speedOut = 0.0f;
@@ -248,6 +272,34 @@ static void vTaskSpeed(void *pvParameters)
                 if (evt == BTN_EVT_SHORT)      g_calibRequest = CALIB_REQ_LEVEL;
                 else if (evt == BTN_EVT_LONG)  g_calibRequest = CALIB_REQ_ACCEL6;
             }
+        }
+
+        /* Phím ngắt ngoài PC0..PC3 */
+        {
+            ButtonEvent_t key[KEY_COUNT];
+            Keys_Poll(key);
+
+            /* PC1 - SET ZERO: dừng tại chỗ (luôn làm), bias gyro (chỉ khi motor tắt - Control lọc) */
+            if (key[KEY_ZERO] == BTN_EVT_SHORT)
+            {
+                leftMotor.position  = 0;
+                rightMotor.position = 0;
+                g_wheelPosition     = 0;
+                g_targetSpeed       = 0.0f;
+                g_turn              = 0.0f;
+            }
+
+            if (g_calibRequest == CALIB_REQ_NONE)
+            {
+                if (key[KEY_CALIB] == BTN_EVT_SHORT)        g_calibRequest = CALIB_REQ_ACCEL6;
+                else if (key[KEY_CALIB] == BTN_EVT_LONG)    g_calibRequest = CALIB_REQ_ERASE;
+                else if (key[KEY_ZERO] == BTN_EVT_SHORT)    g_calibRequest = CALIB_REQ_ZERO;
+                else if (key[KEY_TARGET] == BTN_EVT_SHORT)  g_calibRequest = CALIB_REQ_TARGET;
+            }
+
+            /* PC3 - DỰ PHÒNG: thêm chức năng tại đây */
+            if (key[KEY_SPARE] == BTN_EVT_SHORT)      g_keySpareShort++;
+            else if (key[KEY_SPARE] == BTN_EVT_LONG)  g_keySpareLong++;
         }
     }
 }
@@ -265,6 +317,12 @@ static void vTaskControl(void *pvParameters)
     TickType_t resultUntil = 0u;
     TickType_t captureFlashUntil = 0u;
     uint32_t   lastCaptures = ImuCalib_GetCaptureCount();
+    /* Set target khi đang chạy */
+    float      trimSum = 0.0f;
+    uint32_t   trimN = 0u;
+    uint8_t    trimOk = 0u;
+    TickType_t trimShowUntil = 0u;
+    uint8_t    saveTried = 0u;
 
     while (1)
     {
@@ -272,7 +330,8 @@ static void vTaskControl(void *pvParameters)
         uint32_t   got = ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(BAL_IMU_TIMEOUT_MS));
         TickType_t now = xTaskGetTickCount();
 
-        /* ---- Yêu cầu hiệu chuẩn: CHỈ nhận khi motor đang tắt (WAIT_UPRIGHT) ---- */
+        /* ---- Yêu cầu hiệu chuẩn: CHỈ nhận khi motor đang tắt (WAIT_UPRIGHT),
+         *      riêng TARGET khi đang chạy thì lấy trung bình góc mà KHÔNG tắt motor ---- */
         if (g_calibRequest != CALIB_REQ_NONE)
         {
             uint8_t req = g_calibRequest;
@@ -282,9 +341,21 @@ static void vTaskControl(void *pvParameters)
             if (req == CALIB_REQ_LEVEL)       proc = CALIB_PROC_LEVEL;
             else if (req == CALIB_REQ_ACCEL6) proc = CALIB_PROC_ACCEL6;
             else if (req == CALIB_REQ_ERASE)  proc = CALIB_PROC_ERASE;
+            else if (req == CALIB_REQ_ZERO)   proc = CALIB_PROC_ZERO;
+            else if (req == CALIB_REQ_TARGET) proc = CALIB_PROC_TARGET;
 
-            if ((g_balanceState == BAL_WAIT_UPRIGHT) && (proc != CALIB_PROC_NONE) &&
-                ImuCalib_Start(proc))
+            if ((req == CALIB_REQ_TARGET) && (g_balanceState == BAL_RUNNING))
+            {
+                if (!g_trimActive)
+                {
+                    trimSum = 0.0f;
+                    trimN   = 0u;
+                    g_trimActive  = 1u;
+                    g_calibStatus = (uint8_t)CALIB_STATUS_RUNNING;
+                }
+            }
+            else if ((g_balanceState == BAL_WAIT_UPRIGHT) && (proc != CALIB_PROC_NONE) &&
+                     ImuCalib_Start(proc))
             {
                 Motor_Enable(DISABLE);
                 g_motorPWM    = 0.0f;
@@ -316,6 +387,17 @@ static void vTaskControl(void *pvParameters)
             switch (g_balanceState)
             {
             case BAL_WAIT_UPRIGHT:
+                /* Góc cân bằng đặt lúc đang chạy chỉ nằm trong RAM -> lưu Flash khi xe đã NẰM
+                 * (CPU treo 1-2 s lúc xóa sector, motor đang tắt nên an toàn). Thử 1 lần. */
+                if (ImuCalib_IsDirty() && !saveTried && (tilt > BAL_FALL_ANGLE))
+                {
+                    saveTried    = 1u;
+                    g_calibError = ImuCalib_SaveIfDirty();
+                    g_calibFlags = ImuCalib_Get()->flags;
+                    uprightCnt   = 0u;
+                    break;
+                }
+
                 /* Chỉ cho chạy khi xe được dựng thẳng VÀ đứng yên đủ lâu */
                 if ((tilt < BAL_UPRIGHT_ANGLE) && (absf(rate) < BAL_UPRIGHT_RATE))
                 {
@@ -355,6 +437,33 @@ static void vTaskControl(void *pvParameters)
                      * thay cho kiểu cũ "u > 2 thì cộng 15" gây nhảy bậc 0 -> 17% */
                     Motor_SetPWM_Diff(outputPWM, g_turn);
                     g_motorPWM = outputPWM;
+
+                    /* SET TARGET lúc đang tự cân bằng: góc pitch TRUNG BÌNH khi xe giữ được
+                     * thăng bằng chính là góc cân bằng thật (đã gồm cả phần vòng tốc độ bù) */
+                    if (g_trimActive)
+                    {
+                        trimSum += pitch;
+                        if (++trimN >= TRIM_SAMPLES)
+                        {
+                            float newOff = trimSum / (float)trimN;
+                            trimOk = (ImuCalib_SetAngleOffset(newOff) == CALIB_ERR_NONE) ? 1u : 0u;
+                            if (trimOk)
+                            {
+                                s_newOffset    = newOff;   /* Speed task áp dụng (không giật) */
+                                s_newOffsetReq = 1u;
+                                saveTried      = 0u;       /* Lưu Flash khi xe nằm xuống     */
+                                g_calibError   = CALIB_ERR_NONE;
+                                g_calibFlags   = ImuCalib_Get()->flags;
+                            }
+                            else
+                            {
+                                g_calibError = CALIB_ERR_RANGE;
+                            }
+                            g_calibStatus = (uint8_t)(trimOk ? CALIB_STATUS_OK : CALIB_STATUS_FAIL);
+                            g_trimActive  = 0u;
+                            trimShowUntil = now + pdMS_TO_TICKS(1000);
+                        }
+                    }
                 }
                 break;
 
@@ -367,6 +476,14 @@ static void vTaskControl(void *pvParameters)
                 g_motorPWM = 0.0f;
                 break;
             }
+        }
+
+        /* Set target lúc chạy bị gián đoạn (xe đổ / mất IMU) -> hủy, giữ góc cũ */
+        if (g_trimActive && (g_balanceState != BAL_RUNNING))
+        {
+            g_trimActive  = 0u;
+            g_calibStatus = (uint8_t)CALIB_STATUS_FAIL;
+            g_calibError  = CALIB_ERR_TIMEOUT;
         }
 
         /* ---- Theo dõi quy trình hiệu chuẩn + LED ---- */
@@ -425,6 +542,23 @@ static void vTaskControl(void *pvParameters)
                 g_balanceState = BAL_WAIT_UPRIGHT;
             }
             shown = (BalanceState_t)0xFF;   /* Ép cập nhật LED khi rời CALIB */
+        }
+        else if ((g_balanceState == BAL_RUNNING) &&
+                 (g_trimActive || ((int32_t)(trimShowUntil - now) > 0)))
+        {
+            /* Set target lúc chạy: xanh lá + cam nháy = đang đo (2 s);
+             * kết quả 1 s: xanh lá + cam sáng = OK, xanh lá + đỏ = lỗi (góc vô lý) */
+            GPIO_ResetBits(GPIOD, LED_RED | LED_ORANGE);
+            GPIO_SetBits(GPIOD, LED_GREEN);
+            if (g_trimActive)
+            {
+                if (((now / pdMS_TO_TICKS(125)) & 1u) != 0u) GPIO_SetBits(GPIOD, LED_ORANGE);
+            }
+            else
+            {
+                GPIO_SetBits(GPIOD, trimOk ? LED_ORANGE : LED_RED);
+            }
+            shown = (BalanceState_t)0xFF;
         }
         else if (shown != g_balanceState)
         {

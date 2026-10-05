@@ -9,11 +9,13 @@ typedef enum {
     BAL_CALIB        = 3    /* Đang hiệu chuẩn IMU (motor tắt)                */
 } BalanceState_t;
 
-/* Yêu cầu hiệu chuẩn: ghi vào biến g_calibRequest trên Watch window, hoặc dùng nút USER */
+/* Yêu cầu hiệu chuẩn: ghi vào biến g_calibRequest trên Watch window, hoặc dùng nút USER / PC0..PC2 */
 #define CALIB_REQ_NONE      0u
-#define CALIB_REQ_LEVEL     1u   /* = nhấn ngắn nút USER  */
-#define CALIB_REQ_ACCEL6    2u   /* = giữ nút USER >= 2 s */
-#define CALIB_REQ_ERASE     3u   /* Xóa hiệu chuẩn trong Flash */
+#define CALIB_REQ_LEVEL     1u   /* = nhấn ngắn nút USER                              */
+#define CALIB_REQ_ACCEL6    2u   /* = giữ nút USER >= 2 s, hoặc nhấn PC0              */
+#define CALIB_REQ_ERASE     3u   /* Xóa hiệu chuẩn trong Flash (= giữ PC0 >= 2 s)     */
+#define CALIB_REQ_ZERO      4u   /* = PC1: bias gyro (xe NẰM yên, motor tắt)          */
+#define CALIB_REQ_TARGET    5u   /* = PC2: góc cân bằng (xe đứng ở điểm cân bằng)     */
 
 /**
  * @brief Initialize all system RTOS tasks

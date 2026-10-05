@@ -34,7 +34,9 @@ typedef enum {
     CALIB_PROC_NONE   = 0,
     CALIB_PROC_LEVEL  = 1,   /* Gyro bias + góc cân bằng (giữ xe ở điểm cân bằng, đứng yên) */
     CALIB_PROC_ACCEL6 = 2,   /* Gia tốc kế 6 mặt (đặt xe/board lần lượt 6 mặt, thứ tự tùy ý) */
-    CALIB_PROC_ERASE  = 3    /* Xóa dữ liệu hiệu chuẩn, về mặc định                        */
+    CALIB_PROC_ERASE  = 3,   /* Xóa dữ liệu hiệu chuẩn, về mặc định                        */
+    CALIB_PROC_ZERO   = 4,   /* CHỈ bias gyro (xe nằm yên, tư thế bất kỳ)                  */
+    CALIB_PROC_TARGET = 5    /* CHỈ góc cân bằng (giữ xe ở điểm cân bằng)                   */
 } CalibProc_t;
 
 typedef enum {
@@ -80,5 +82,21 @@ uint8_t       ImuCalib_GetError(void);
 uint8_t       ImuCalib_GetFaces(void);        /* bitmask 6 mặt đã thu: bit0 +X, bit1 -X, ... bit5 -Z */
 uint32_t      ImuCalib_GetCaptureCount(void); /* tăng 1 mỗi khi thu xong 1 mặt (để nháy LED)          */
 void          ImuCalib_ClearStatus(void);     /* OK/FAIL -> IDLE                                     */
+
+/**
+ * @brief Đặt góc cân bằng NGAY trong RAM (không ghi Flash) - dùng khi xe ĐANG CHẠY,
+ *        vì xóa Flash làm CPU treo 1-2 s => xe đổ. Đánh dấu "chưa lưu".
+ * @retval CALIB_ERR_NONE hoặc CALIB_ERR_RANGE (|góc| quá lớn, không áp dụng)
+ */
+uint8_t ImuCalib_SetAngleOffset(float angle);
+
+/** Có dữ liệu đặt bằng ImuCalib_SetAngleOffset() chưa ghi xuống Flash? */
+uint8_t ImuCalib_IsDirty(void);
+
+/**
+ * @brief Ghi Flash nếu đang "chưa lưu". CHỈ gọi khi motor TẮT (CPU treo 1-2 s).
+ * @retval CALIB_ERR_NONE (đã lưu / không cần lưu) hoặc CALIB_ERR_FLASH
+ */
+uint8_t ImuCalib_SaveIfDirty(void);
 
 #endif /* __IMU_CALIB_H */

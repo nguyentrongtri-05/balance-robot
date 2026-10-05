@@ -27,6 +27,7 @@ góc nghiêng ước lượng bằng **bộ lọc Kalman**.
 | Encoder phải | TIM4 encoder x4 | PB6 = CH1, PB7 = CH2 | |
 | LED | GPIO | PD12 xanh lá, PD13 cam, PD14 đỏ, PD15 xanh dương | |
 | Nút USER | GPIO, pull-down | PA0 | Dùng cho hiệu chuẩn |
+| Phím chức năng | EXTI0..3, pull-up nội, cạnh xuống | PC0 Calib, PC1 Set zero, PC2 Set target, PC3 dự phòng | Nối PCx ── nút ── GND (xem §7.1) |
 
 > Không dùng PA9 cho PWM vì trên board Discovery PA9 nối VBUS USB OTG.
 
@@ -320,6 +321,31 @@ Chỉ được nhận khi motor đang tắt (`BAL_WAIT_UPRIGHT`, LED cam). Dữ 
 - Sau LEVEL, xe đang đứng thẳng và yên 0.5 s sẽ **tự bật cân bằng** → giữ tay sẵn.
 - `g_calibFaces`: bitmask mặt đã thu (bit0 +X, bit1 −X, … bit5 −Z; `0x3F` = đủ).
 - `g_calibFlags`: bit0 có gyro, bit1 có accel, bit2 có góc cân bằng.
+
+### 7.1 Phím ngắt ngoài PC0..PC3
+
+| Phím | Nhấn ngắn | Giữ ≥ 2 s | Điều kiện |
+|---|---|---|---|
+| **PC0 – Calib** | ACCEL6 (6 mặt) | ERASE (xóa hiệu chuẩn) | Motor tắt (LED cam) |
+| **PC1 – Set zero** | Reset vị trí encoder, `g_targetSpeed = 0`, `g_turn = 0` (luôn làm) **+** đo bias gyro 2 s, lưu Flash (chỉ khi motor tắt) | — | Xe **nằm yên**, tư thế bất kỳ |
+| **PC2 – Set target** | Lấy góc hiện tại làm góc cân bằng | — | Xem 2 trường hợp dưới |
+| **PC3 – dự phòng** | `g_keySpareShort++` | `g_keySpareLong++` | Thêm chức năng ở cuối `vTaskSpeed` |
+
+Set target (PC2):
+- **Xe đang tự cân bằng (LED xanh lá):** motor **vẫn chạy**, lấy trung bình pitch 2 s (xanh lá + cam nháy) →
+  đổi góc cân bằng **không giật** (bù vào `speedPID.pre_Output`). Kết quả 1 s: xanh lá + cam = OK, xanh lá + đỏ = lỗi.
+  Chỉ lưu RAM; **tự ghi Flash khi xe nằm xuống** (|góc| > 35°) vì ghi Flash làm CPU đứng 1–2 s.
+- **Motor đang tắt (LED cam):** giữ xe bằng tay ở điểm cân bằng, nhấn → quy trình như LEVEL nhưng chỉ lưu góc
+  (cho phép rung tay tới 15 °/s).
+
+Cơ chế: ISR (ưu tiên 10, không gọi API FreeRTOS) chỉ ghi nhận cạnh xuống và **khóa đường EXTI** đó;
+`Keys_Poll()` chạy mỗi 10 ms trong `Task_Speed` xác nhận phím còn giữ ≥ 30 ms, đo thời gian giữ, chờ nhả ≥ 50 ms
+rồi mới mở lại ngắt ⇒ dội phím không gây bão ngắt. `Keys_GetIrqCount(k)` đếm số ngắt (kể cả dội) để debug.
+
+> Phần cứng Discovery: **PC0** nối chân EN của chip nguồn USB OTG (STMPS2141) — nhấn PC0 sẽ bật 5 V ra cổng
+> micro-USB OTG, vô hại nếu không cắm gì. **PC3** nối ngõ ra PDM của micro MP45DT02 — chưa kiểm chứng micro
+> có giữ chân này khi không cấp clock hay không, nên để PC3 làm phím dự phòng. Nếu thấy PC3 không xuống mức 0 khi nhấn
+> (xem `Keys_GetIrqCount(KEY_SPARE)`), đổi sang chân khác.
 
 ---
 

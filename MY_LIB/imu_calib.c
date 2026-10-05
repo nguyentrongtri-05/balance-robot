@@ -15,6 +15,7 @@
 #define ACC6_TIMEOUT             (120u * CALIB_RATE_HZ)  /* 2 phút cho đủ 6 mặt              */
 
 #define STILL_GYRO_RANGE_DPS     4.0f    /* Dao động gyro trong cửa sổ  > mức này = đang rung */
+#define STILL_GYRO_HAND_DPS      15.0f   /* TARGET: xe thường được GIỮ BẰNG TAY -> nới ngưỡng  */
 #define STILL_ACC_RANGE_G        0.04f
 #define FACE_DOM_MIN_G           0.80f   /* Trục hướng thẳng đứng phải đọc > 0.8 g            */
 #define FACE_OTHER_MAX_G         0.30f   /* 2 trục còn lại phải < 0.3 g (đặt đủ thẳng)         */
@@ -36,6 +37,7 @@ static volatile CalibStatus_t s_status   = CALIB_STATUS_IDLE;
 static volatile uint8_t       s_err      = CALIB_ERR_NONE;
 static volatile uint8_t       s_faces    = 0u;
 static volatile uint32_t      s_captures = 0u;
+static volatile uint8_t       s_dirty    = 0u;   /* s_cal khác Flash (chờ lưu khi motor tắt) */
 
 static uint32_t s_tick;          /* Số mẫu từ lúc bắt đầu quy trình   */
 static uint32_t s_n;             /* Số mẫu trong cửa sổ trung bình    */
@@ -142,6 +144,7 @@ static uint8_t Flash_SaveCalib(ImuCalibData_t *c)
     {
         return CALIB_ERR_FLASH;
     }
+    s_dirty = 0u;
     return CALIB_ERR_NONE;
 }
 
@@ -244,9 +247,16 @@ void ImuCalib_ClearStatus(void)
 /* =====================================================================
  *  QUY TRÌNH 1: LEVEL - bias gyro + góc cân bằng
  *  Giữ xe ở đúng tư thế "tự đứng được" (hoặc kê lên giá), không chạm/rung.
+ *  Dùng chung cho:
+ *    ZERO   : chỉ lưu bias gyro  (xe NẰM yên, tư thế bất kỳ)
+ *    TARGET : chỉ lưu góc cân bằng (xe được giữ tay ở điểm cân bằng -> nới ngưỡng rung)
  * ===================================================================== */
 static void Feed_Level(const MPU6050_Data_t *d, float pitch)
 {
+    const uint8_t wantGyro  = (s_proc != CALIB_PROC_TARGET) ? 1u : 0u;
+    const uint8_t wantAngle = (s_proc != CALIB_PROC_ZERO)   ? 1u : 0u;
+    const float   stillMax  = (s_proc == CALIB_PROC_TARGET) ? STILL_GYRO_HAND_DPS
+                                                            : STILL_GYRO_RANGE_DPS;
     float g[3];
     uint8_t k;
 
@@ -275,7 +285,7 @@ static void Feed_Level(const MPU6050_Data_t *d, float pitch)
     {
         if (g[k] < s_min[k]) s_min[k] = g[k];
         if (g[k] > s_max[k]) s_max[k] = g[k];
-        if ((s_max[k] - s_min[k]) > STILL_GYRO_RANGE_DPS)
+        if ((s_max[k] - s_min[k]) > stillMax)
         {
             s_n = 0u;     /* Bị rung -> đo lại từ đầu (vẫn trong thời gian timeout) */
             return;
@@ -294,22 +304,29 @@ static void Feed_Level(const MPU6050_Data_t *d, float pitch)
         for (k = 0u; k < 3u; k++)
         {
             gb[k] = s_sum[k] / (float)s_n;
-            if ((gb[k] > MAX_GYRO_BIAS_DPS) || (gb[k] < -MAX_GYRO_BIAS_DPS))
+            if (wantGyro && ((gb[k] > MAX_GYRO_BIAS_DPS) || (gb[k] < -MAX_GYRO_BIAS_DPS)))
             {
                 Calib_Finish(CALIB_ERR_RANGE);
                 return;
             }
         }
-        if ((ang > MAX_ANGLE_OFFSET_DEG) || (ang < -MAX_ANGLE_OFFSET_DEG))
+        if (wantAngle && ((ang > MAX_ANGLE_OFFSET_DEG) || (ang < -MAX_ANGLE_OFFSET_DEG)))
         {
             Calib_Finish(CALIB_ERR_RANGE);
             return;
         }
 
-        for (k = 0u; k < 3u; k++) s_cal.gyro_offset[k] = gb[k];
-        s_cal.angle_offset = ang;
-        s_cal.flags |= (IMU_CALIB_HAS_GYRO | IMU_CALIB_HAS_ANGLE);
-        MPU6050_SetGyroOffset(gb[0], gb[1], gb[2]);
+        if (wantGyro)
+        {
+            for (k = 0u; k < 3u; k++) s_cal.gyro_offset[k] = gb[k];
+            s_cal.flags |= IMU_CALIB_HAS_GYRO;
+            MPU6050_SetGyroOffset(gb[0], gb[1], gb[2]);
+        }
+        if (wantAngle)
+        {
+            s_cal.angle_offset = ang;
+            s_cal.flags |= IMU_CALIB_HAS_ANGLE;
+        }
 
         Calib_Finish(Flash_SaveCalib(&s_cal));
     }
@@ -480,6 +497,7 @@ static void Do_Erase(void)
     uint8_t err = Flash_EraseCalib();
     Calib_Defaults(&s_cal);
     MPU6050_SetAccelCalib(NULL, NULL);
+    s_dirty = 0u;
     /* Giữ nguyên bias gyro hiện tại trong driver (đo lúc khởi động, vẫn đúng) */
     Calib_Finish(err);
 }
@@ -490,9 +508,40 @@ void ImuCalib_Feed(const MPU6050_Data_t *d, float pitch)
 
     switch (s_proc)
     {
-    case CALIB_PROC_LEVEL:  Feed_Level(d, pitch); break;
+    case CALIB_PROC_LEVEL:
+    case CALIB_PROC_ZERO:
+    case CALIB_PROC_TARGET: Feed_Level(d, pitch); break;
     case CALIB_PROC_ACCEL6: Feed_Accel6(d);       break;
     case CALIB_PROC_ERASE:  Do_Erase();           break;
     default:                                      break;
     }
+}
+
+/* =====================================================================
+ *  ĐẶT GÓC CÂN BẰNG KHI XE ĐANG CHẠY (không ghi Flash ngay)
+ * ===================================================================== */
+uint8_t ImuCalib_SetAngleOffset(float angle)
+{
+    if ((angle > MAX_ANGLE_OFFSET_DEG) || (angle < -MAX_ANGLE_OFFSET_DEG))
+    {
+        return CALIB_ERR_RANGE;
+    }
+    s_cal.angle_offset = angle;
+    s_cal.flags |= IMU_CALIB_HAS_ANGLE;
+    s_dirty = 1u;
+    return CALIB_ERR_NONE;
+}
+
+uint8_t ImuCalib_IsDirty(void)
+{
+    return s_dirty;
+}
+
+uint8_t ImuCalib_SaveIfDirty(void)
+{
+    if (!s_dirty || (s_proc != CALIB_PROC_NONE))
+    {
+        return CALIB_ERR_NONE;   /* Không cần lưu / quy trình khác đang chạy sẽ tự lưu */
+    }
+    return Flash_SaveCalib(&s_cal);
 }

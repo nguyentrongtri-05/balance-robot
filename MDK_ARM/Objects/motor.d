@@ -2,12 +2,12 @@
 .\objects\motor.o: ..\MY_LIB\motor.h
 .\objects\motor.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 .\objects\motor.o: ..\Libraries\CMSIS\Include\core_cm4.h
-.\objects\motor.o: D:\keilc\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\motor.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\motor.o: ..\Libraries\CMSIS\Include\core_cmInstr.h
 .\objects\motor.o: ..\Libraries\CMSIS\Include\core_cmFunc.h
 .\objects\motor.o: ..\Libraries\CMSIS\Include\core_cmSimd.h
 .\objects\motor.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h
-.\objects\motor.o: ..\..\Template_rtos\stm32f4xx_conf.h
+.\objects\motor.o: ..\..\BTL_NMDKTM\stm32f4xx_conf.h
 .\objects\motor.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h
 .\objects\motor.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 .\objects\motor.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_crc.h
@@ -35,4 +35,4 @@
 .\objects\motor.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dac.h
 .\objects\motor.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dcmi.h
 .\objects\motor.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_fsmc.h
-.\objects\motor.o: D:\keilc\ARM\ARMCC\Bin\..\include\math.h
+.\objects\motor.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

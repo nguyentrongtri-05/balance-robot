@@ -169,3 +169,435 @@ Not enough information to list image symbols.
 Finished: 1 information, 0 warning and 3 error messages.
 
 
+[2026-10-05 10:47:11]	[info] incremental build: 30 source files changed
+These source files will be recompiled
+---
+'e:\NMDKTMN\BTL\BTL_NMDKTM\FreeRTOS\list.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\FreeRTOS\portable\MemMang\heap_4.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\FreeRTOS\portable\RVDS\ARM_CM4F\port.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\FreeRTOS\queue.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\FreeRTOS\tasks.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\CMSIS\Device\ST\STM32F4xx\Source\Templates\arm\startup_stm32f40_41xxx.s': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\misc.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_can.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_flash.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_gpio.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_i2c.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_iwdg.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_rcc.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_spi.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_syscfg.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_tim.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_usart.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_wwdg.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MDK_ARM\main.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\encoder.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\fuzzy.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\gpio.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\kalman.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\managetask.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\motor.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\pid.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\stm32f4xx_it.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\system_stm32f4xx.c': compiler options has been changed.
+
+[2026-10-05 10:47:11]	compilation failed at : "e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c", exit code: 1
+command: 
+  "C:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Template_rtos -IMDK_ARM -ILibraries/CMSIS/Device/ST/STM32F4xx/Include -ILibraries/STM32F4xx_StdPeriph_Driver/inc -ILibraries/CMSIS/Include -IFreeRTOS/include -IFreeRTOS -IFreeRTOS/portable/RVDS/ARM_CM4F -IMY_LIB -I.cmsis/include -I"MDK_ARM/RTE/_Target 1" -D"STM32F40_41xxx" -D"USE_STDPERIPH_DRIVER" -D"HSE_VALUE=8000000" --cpu Cortex-M4.fp --li --c99 -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o ".\build\Target 1\.obj\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.o" --no_depend_system_headers --depend ".\build\Target 1\.obj\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.d" .\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c
+   at unify_builder.Program.compileByMulThread(Int32 thrNum, CmdInfo[] cmds_, List`1 errLogs)
+   at unify_builder.Program.Main(String[] args_)
+---
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11581: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11582: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11583: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11584: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11585: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 12028: Error:  #5: cannot open source input file "stm32f4xx_conf.h": No such file or directory
+    #include "stm32f4xx_conf.h"
+                               ^
+.\FreeRTOS\portable\RVDS\ARM_CM4F\port.c: 5 warnings, 1 error
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11581: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11582: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11583: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11584: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11585: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 12028: Error:  #5: cannot open source input file "stm32f4xx_conf.h": No such file or directory
+    #include "stm32f4xx_conf.h"
+                               ^
+.\FreeRTOS\queue.c: 5 warnings, 1 error
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11581: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11582: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11583: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11584: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11585: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 12028: Error:  #5: cannot open source input file "stm32f4xx_conf.h": No such file or directory
+    #include "stm32f4xx_conf.h"
+                               ^
+.\FreeRTOS\list.c: 5 warnings, 1 error
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11581: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11582: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11583: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11584: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11585: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 12028: Error:  #5: cannot open source input file "stm32f4xx_conf.h": No such file or directory
+    #include "stm32f4xx_conf.h"
+                               ^
+.\FreeRTOS\portable\MemMang\heap_4.c: 5 warnings, 1 error
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11581: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11582: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11583: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11584: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11585: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 12028: Error:  #5: cannot open source input file "stm32f4xx_conf.h": No such file or directory
+    #include "stm32f4xx_conf.h"
+                               ^
+.\FreeRTOS\tasks.c: 5 warnings, 1 error
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11581: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11582: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11583: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11584: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11585: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 12028: Error:  #5: cannot open source input file "stm32f4xx_conf.h": No such file or directory
+    #include "stm32f4xx_conf.h"
+                               ^
+.\Libraries\STM32F4xx_StdPeriph_Driver\src\misc.c: 5 warnings, 1 error
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11581: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11582: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11583: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11584: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11585: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 12028: Error:  #5: cannot open source input file "stm32f4xx_conf.h": No such file or directory
+    #include "stm32f4xx_conf.h"
+                               ^
+.\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c: 5 warnings, 1 error
+
+[2026-10-05 10:48:49]	[info] incremental build: 29 source files changed
+These source files will be recompiled
+---
+'e:\NMDKTMN\BTL\BTL_NMDKTM\FreeRTOS\list.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\FreeRTOS\portable\MemMang\heap_4.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\FreeRTOS\portable\RVDS\ARM_CM4F\port.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\FreeRTOS\queue.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\FreeRTOS\tasks.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\misc.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_can.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_flash.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_gpio.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_i2c.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_iwdg.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_rcc.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_spi.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_syscfg.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_tim.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_usart.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_wwdg.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MDK_ARM\main.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\encoder.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\fuzzy.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\gpio.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\kalman.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\managetask.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\motor.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\pid.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\stm32f4xx_it.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\system_stm32f4xx.c': compiler options has been changed.
+
+[2026-10-05 10:48:49]	compilation failed at : "e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_can.c", exit code: 1
+command: 
+  "C:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Template_rtos -IMDK_ARM -ILibraries/CMSIS/Device/ST/STM32F4xx/Include -ILibraries/STM32F4xx_StdPeriph_Driver/inc -ILibraries/CMSIS/Include -IFreeRTOS/include -IFreeRTOS -IFreeRTOS/portable/RVDS/ARM_CM4F -IMY_LIB -I.cmsis/include -I"MDK_ARM/RTE/_Target 1" -D"STM32F40_41xxx" -D"USE_STDPERIPH_DRIVER" -D"HSE_VALUE=8000000" --cpu Cortex-M4.fp --li --c99 -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o ".\build\Target 1\.obj\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_can.o" --no_depend_system_headers --depend ".\build\Target 1\.obj\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_can.d" .\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_can.c
+   at unify_builder.Program.compileByMulThread(Int32 thrNum, CmdInfo[] cmds_, List`1 errLogs)
+   at unify_builder.Program.Main(String[] args_)
+---
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11581: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11582: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11583: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11584: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11585: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 12028: Error:  #5: cannot open source input file "stm32f4xx_conf.h": No such file or directory
+    #include "stm32f4xx_conf.h"
+                               ^
+.\FreeRTOS\list.c: 5 warnings, 1 error
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11581: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11582: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11583: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11584: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11585: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 12028: Error:  #5: cannot open source input file "stm32f4xx_conf.h": No such file or directory
+    #include "stm32f4xx_conf.h"
+                               ^
+.\FreeRTOS\portable\RVDS\ARM_CM4F\port.c: 5 warnings, 1 error
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11581: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11582: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11583: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11584: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11585: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 12028: Error:  #5: cannot open source input file "stm32f4xx_conf.h": No such file or directory
+    #include "stm32f4xx_conf.h"
+                               ^
+.\FreeRTOS\queue.c: 5 warnings, 1 error
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11581: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11582: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11583: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11584: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11585: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 12028: Error:  #5: cannot open source input file "stm32f4xx_conf.h": No such file or directory
+    #include "stm32f4xx_conf.h"
+                               ^
+.\FreeRTOS\portable\MemMang\heap_4.c: 5 warnings, 1 error
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11581: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11582: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11583: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11584: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11585: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 12028: Error:  #5: cannot open source input file "stm32f4xx_conf.h": No such file or directory
+    #include "stm32f4xx_conf.h"
+                               ^
+.\FreeRTOS\tasks.c: 5 warnings, 1 error
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11581: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11582: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11583: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11584: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11585: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 12028: Error:  #5: cannot open source input file "stm32f4xx_conf.h": No such file or directory
+    #include "stm32f4xx_conf.h"
+                               ^
+.\Libraries\STM32F4xx_StdPeriph_Driver\src\misc.c: 5 warnings, 1 error
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11581: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11582: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11583: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11584: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11585: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 12028: Error:  #5: cannot open source input file "stm32f4xx_conf.h": No such file or directory
+    #include "stm32f4xx_conf.h"
+                               ^
+.\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c: 5 warnings, 1 error
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11581: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
+  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11582: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
+  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11583: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
+  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11584: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
+  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 11585: Warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
+  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
+           ^
+"Libraries/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h", line 12028: Error:  #5: cannot open source input file "stm32f4xx_conf.h": No such file or directory
+    #include "stm32f4xx_conf.h"
+                               ^
+.\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_can.c: 5 warnings, 1 error
+
+[2026-10-05 10:50:28]	[info] incremental build: 30 source files changed
+These source files will be recompiled
+---
+'e:\NMDKTMN\BTL\BTL_NMDKTM\FreeRTOS\list.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\FreeRTOS\portable\MemMang\heap_4.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\FreeRTOS\portable\RVDS\ARM_CM4F\port.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\FreeRTOS\queue.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\FreeRTOS\tasks.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\CMSIS\Device\ST\STM32F4xx\Source\Templates\arm\startup_stm32f40_41xxx.s': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\misc.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_can.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_flash.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_gpio.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_i2c.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_iwdg.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_rcc.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_spi.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_syscfg.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_tim.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_usart.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_wwdg.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MDK_ARM\main.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\encoder.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\fuzzy.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\gpio.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\kalman.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\managetask.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\motor.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\pid.c': source file has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\stm32f4xx_it.c': compiler options has been changed.
+'e:\NMDKTMN\BTL\BTL_NMDKTM\system_stm32f4xx.c': compiler options has been changed.
+
+[2026-10-05 10:50:29]	link failed !, exit code: 1
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6218E: Undefined symbol I2C1_MPU6050_Init (referred from managetask.o).
+Error: L6218E: Undefined symbol ImuCalib_ClearStatus (referred from managetask.o).
+Error: L6218E: Undefined symbol ImuCalib_Feed (referred from managetask.o).
+Error: L6218E: Undefined symbol ImuCalib_Get (referred from managetask.o).
+Error: L6218E: Undefined symbol ImuCalib_GetCaptureCount (referred from managetask.o).
+Error: L6218E: Undefined symbol ImuCalib_GetError (referred from managetask.o).
+Error: L6218E: Undefined symbol ImuCalib_GetFaces (referred from managetask.o).
+Error: L6218E: Undefined symbol ImuCalib_GetStatus (referred from managetask.o).
+Error: L6218E: Undefined symbol ImuCalib_Init (referred from managetask.o).
+Error: L6218E: Undefined symbol ImuCalib_Start (referred from managetask.o).
+Error: L6218E: Undefined symbol MPU6050_AccelPitch (referred from managetask.o).
+Error: L6218E: Undefined symbol MPU6050_CalibrateGyro (referred from managetask.o).
+Error: L6218E: Undefined symbol MPU6050_Read (referred from managetask.o).
+Not enough information to list image symbols.
+Finished: 1 information, 0 warning and 13 error messages.
+
+
+[2026-10-05 10:53:08]	[info] incremental build: 2 source files changed
+These source files will be recompiled
+---
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\driver_i2c.c': object (.o) file not exist
+'e:\NMDKTMN\BTL\BTL_NMDKTM\MY_LIB\imu_calib.c': object (.o) file not exist
+
+[2026-10-05 10:53:08]	[done]
+	build successfully !
+
+[2026-10-05 10:53:39]	[done]
+	build successfully !
+

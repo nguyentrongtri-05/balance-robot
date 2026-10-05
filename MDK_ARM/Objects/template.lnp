@@ -1,4 +1,4 @@
-
+--cpu=Cortex-M4.fp.sp
 ".\objects\stm32f4xx_it.o"
 ".\objects\main.o"
 ".\objects\system_stm32f4xx.o"
@@ -23,6 +23,7 @@
 ".\objects\gpio.o"
 ".\objects\kalman.o"
 ".\objects\managetask.o"
+".\objects\imu_calib.o"
 ".\objects\motor.o"
 ".\objects\pid.o"
 ".\objects\list.o"
@@ -30,6 +31,7 @@
 ".\objects\tasks.o"
 ".\objects\heap_4.o"
 ".\objects\port.o"
---ro-base 0x08000000 --entry 0x08000000 --rw-base 0x20000000 --strict --map --load_addr_map_info --xref --callgraph --symbols
+--strict --scatter ".\Objects\template.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
 --list ".\Listings\template.map" -o .\Objects\template.axf

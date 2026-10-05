@@ -10,7 +10,7 @@
       <TargetName>Target 1</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5050041::5.06 update 6 (build 750)::.\ARMCC</pCCUsed>
+      <pCCUsed>5060750::V5.06 update 6 (build 750)::.\ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -276,7 +276,7 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0xE0000</Size>
+                <Size>0xe0000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F40_41xxx, USE_STDPERIPH_DRIVER ,HSE_VALUE=8000000</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Template_rtos;..\MDK_ARM;..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\Libraries\CMSIS\Include;..\FreeRTOS\include;..\FreeRTOS;..\FreeRTOS\portable\RVDS\ARM_CM4F;..\MY_LIB</IncludePath>
+              <IncludePath>..\..\Template_rtos;..\MDK_ARM;..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\Libraries\CMSIS\Include;..\FreeRTOS\include;..\FreeRTOS;..\FreeRTOS\portable\RVDS\ARM_CM4F;..\MY_LIB;..\MDK_ARM;..\..\BTL_NMDKTM</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
