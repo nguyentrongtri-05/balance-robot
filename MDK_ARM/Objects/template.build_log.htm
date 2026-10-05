@@ -8,53 +8,60 @@ Copyright (C) 2020 ARM Ltd and ARM Germany GmbH. All rights reserved.
 License Information: 12 Gig, OEM, LIC=QF82M-XTQBS-9UE4U-SYM66-ENB0J-J6A63
  
 Tool Versions:
-Toolchain:       MDK-ARM Plus  Version: 5.31.0.0
+Toolchain:       MDK-ARM Plus  Version: <unknown>
 Toolchain Path:  D:\keilc\ARM\ARMCC\Bin
-C Compiler:      Armcc.exe V5.06 update 6 (build 750)
-Assembler:       Armasm.exe V5.06 update 6 (build 750)
-Linker/Locator:  ArmLink.exe V5.06 update 6 (build 750)
-Library Manager: ArmAr.exe V5.06 update 6 (build 750)
-Hex Converter:   FromElf.exe V5.06 update 6 (build 750)
-CPU DLL:         SARMCM3.DLL V5.31.0.0
-Dialog DLL:      DCM.DLL V1.17.3.0
-Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.0.7.0
-Dialog DLL:      TCM.DLL V1.46.0.0
+C Compiler:      Armcc.exe
+Assembler:       Armasm.exe
+Linker/Locator:  ArmLink.exe
+Library Manager: ArmAr.exe
+Hex Converter:   FromElf.exe
+CPU DLL:         SARMCM3.DLL
+Dialog DLL:      DCM.DLL
+    Target DLL: STLink\ST-LINKIII-KEIL_SWO.dll
+Dialog DLL:      TCM.DLL
  
 <h2>Project:</h2>
-D:\CODE STM\BTL_NMDKTM\MDK_ARM\template.uvprojx
-Project File Date:  09/15/2026
+E:\CODE STM\BTL_NMDKTM\MDK_ARM\template.uvprojx
+Project File Date:  09/30/2026
 
 <h2>Output:</h2>
-*** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\keilc\ARM\ARMCC\Bin'
+*** Using Compiler '5.06 update 6 (build 750)', folder: 'D:\keilc\ARM\ARMCC\Bin'
 Build target 'Target 1'
-compiling motor.c...
-..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
-  #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
-..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
-  #define  DBGMCU_APB2_FZ_DBG_TIM8_STOP        DBGMCU_APB1_FZ_DBG_TIM8_STOP
-..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11583): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM9_STOP"  (declared at line 11576)
-  #define  DBGMCU_APB2_FZ_DBG_TIM9_STOP        DBGMCU_APB1_FZ_DBG_TIM9_STOP
-..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11584): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM10_STOP"  (declared at line 11577)
-  #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
-..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
-  #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
-..\MY_LIB\motor.c: 5 warnings, 0 errors
+compiling system_stm32f4xx.c...
+*** Error: CreateProcess failed, Command: '"D:\keilc\ARM\ARMCC\Bin\ArmCC" --via ".\objects\system_stm32f4xx.__i"'
+compiling stm32f4xx_it.c...
+*** Error: CreateProcess failed, Command: '"D:\keilc\ARM\ARMCC\Bin\ArmCC" --via ".\objects\stm32f4xx_it.__i"'
+assembling startup_stm32f40_41xxx.s...
+*** Error: CreateProcess failed, Command: '"D:\keilc\ARM\ARMCC\Bin\ArmAsm" --via ".\objects\startup_stm32f40_41xxx._ia"'
+compiling stm32f4xx_adc.c...
+*** Error: CreateProcess failed, Command: '"D:\keilc\ARM\ARMCC\Bin\ArmCC" --via ".\objects\stm32f4xx_adc.__i"'
+compiling main.c...
+*** Error: CreateProcess failed, Command: '"D:\keilc\ARM\ARMCC\Bin\ArmCC" --via ".\objects\main.__i"'
+compiling misc.c...
+*** Error: CreateProcess failed, Command: '"D:\keilc\ARM\ARMCC\Bin\ArmCC" --via ".\objects\misc.__i"'
+compiling stm32f4xx_i2c.c...
+*** Error: CreateProcess failed, Command: '"D:\keilc\ARM\ARMCC\Bin\ArmCC" --via ".\objects\stm32f4xx_i2c.__i"'
+compiling stm32f4xx_dma.c...
+*** Error: CreateProcess failed, Command: '"D:\keilc\ARM\ARMCC\Bin\ArmCC" --via ".\objects\stm32f4xx_dma.__i"'
+compiling stm32f4xx_flash.c...
+*** Error: CreateProcess failed, Command: '"D:\keilc\ARM\ARMCC\Bin\ArmCC" --via ".\objects\stm32f4xx_flash.__i"'
+compiling stm32f4xx_gpio.c...
+*** Error: CreateProcess failed, Command: '"D:\keilc\ARM\ARMCC\Bin\ArmCC" --via ".\objects\stm32f4xx_gpio.__i"'
+compiling stm32f4xx_can.c...
+*** Error: CreateProcess failed, Command: '"D:\keilc\ARM\ARMCC\Bin\ArmCC" --via ".\objects\stm32f4xx_can.__i"'
+compiling stm32f4xx_iwdg.c...
+*** Error: CreateProcess failed, Command: '"D:\keilc\ARM\ARMCC\Bin\ArmCC" --via ".\objects\stm32f4xx_iwdg.__i"'
 linking...
-Program Size: Code=3224 RO-data=424 RW-data=64 ZI-data=1832  
-FromELF: creating hex file...
-".\Objects\template.axf" - 0 Error(s), 5 Warning(s).
+--- Error: failed to execute 'D:\keilc\ARM\ARMCC\Bin\ArmLink'
+".\Objects\template.axf" - 1 Error(s), 0 Warning(s).
 
 <h2>Software Packages used:</h2>
-
-Package Vendor: Keil
-                https://www.keil.com/pack/Keil.STM32F4xx_DFP.3.1.1.pack
-                Keil.STM32F4xx_DFP.3.1.1
-                STMicroelectronics STM32F4 Series Device Support
 
 <h2>Collection of Component include folders:</h2>
 
 <h2>Collection of Component Files used:</h2>
-Build Time Elapsed:  00:00:01
+Target not created.
+Build Time Elapsed:  00:00:00
 </pre>
 </body>
 </html>

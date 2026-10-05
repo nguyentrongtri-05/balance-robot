@@ -10,7 +10,7 @@
       <TargetName>Target 1</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060750::V5.06 update 6 (build 750)::.\ARMCC</pCCUsed>
+      <pCCUsed>5050041::5.06 update 6 (build 750)::.\ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -276,7 +276,7 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x100000</Size>
+                <Size>0xE0000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -522,6 +522,11 @@
               <FileName>managetask.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\MY_LIB\managetask.c</FilePath>
+            </File>
+            <File>
+              <FileName>imu_calib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\MY_LIB\imu_calib.c</FilePath>
             </File>
             <File>
               <FileName>motor.c</FileName>

@@ -48,3 +48,9 @@ float PID_Compute(PID_t *pid, float setpoint, float measurement, float dt) {
     
     return Output;
 }
+
+void PID_Reset(PID_t *pid) {
+    pid->pre_Error = 0.0f;
+    pid->pre_pre_Error = 0.0f;
+    pid->pre_Output = 0.0f;
+}

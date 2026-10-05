@@ -30,4 +30,10 @@ void PID_Init(PID_t *pid, float Kp, float Ki, float Kd, float outMin, float outM
  */
 float PID_Compute(PID_t *pid, float setpoint, float measurement, float dt);
 
+/**
+ * @brief Xóa trạng thái (e(k-1), e(k-2), u(k-1)) về 0.
+ *        Gọi khi xe đổ / khi bật lại vòng điều khiển để không mang "quán tính" cũ.
+ */
+void PID_Reset(PID_t *pid);
+
 #endif /* __PID_H */

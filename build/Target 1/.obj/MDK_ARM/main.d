@@ -44,7 +44,7 @@
 .\build\Target 1\.obj\MDK_ARM\main.o: FreeRTOS/include/list.h
 .\build\Target 1\.obj\MDK_ARM\main.o: MY_LIB\gpio.h
 .\build\Target 1\.obj\MDK_ARM\main.o: MY_LIB\motor.h
-.\build\Target 1\.obj\MDK_ARM\main.o: MY_LIB\imu.h
 .\build\Target 1\.obj\MDK_ARM\main.o: MY_LIB\encoder.h
 .\build\Target 1\.obj\MDK_ARM\main.o: MY_LIB\fuzzy.h
 .\build\Target 1\.obj\MDK_ARM\main.o: MY_LIB\managetask.h
+.\build\Target 1\.obj\MDK_ARM\main.o: MY_LIB\driver_i2c.h

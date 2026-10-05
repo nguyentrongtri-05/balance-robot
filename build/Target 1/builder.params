@@ -2,12 +2,12 @@
     "name": "template",
     "target": "Target 1",
     "toolchain": "AC5",
-    "toolchainLocation": "d:\\keilc\\ARM\\ARMCC",
+    "toolchainLocation": "E:\\keilc\\ARM\\ARMCC",
     "toolchainCfgFile": "c:\\Users\\Gigabyte\\.vscode\\extensions\\cl.eide-3.27.2\\res\\data\\models/arm.v5.model.json",
     "buildMode": "fast|multhread",
     "showRepathOnLog": true,
     "threadNum": 16,
-    "rootDir": "d:\\CODE STM\\BTL_NMDKTM",
+    "rootDir": "e:\\CODE STM\\BTL_NMDKTM",
     "dumpPath": "build\\Target 1",
     "outDir": "build\\Target 1",
     "ram": 131072,
@@ -100,21 +100,21 @@
             "rw-base": "0x20000000",
             "xo-base": "",
             "link-scatter": [
-                "\"d:/CODE STM/BTL_NMDKTM/build/Target 1/template.sct\""
+                "\"e:/CODE STM/BTL_NMDKTM/build/Target 1/template.sct\""
             ]
         }
     },
     "env": {
         "KEIL_OUTPUT_DIR": "Objects",
-        "workspaceFolder": "d:\\CODE STM\\BTL_NMDKTM",
+        "workspaceFolder": "e:\\CODE STM\\BTL_NMDKTM",
         "workspaceFolderBasename": "BTL_NMDKTM",
-        "OutDir": "d:\\CODE STM\\BTL_NMDKTM\\build\\Target 1",
+        "OutDir": "e:\\CODE STM\\BTL_NMDKTM\\build\\Target 1",
         "OutDirRoot": "build",
         "OutDirBase": "build\\Target 1",
         "ProjectName": "template",
         "ConfigName": "Target 1",
-        "ProjectRoot": "d:\\CODE STM\\BTL_NMDKTM",
-        "ExecutableName": "d:\\CODE STM\\BTL_NMDKTM\\build\\Target 1\\template",
+        "ProjectRoot": "e:\\CODE STM\\BTL_NMDKTM",
+        "ExecutableName": "e:\\CODE STM\\BTL_NMDKTM\\build\\Target 1\\template",
         "ChipPackDir": "",
         "ChipName": "",
         "SYS_Platform": "win32",
@@ -127,7 +127,7 @@
         "EIDE_BINARIES_VER": "12.1.1",
         "EIDE_MSYS": "C:\\Users\\Gigabyte\\.eide\\bin\\builder\\msys\\bin",
         "EIDE_PY3_CMD": "C:\\Users\\Gigabyte\\.eide\\bin\\python36\\python3.exe",
-        "ToolchainRoot": "d:\\keilc\\ARM\\ARMCC"
+        "ToolchainRoot": "E:\\keilc\\ARM\\ARMCC"
     },
     "sysPaths": []
 }

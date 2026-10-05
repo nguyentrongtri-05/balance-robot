@@ -125,3 +125,47 @@ Not enough information to list image symbols.
 Finished: 1 information, 0 warning and 3 error messages.
 
 
+[2026-09-30 12:38:01]	[info] incremental build: 30 source files changed
+These source files will be recompiled
+---
+'e:\CODE STM\BTL_NMDKTM\FreeRTOS\list.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\FreeRTOS\portable\MemMang\heap_4.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\FreeRTOS\portable\RVDS\ARM_CM4F\port.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\FreeRTOS\queue.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\FreeRTOS\tasks.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\Libraries\CMSIS\Device\ST\STM32F4xx\Source\Templates\arm\startup_stm32f40_41xxx.s': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\misc.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_can.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_flash.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_gpio.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_i2c.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_iwdg.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_rcc.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_spi.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_syscfg.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_tim.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_usart.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_wwdg.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\MDK_ARM\main.c': source file has been changed.
+'e:\CODE STM\BTL_NMDKTM\MY_LIB\encoder.c': source file has been changed.
+'e:\CODE STM\BTL_NMDKTM\MY_LIB\fuzzy.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\MY_LIB\gpio.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\MY_LIB\kalman.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\MY_LIB\managetask.c': source file has been changed.
+'e:\CODE STM\BTL_NMDKTM\MY_LIB\motor.c': source file has been changed.
+'e:\CODE STM\BTL_NMDKTM\MY_LIB\pid.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\stm32f4xx_it.c': compiler options has been changed.
+'e:\CODE STM\BTL_NMDKTM\system_stm32f4xx.c': compiler options has been changed.
+
+[2026-09-30 12:38:03]	link failed !, exit code: 1
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6218E: Undefined symbol I2C1_MPU6050_Init (referred from managetask.o).
+Error: L6218E: Undefined symbol MPU6050_GetPitch (referred from managetask.o).
+Error: L6218E: Undefined symbol MPU6050_ReadRawData (referred from managetask.o).
+Not enough information to list image symbols.
+Finished: 1 information, 0 warning and 3 error messages.
+
+

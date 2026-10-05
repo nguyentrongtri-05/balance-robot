@@ -45,8 +45,8 @@
 .\build\Target 1\.obj\MY_LIB\managetask.o: FreeRTOS/include/list.h
 .\build\Target 1\.obj\MY_LIB\managetask.o: .\MY_LIB\gpio.h
 .\build\Target 1\.obj\MY_LIB\managetask.o: .\MY_LIB\motor.h
-.\build\Target 1\.obj\MY_LIB\managetask.o: .\MY_LIB\imu.h
 .\build\Target 1\.obj\MY_LIB\managetask.o: .\MY_LIB\encoder.h
 .\build\Target 1\.obj\MY_LIB\managetask.o: .\MY_LIB\driver_i2c.h
 .\build\Target 1\.obj\MY_LIB\managetask.o: .\MY_LIB\fuzzy.h
 .\build\Target 1\.obj\MY_LIB\managetask.o: .\MY_LIB\pid.h
+.\build\Target 1\.obj\MY_LIB\managetask.o: .\MY_LIB\kalman.h
