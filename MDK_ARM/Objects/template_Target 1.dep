@@ -685,7 +685,7 @@ I (..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dac.h)(0x68BE276C)
 I (..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dcmi.h)(0x68BE276C)
 I (..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_fsmc.h)(0x68BE276C)
 F (..\MY_LIB\driver_uart.c)(0x6ACB3718)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ..\..\Template_rtos -I ..\MDK_ARM -I ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include -I ..\Libraries\STM32F4xx_StdPeriph_Driver\inc -I ..\Libraries\CMSIS\Include -I ..\FreeRTOS\include -I ..\FreeRTOS -I ..\FreeRTOS\portable\RVDS\ARM_CM4F -I ..\MY_LIB -I ..\..\BTL_NMDKTM-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="531" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DHSE_VALUE="8000000"-o .\objects\driver_uart.o --omf_browse .\objects\driver_uart.crf --depend .\objects\driver_uart.d)
-I (..\MY_LIB\driver_uart.h)(0x6ACB376F)
+I (..\MY_LIB\driver_uart.h)(0x6ACB4375)
 I (..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h)(0x68BE2760)
 I (..\Libraries\CMSIS\Include\core_cm4.h)(0x68BE276A)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5EC7840C)
@@ -837,9 +837,9 @@ I (..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dac.h)(0x68BE276C)
 I (..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dcmi.h)(0x68BE276C)
 I (..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_fsmc.h)(0x68BE276C)
 I (..\MY_LIB\managetask.h)(0x6ACB310E)
-F (..\MY_LIB\kalman.c)(0x6A9D34FF)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ..\..\Template_rtos -I ..\MDK_ARM -I ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include -I ..\Libraries\STM32F4xx_StdPeriph_Driver\inc -I ..\Libraries\CMSIS\Include -I ..\FreeRTOS\include -I ..\FreeRTOS -I ..\FreeRTOS\portable\RVDS\ARM_CM4F -I ..\MY_LIB -I ..\..\BTL_NMDKTM-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="531" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DHSE_VALUE="8000000"-o .\objects\kalman.o --omf_browse .\objects\kalman.crf --depend .\objects\kalman.d)
-I (..\MY_LIB\kalman.h)(0x6A9D34FF)
-F (..\MY_LIB\managetask.c)(0x6ACB376F)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ..\..\Template_rtos -I ..\MDK_ARM -I ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include -I ..\Libraries\STM32F4xx_StdPeriph_Driver\inc -I ..\Libraries\CMSIS\Include -I ..\FreeRTOS\include -I ..\FreeRTOS -I ..\FreeRTOS\portable\RVDS\ARM_CM4F -I ..\MY_LIB -I ..\..\BTL_NMDKTM-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="531" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DHSE_VALUE="8000000"-o .\objects\managetask.o --omf_browse .\objects\managetask.crf --depend .\objects\managetask.d)
+F (..\MY_LIB\kalman.c)(0x6ACB42AD)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ..\..\Template_rtos -I ..\MDK_ARM -I ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include -I ..\Libraries\STM32F4xx_StdPeriph_Driver\inc -I ..\Libraries\CMSIS\Include -I ..\FreeRTOS\include -I ..\FreeRTOS -I ..\FreeRTOS\portable\RVDS\ARM_CM4F -I ..\MY_LIB -I ..\..\BTL_NMDKTM-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="531" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DHSE_VALUE="8000000"-o .\objects\kalman.o --omf_browse .\objects\kalman.crf --depend .\objects\kalman.d)
+I (..\MY_LIB\kalman.h)(0x6ACB42A8)
+F (..\MY_LIB\managetask.c)(0x6ACB4375)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ..\..\Template_rtos -I ..\MDK_ARM -I ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include -I ..\Libraries\STM32F4xx_StdPeriph_Driver\inc -I ..\Libraries\CMSIS\Include -I ..\FreeRTOS\include -I ..\FreeRTOS -I ..\FreeRTOS\portable\RVDS\ARM_CM4F -I ..\MY_LIB -I ..\..\BTL_NMDKTM-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="531" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DHSE_VALUE="8000000"-o .\objects\managetask.o --omf_browse .\objects\managetask.crf --depend .\objects\managetask.d)
 I (..\MY_LIB\managetask.h)(0x6ACB310E)
 I (..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h)(0x68BE2760)
 I (..\Libraries\CMSIS\Include\core_cm4.h)(0x68BE276A)
@@ -889,11 +889,11 @@ I (..\MY_LIB\gpio.h)(0x6ACB310E)
 I (..\MY_LIB\motor.h)(0x6ACB1599)
 I (..\MY_LIB\encoder.h)(0x6ACB027B)
 I (..\MY_LIB\driver_i2c.h)(0x6ACB252D)
-I (..\MY_LIB\driver_uart.h)(0x6ACB376F)
+I (..\MY_LIB\driver_uart.h)(0x6ACB4375)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5EC7840C)
 I (..\MY_LIB\fuzzy.h)(0x6ACB027B)
 I (..\MY_LIB\pid.h)(0x6ACB215F)
-I (..\MY_LIB\kalman.h)(0x6A9D34FF)
+I (..\MY_LIB\kalman.h)(0x6ACB42A8)
 I (..\MY_LIB\driver_flash.h)(0x6ACB2D39)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x5EC78414)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5EC78414)
