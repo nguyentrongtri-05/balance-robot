@@ -49,3 +49,7 @@ float Kalman_GetAngle(Kalman_t *klm, float newAngle, float newRate, float dt) {
     return klm->angle;
 }
 
+void Kalman_SetAngle(Kalman_t *klm, float angle) {
+    klm->angle = angle;
+}
+

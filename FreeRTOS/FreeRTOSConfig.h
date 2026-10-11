@@ -1,15 +1,15 @@
-#ifndef FREERTOS_CONFIG_H
+ï»¿#ifndef FREERTOS_CONFIG_H
 #define FREERTOS_CONFIG_H
 
 #include "stm32f4xx.h"
 
 /* =========================================================================
- * C?u hình l?p l?ch và nhân FreeRTOS
+ * C?u hï¿½nh l?p l?ch vï¿½ nhï¿½n FreeRTOS
  * ========================================================================= */
 #define configUSE_PREEMPTION                    1
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION 1
 #define configUSE_TICKLESS_IDLE                 0
-#define configCPU_CLOCK_HZ                      (168000000UL) /* 168MHz trên STM32F407 */
+#define configCPU_CLOCK_HZ                      (168000000UL) /* 168MHz trï¿½n STM32F407 */
 #define configTICK_RATE_HZ                      ((TickType_t)1000) /* 1 tick = 1ms */
 #define configMAX_PRIORITIES                    (5)
 #define configMINIMAL_STACK_SIZE                ((uint16_t)128)
@@ -21,9 +21,9 @@
 #define configUSE_RECURSIVE_MUTEXES             1
 #define configUSE_COUNTING_SEMAPHORES           1
 #define configQUEUE_REGISTRY_SIZE               8
-#define configCHECK_FOR_STACK_OVERFLOW          0
+#define configCHECK_FOR_STACK_OVERFLOW          2
 
-/* Ð? r?ng bi?n d?m Tick cho FreeRTOS V11 (Dùng 32-bit, không d?nh nghia 16-bit) */
+/* ï¿½? r?ng bi?n d?m Tick cho FreeRTOS V11 (Dï¿½ng 32-bit, khï¿½ng d?nh nghia 16-bit) */
 #define configTICK_TYPE_WIDTH_IN_BITS           TICK_TYPE_WIDTH_32_BITS
 
 /* Hook Callbacks */
@@ -32,17 +32,17 @@
 #define configUSE_MALLOC_FAILED_HOOK            0
 #define configUSE_DAEMON_TASK_STARTUP_HOOK      0
 
-/* C?p phát b? nh? */
+/* C?p phï¿½t b? nh? */
 #define configSUPPORT_STATIC_ALLOCATION         0
 #define configSUPPORT_DYNAMIC_ALLOCATION        1
 
-/* Các tính nang nâng cao không s? d?ng */
+/* Cï¿½c tï¿½nh nang nï¿½ng cao khï¿½ng s? d?ng */
 #define configUSE_TIMERS                        0
 #define configUSE_CO_ROUTINES                   0
 #define configNUMBER_OF_CORES                   1
 
 /* =========================================================================
- * C?u hình m?c uu tiên ng?t cho ARM Cortex-M4 (NVIC 4 bits)
+ * C?u hï¿½nh m?c uu tiï¿½n ng?t cho ARM Cortex-M4 (NVIC 4 bits)
  * ========================================================================= */
 #define configPRIO_BITS                         4
 #define configLIBRARY_LOWEST_INTERRUPT_PRIORITY         15
@@ -52,7 +52,7 @@
 #define configMAX_SYSCALL_INTERRUPT_PRIORITY    (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY << (8 - configPRIO_BITS))
 
 /* =========================================================================
- * Khai báo các hàm API du?c phép s? d?ng
+ * Khai bï¿½o cï¿½c hï¿½m API du?c phï¿½p s? d?ng
  * ========================================================================= */
 #define INCLUDE_vTaskPrioritySet                1
 #define INCLUDE_uxTaskPriorityGet               1
@@ -63,7 +63,7 @@
 #define INCLUDE_xTaskGetSchedulerState          1
 
 /* =========================================================================
- * Ánh x? tên ng?t FreeRTOS vào vector b?ng ng?t STM32
+ * ï¿½nh x? tï¿½n ng?t FreeRTOS vï¿½o vector b?ng ng?t STM32
  * ========================================================================= */
 #define vPortSVCHandler                         SVC_Handler
 #define xPortPendSVHandler                      PendSV_Handler

@@ -6,7 +6,12 @@ typedef struct {
     float Kp;
     float Ki;
     float Kd;
-    
+
+		float P_part;
+		float I_Part;
+		float D_part;
+		float Output;
+	
     float pre_Error;      /* e(k-1) */
     float pre_pre_Error;  /* e(k-2) */
     float pre_Output;     /* u(k-1) */

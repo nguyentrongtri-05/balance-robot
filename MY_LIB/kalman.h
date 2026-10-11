@@ -29,5 +29,12 @@ void Kalman_Init(Kalman_t *klm);
  */
 float Kalman_GetAngle(Kalman_t *klm, float newAngle, float newRate, float dt);
 
+/**
+ * @brief Đặt góc bắt đầu cho bộ lọc (First Sample) để triệt tiêu thời gian trễ quá độ
+ * @param klm: Con trỏ đến struct Kalman
+ * @param angle: Góc đo ban đầu từ Accelerometer
+ */
+void Kalman_SetAngle(Kalman_t *klm, float angle);
+
 #endif /* __KALMAN_H */
 

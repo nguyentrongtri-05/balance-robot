@@ -1,9 +1,9 @@
 .\objects\heap_4.o: ..\FreeRTOS\portable\MemMang\heap_4.c
-.\objects\heap_4.o: D:\keilc\ARM\ARMCC\Bin\..\include\stdlib.h
-.\objects\heap_4.o: D:\keilc\ARM\ARMCC\Bin\..\include\string.h
+.\objects\heap_4.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\heap_4.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 .\objects\heap_4.o: ..\FreeRTOS\include\FreeRTOS.h
-.\objects\heap_4.o: D:\keilc\ARM\ARMCC\Bin\..\include\stddef.h
-.\objects\heap_4.o: D:\keilc\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\heap_4.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\heap_4.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\heap_4.o: ..\FreeRTOS\FreeRTOSConfig.h
 .\objects\heap_4.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 .\objects\heap_4.o: ..\Libraries\CMSIS\Include\core_cm4.h
@@ -11,7 +11,7 @@
 .\objects\heap_4.o: ..\Libraries\CMSIS\Include\core_cmFunc.h
 .\objects\heap_4.o: ..\Libraries\CMSIS\Include\core_cmSimd.h
 .\objects\heap_4.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h
-.\objects\heap_4.o: ..\..\Template_rtos\stm32f4xx_conf.h
+.\objects\heap_4.o: ..\..\BTL_NMDKTM\stm32f4xx_conf.h
 .\objects\heap_4.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h
 .\objects\heap_4.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 .\objects\heap_4.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_crc.h

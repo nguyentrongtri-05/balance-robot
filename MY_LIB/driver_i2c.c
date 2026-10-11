@@ -1,10 +1,5 @@
 #include "driver_i2c.h"
-
 #include <math.h>
-
-#include "stm32f4xx_gpio.h"
-#include "stm32f4xx_rcc.h"
-#include "stm32f4xx_i2c.h"
 
 #define I2C1_TIMEOUT     100000u
 
@@ -258,7 +253,6 @@ float MPU6050_GetRoll(void)
         return 0.0f;
     }
 
-    float axg = (float)ax / 16384.0f;
     float ayg = (float)ay / 16384.0f;
     float azg = (float)az / 16384.0f;
 

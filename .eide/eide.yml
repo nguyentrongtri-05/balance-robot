@@ -48,6 +48,9 @@ virtualFolder:
         - path: MY_LIB/managetask.c
         - path: MY_LIB/motor.c
         - path: MY_LIB/pid.c
+        - path: MY_LIB/driver_flash.c
+        - path: MY_LIB/driver_i2c.c
+        - path: MY_LIB/driver_uart.c
       folders: []
     - name: FreeRTOS
       files:

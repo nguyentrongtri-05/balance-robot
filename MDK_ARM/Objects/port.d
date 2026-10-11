@@ -1,7 +1,7 @@
 .\objects\port.o: ..\FreeRTOS\portable\RVDS\ARM_CM4F\port.c
 .\objects\port.o: ..\FreeRTOS\include\FreeRTOS.h
-.\objects\port.o: D:\keilc\ARM\ARMCC\Bin\..\include\stddef.h
-.\objects\port.o: D:\keilc\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\port.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\port.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\port.o: ..\FreeRTOS\FreeRTOSConfig.h
 .\objects\port.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 .\objects\port.o: ..\Libraries\CMSIS\Include\core_cm4.h
@@ -9,7 +9,7 @@
 .\objects\port.o: ..\Libraries\CMSIS\Include\core_cmFunc.h
 .\objects\port.o: ..\Libraries\CMSIS\Include\core_cmSimd.h
 .\objects\port.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h
-.\objects\port.o: ..\..\Template_rtos\stm32f4xx_conf.h
+.\objects\port.o: ..\..\BTL_NMDKTM\stm32f4xx_conf.h
 .\objects\port.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h
 .\objects\port.o: ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 .\objects\port.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_crc.h

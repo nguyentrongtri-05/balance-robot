@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F40_41xxx, USE_STDPERIPH_DRIVER ,HSE_VALUE=8000000</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Template_rtos;..\MDK_ARM;..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\Libraries\CMSIS\Include;..\FreeRTOS\include;..\FreeRTOS;..\FreeRTOS\portable\RVDS\ARM_CM4F;..\MY_LIB</IncludePath>
+              <IncludePath>..\..\Template_rtos;..\MDK_ARM;..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\Libraries\CMSIS\Include;..\FreeRTOS\include;..\FreeRTOS;..\FreeRTOS\portable\RVDS\ARM_CM4F;..\MY_LIB;..\..\BTL_NMDKTM</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -439,6 +439,11 @@
               <FilePath>..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c</FilePath>
             </File>
             <File>
+              <FileName>stm32f4xx_exti.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_exti.c</FilePath>
+            </File>
+            <File>
               <FileName>stm32f4xx_flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_flash.c</FilePath>
@@ -493,6 +498,16 @@
         <Group>
           <GroupName>MY LIB</GroupName>
           <Files>
+            <File>
+              <FileName>driver_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\MY_LIB\driver_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>driver_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\MY_LIB\driver_uart.c</FilePath>
+            </File>
             <File>
               <FileName>driver_i2c.c</FileName>
               <FileType>1</FileType>
