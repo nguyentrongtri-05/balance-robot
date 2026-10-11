@@ -11,8 +11,8 @@
  * ===================================================================== */
 
 /* Cấu hình chu kỳ và Prescaler cho PWM TIM1 (Timer 1 chạy trên APB2 - 168MHz) */
-#define MOTOR_PWM_PERIOD        1000  /* ARR: 1000 mức, tương ứng độ phân giải 0.1% */
-#define MOTOR_PWM_PRESCALER     8     /* 168MHz / (8 * 1000) = 21kHz (tần số siêu âm êm ái) */
+#define MOTOR_PWM_PERIOD        100  /* ARR: 100 mức, tương ứng độ phân giải 1% */
+#define MOTOR_PWM_PRESCALER     167     /* 168MHz / (168 * 100) = 10kHz  */
 /* Nếu dùng L298N (BJT, chuyển mạch chậm) nên hạ còn ~2-5kHz: PRESCALER = 42 -> 4kHz */
 
 /* Tùy chọn đảo chiều nếu động cơ đấu dây ngược (0: Bình thường, 1: Đảo chiều) */

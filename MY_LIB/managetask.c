@@ -330,6 +330,7 @@ static void vTaskControl(void *pvParameters)
         uint32_t   got = ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(BAL_IMU_TIMEOUT_MS));
         TickType_t now = xTaskGetTickCount();
 
+        /* ---- Yêu cầu hiệu chuẩn: CHỈ nhận khi motor đang tắt (WAIT_UPRIGHT) ---- */
         /* ---- Yêu cầu hiệu chuẩn: CHỈ nhận khi motor đang tắt (WAIT_UPRIGHT),
          *      riêng TARGET khi đang chạy thì lấy trung bình góc mà KHÔNG tắt motor ---- */
         if (g_calibRequest != CALIB_REQ_NONE)
@@ -344,6 +345,8 @@ static void vTaskControl(void *pvParameters)
             else if (req == CALIB_REQ_ZERO)   proc = CALIB_PROC_ZERO;
             else if (req == CALIB_REQ_TARGET) proc = CALIB_PROC_TARGET;
 
+            if ((g_balanceState == BAL_WAIT_UPRIGHT) && (proc != CALIB_PROC_NONE) &&
+                ImuCalib_Start(proc))
             if ((req == CALIB_REQ_TARGET) && (g_balanceState == BAL_RUNNING))
             {
                 if (!g_trimActive)

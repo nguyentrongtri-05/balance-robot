@@ -285,6 +285,7 @@ static void Feed_Level(const MPU6050_Data_t *d, float pitch)
     {
         if (g[k] < s_min[k]) s_min[k] = g[k];
         if (g[k] > s_max[k]) s_max[k] = g[k];
+        if ((s_max[k] - s_min[k]) > STILL_GYRO_RANGE_DPS)
         if ((s_max[k] - s_min[k]) > stillMax)
         {
             s_n = 0u;     /* Bị rung -> đo lại từ đầu (vẫn trong thời gian timeout) */
@@ -304,18 +305,24 @@ static void Feed_Level(const MPU6050_Data_t *d, float pitch)
         for (k = 0u; k < 3u; k++)
         {
             gb[k] = s_sum[k] / (float)s_n;
+            if ((gb[k] > MAX_GYRO_BIAS_DPS) || (gb[k] < -MAX_GYRO_BIAS_DPS))
             if (wantGyro && ((gb[k] > MAX_GYRO_BIAS_DPS) || (gb[k] < -MAX_GYRO_BIAS_DPS)))
             {
                 Calib_Finish(CALIB_ERR_RANGE);
                 return;
             }
         }
+        if ((ang > MAX_ANGLE_OFFSET_DEG) || (ang < -MAX_ANGLE_OFFSET_DEG))
         if (wantAngle && ((ang > MAX_ANGLE_OFFSET_DEG) || (ang < -MAX_ANGLE_OFFSET_DEG)))
         {
             Calib_Finish(CALIB_ERR_RANGE);
             return;
         }
 
+        for (k = 0u; k < 3u; k++) s_cal.gyro_offset[k] = gb[k];
+        s_cal.angle_offset = ang;
+        s_cal.flags |= (IMU_CALIB_HAS_GYRO | IMU_CALIB_HAS_ANGLE);
+        MPU6050_SetGyroOffset(gb[0], gb[1], gb[2]);
         if (wantGyro)
         {
             for (k = 0u; k < 3u; k++) s_cal.gyro_offset[k] = gb[k];
@@ -508,6 +515,7 @@ void ImuCalib_Feed(const MPU6050_Data_t *d, float pitch)
 
     switch (s_proc)
     {
+    case CALIB_PROC_LEVEL:  Feed_Level(d, pitch); break;
     case CALIB_PROC_LEVEL:
     case CALIB_PROC_ZERO:
     case CALIB_PROC_TARGET: Feed_Level(d, pitch); break;

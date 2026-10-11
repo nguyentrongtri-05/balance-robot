@@ -34,6 +34,7 @@ typedef enum {
     CALIB_PROC_NONE   = 0,
     CALIB_PROC_LEVEL  = 1,   /* Gyro bias + góc cân bằng (giữ xe ở điểm cân bằng, đứng yên) */
     CALIB_PROC_ACCEL6 = 2,   /* Gia tốc kế 6 mặt (đặt xe/board lần lượt 6 mặt, thứ tự tùy ý) */
+    CALIB_PROC_ERASE  = 3    /* Xóa dữ liệu hiệu chuẩn, về mặc định                        */
     CALIB_PROC_ERASE  = 3,   /* Xóa dữ liệu hiệu chuẩn, về mặc định                        */
     CALIB_PROC_ZERO   = 4,   /* CHỈ bias gyro (xe nằm yên, tư thế bất kỳ)                  */
     CALIB_PROC_TARGET = 5    /* CHỈ góc cân bằng (giữ xe ở điểm cân bằng)                   */
