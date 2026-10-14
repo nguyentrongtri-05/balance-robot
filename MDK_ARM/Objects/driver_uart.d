@@ -35,6 +35,4 @@
 .\objects\driver_uart.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dac.h
 .\objects\driver_uart.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dcmi.h
 .\objects\driver_uart.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_fsmc.h
-.\objects\driver_uart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
-.\objects\driver_uart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 .\objects\driver_uart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

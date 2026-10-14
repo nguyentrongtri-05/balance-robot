@@ -6,40 +6,39 @@
 /* Trạng thái hoạt động của hệ thống (0: STOP, 1: RUN) */
 extern volatile uint8_t g_systemEnable;
 
-/* Các biến góc đo và điều khiển */
+/* Các chế độ điều khiển Robot (Giữ Dual PID và Fuzzy) */
+typedef enum {
+    CTRL_MODE_DUAL_PID    = 0,  /* PID 2 vòng: Cân bằng PD + Vị trí/Tốc độ PI */
+    CTRL_MODE_FUZZY       = 1   /* Điều khiển Mờ Fuzzy Logic */
+} RobotControlMode_t;
+
+extern volatile RobotControlMode_t g_controlMode;
+
+/* Thông số PID 2 vòng (có thể tinh chỉnh trực tiếp hoặc qua UART) */
+extern volatile float g_Kp_balance;
+extern volatile float g_Kd_balance;
+extern volatile float g_Kp_position;
+extern volatile float g_Ki_position;
+extern volatile float g_Kd_yaw;
+extern volatile float g_Kp_yaw;
+extern volatile float g_Kd_yaw_imu;
+
+/* Các biến góc đo và điều khiển (Pitch & Yaw) */
 extern volatile float g_filteredPitch;
 extern volatile float g_targetAngle;
 extern volatile float g_gyroOffset;
+extern volatile float g_gyroZOffset;
+extern volatile float g_rawYawRate;
+extern volatile float g_rawYawAngle;
+extern volatile float g_filteredYaw;
+extern volatile float g_targetYaw;
+extern volatile float g_targetSpeed;
 
-/**
- * @brief Khởi tạo toàn bộ task RTOS của hệ thống
- */
+void Robot_SetControlMode(RobotControlMode_t mode);
 void System_Tasks_Init(void);
-
-/**
- * @brief Nút PC0: START hệ thống cân bằng (kèm kiểm tra góc dựng an toàn < 15 độ)
- * @return 1 nếu khởi động thành công, 0 nếu góc nghiêng quá lớn (từ chối chạy)
- */
 uint8_t Robot_Start(void);
-
-/**
- * @brief Nút PC1: STOP / Dừng khẩn cấp, cắt PWM cả 2 động cơ ngay lập tức
- */
 void Robot_Stop(void);
-
-/**
- * @brief Nút PC2: CALIB THÔNG MINH TOÀN DIỆN (Phương án 2)
- *        - Bước 1: Tự nhận diện xe ĐỨNG YÊN TĨNH (chống rung tay) -> Calib Gyro Offset
- *        - Bước 2: Tự nhận diện xe DỰNG THẲNG CÂN BẰNG -> Chốt Zero Point
- *        - Bước 3: Tự động lưu cả 2 giá trị vào Flash Sector 11
- * @return 1 nếu calib thành công, 0 nếu bị timeout
- */
 uint8_t Robot_AutoCalibrate(void);
 
-/**
- * @brief Các hàm đơn lẻ (vẫn giữ để tương thích lệnh UART nếu cần)
- */
-void Robot_SetBalancePoint(void);
-void Robot_CalibrateIMU(void);
-
 #endif /* __MANAGETASK_H */
+

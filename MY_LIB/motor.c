@@ -98,8 +98,8 @@ void Motor_Config(void) {
  */
 void Motor_SetPWM_Left(float pwm) {
     /* Giới hạn giá trị PWM từ -100.0f đến 100.0f */
-    if (pwm > 100.0f)  pwm = 100.0f;
-    if (pwm < -100.0f) pwm = -100.0f;
+    if (pwm > 1000.0f)  pwm = 1000.0f;
+    if (pwm < -1000.0f) pwm = -1000.0f;
 
 #if MOTOR_LEFT_INVERT
     pwm = -pwm;
@@ -120,7 +120,7 @@ void Motor_SetPWM_Left(float pwm) {
     }
 
     /* Tính độ rộng xung tương ứng với Duty Cycle (0 - MOTOR_PWM_PERIOD) */
-    uint16_t pulse = (uint16_t)((fabsf(pwm) / 100.0f) * (float)MOTOR_PWM_PERIOD);
+    uint16_t pulse = (uint16_t)(fabsf(pwm));
     if (pulse > MOTOR_PWM_PERIOD) {
         pulse = MOTOR_PWM_PERIOD;
     }
@@ -133,8 +133,8 @@ void Motor_SetPWM_Left(float pwm) {
  */
 void Motor_SetPWM_Right(float pwm) {
     /* Giới hạn giá trị PWM từ -100.0f đến 100.0f */
-    if (pwm > 100.0f)  pwm = 100.0f;
-    if (pwm < -100.0f) pwm = -100.0f;
+    if (pwm > 1000.0f)  pwm = 1000.0f;
+    if (pwm < -1000.0f) pwm = -1000.0f;
 
 #if MOTOR_RIGHT_INVERT
     pwm = -pwm;
@@ -155,7 +155,7 @@ void Motor_SetPWM_Right(float pwm) {
     }
 
     /* Tính độ rộng xung tương ứng với Duty Cycle (0 - MOTOR_PWM_PERIOD) */
-    uint16_t pulse = (uint16_t)((fabsf(pwm) / 100.0f) * (float)MOTOR_PWM_PERIOD);
+      uint16_t pulse = (uint16_t)(fabsf(pwm));
     if (pulse > MOTOR_PWM_PERIOD) {
         pulse = MOTOR_PWM_PERIOD;
     }

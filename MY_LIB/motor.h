@@ -4,14 +4,14 @@
 #include "stm32f4xx.h"
 
 /* Cấu hình chu kỳ và Prescaler cho PWM TIM1 (Timer 1 chạy trên APB2 - 168MHz) */
-#define MOTOR_PWM_PERIOD        100  /* ARR: 100 mức, tương ứng độ phân giải 1% */
-#define MOTOR_PWM_PRESCALER     167     /* 168MHz / (168 * 100) = 10kHz */
+#define MOTOR_PWM_PERIOD        1000  /* ARR: 100 mức, tương ứng độ phân giải 1% */
+#define MOTOR_PWM_PRESCALER     16     /* 168MHz / (168 * 1000) = 1kHz */
 
 /* Tùy chọn đảo chiều nếu động cơ đấu dây ngược (0: Bình thường, 1: Đảo chiều) */
 #define MOTOR_LEFT_INVERT       0
 #define MOTOR_RIGHT_INVERT      0
 
-/**
+/**`
  * @brief Khởi tạo PWM TIM1 (PA8 - Bánh trái, PA9 - Bánh phải) 
  *        và GPIO điều khiển chiều (PC8, PC6 - Trái | PC9, PC7 - Phải)
  */
