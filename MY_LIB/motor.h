@@ -3,9 +3,11 @@
 
 #include "stm32f4xx.h"
 
-/* Cấu hình chu kỳ và Prescaler cho PWM TIM1 (Timer 1 chạy trên APB2 - 168MHz) */
-#define MOTOR_PWM_PERIOD        1000  /* ARR: 100 mức, tương ứng độ phân giải 1% */
-#define MOTOR_PWM_PRESCALER     16     /* 168MHz / (168 * 1000) = 1kHz */
+/* Cấu hình chu kỳ và Prescaler cho PWM TIM1 (Timer 1 chạy trên APB2 - 168MHz):
+ *  - Tần số PWM = 168MHz / (2 * 8400) = 10.0 kHz
+ *  - Độ phân giải phần cứng: 8400 mức (~13-bit, mịn 0.012% mỗi bước, tận dụng cả phần lẻ thập phân của float pwm) */
+#define MOTOR_PWM_PERIOD        8400
+#define MOTOR_PWM_PRESCALER     2
 
 /* Tùy chọn đảo chiều nếu động cơ đấu dây ngược (0: Bình thường, 1: Đảo chiều) */
 #define MOTOR_LEFT_INVERT       0

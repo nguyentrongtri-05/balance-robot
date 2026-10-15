@@ -17,28 +17,29 @@ static const FuzzyState_t RuleBase[5][5] = {
 void Fuzzy_Init(FuzzyController_t *fc) {
     if (!fc) return;
 
-    /* Initialize gains (can be tuned later) */
-    fc->ke = 1.0f;
-    fc->kde = 1.0f;
-    fc->ku = 1.0f;
+    /* Hệ số chuẩn hóa đầu vào/ra mặc định tương ứng với Kp_bal = 48.0, Kd_bal = 1.20 */
+    fc->ke  = 0.72f;
+    fc->kde = 0.30f;
+    fc->ku  = 1.0f;
 
-    /* Initialize limits for membership functions (Example values) */
-    fc->e_limit_nb_ns = -20.0f;
-    fc->e_limit_ns_ze = -5.0f;
-    fc->e_limit_ze_ps = 5.0f;
-    fc->e_limit_ps_pb = 20.0f;
+    /* Miền hàm liên thuộc cho Sai số góc nghiêng Pitch (độ) */
+    fc->e_limit_nb_ns = -16.0f;
+    fc->e_limit_ns_ze = -6.0f;
+    fc->e_limit_ze_ps =  6.0f;
+    fc->e_limit_ps_pb =  16.0f;
 
-    fc->de_limit_nb_ns = -50.0f;
-    fc->de_limit_ns_ze = -10.0f;
-    fc->de_limit_ze_ps = 10.0f;
-    fc->de_limit_ps_pb = 50.0f;
+    /* Miền hàm liên thuộc cho Vận tốc góc Gyro Pitch (độ/giây) */
+    fc->de_limit_nb_ns = -250.0f;
+    fc->de_limit_ns_ze = -100.0f;
+    fc->de_limit_ze_ps =  100.0f;
+    fc->de_limit_ps_pb =  250.0f;
     
-    /* Initialize output singletons */
-    fc->out_nb = -100.0f; /* Max reverse PWM */
-    fc->out_ns = -50.0f;
-    fc->out_ze = 0.0f;
-    fc->out_ps = 50.0f;
-    fc->out_pb = 100.0f;  /* Max forward PWM */
+    /* Giá trị Singleton ngõ ra: êm quanh điểm 0 (NS/PS = +-40) và tăng phi tuyến mạnh ở biên (NB/PB = +-100) */
+    fc->out_nb = -100.0f;
+    fc->out_ns = -40.0f;
+    fc->out_ze =  0.0f;
+    fc->out_ps =  40.0f;
+    fc->out_pb =  100.0f;
 }
 
 /* Helper function for triangular membership calculation */
@@ -64,14 +65,15 @@ static float membership_trap_R(float x, float a, float b) {
 }
 
 static void Fuzzify(float x, float limit_nb_ns, float limit_ns_ze, float limit_ze_ps, float limit_ps_pb, float *mu) {
-    /* Limit variables */
-    float nb_center = limit_nb_ns - 10.0f; // Arbitrary left center
-    float pb_center = limit_ps_pb + 10.0f; // Arbitrary right center
-    
+    /* Phân hoạch chuẩn (Partition of Unity: tổng mu[i] = 1.0 tại mọi điểm x):
+     * - NS chỉ nằm ở miền âm [limit_nb_ns .. 0.0f], bằng 0 tại x >= 0
+     * - ZE đối xứng quanh 0 [limit_ns_ze .. limit_ze_ps], đạt 1.0 tại x = 0
+     * - PS chỉ nằm ở miền dương [0.0f .. limit_ps_pb], bằng 0 tại x <= 0
+     */
     mu[NB] = membership_trap_L(x, limit_nb_ns, limit_ns_ze);
-    mu[NS] = membership_tri(x, limit_nb_ns, limit_ns_ze, limit_ze_ps);
+    mu[NS] = membership_tri(x, limit_nb_ns, limit_ns_ze, 0.0f);
     mu[ZE] = membership_tri(x, limit_ns_ze, 0.0f, limit_ze_ps);
-    mu[PS] = membership_tri(x, limit_ns_ze, limit_ze_ps, limit_ps_pb);
+    mu[PS] = membership_tri(x, 0.0f, limit_ze_ps, limit_ps_pb);
     mu[PB] = membership_trap_R(x, limit_ze_ps, limit_ps_pb);
 }
 
@@ -100,19 +102,21 @@ float Fuzzy_Compute(FuzzyController_t *fc, float error, float dError) {
 
     /* ----------------------------------------------------
      * 3. HỆ QUI TẮC & PHƯƠNG PHÁP SUY LUẬN (Rule Base & Inference)
-     * Kết hợp cả 4. GIẢI MỜ (Defuzzification) theo phương pháp Fuzzy Mean
-     * (Trung bình có trọng số) trong cùng 1 vòng lặp để tối ưu tốc độ
+     * Kết hợp cả 4. GIẢI MỜ (Defuzzification) theo phương pháp Product-Sum
+     * (Takagi-Sugeno / Trung bình có trọng số tích) giúp bề mặt điều khiển trơn mượt quanh 0
      * ---------------------------------------------------- */
     for (int i = 0; i < 5; i++) {
+        if (mu_e[i] <= 0.0f) continue;
         for (int j = 0; j < 5; j++) {
-            /* Phương pháp suy luận: Dùng phép AND (Lấy giá trị Min) */
-            float weight = mu_e[i] < mu_de[j] ? mu_e[i] : mu_de[j];
+            if (mu_de[j] <= 0.0f) continue;
+            /* Phương pháp suy luận: Tích đại số (Product AND) giúp nội suy mượt không bị bậc thang */
+            float weight = mu_e[i] * mu_de[j];
             
             if (weight > 0.0f) {
                 /* Hệ qui tắc: Tra bảng luật RuleBase để lấy đầu ra */
                 FuzzyState_t out_state = RuleBase[i][j];
                 
-                /* Tích lũy tử số và mẫu số cho công thức Fuzzy Mean */
+                /* Tích lũy tử số và mẫu số cho công thức trung bình trọng số */
                 num += weight * out_vals[out_state];
                 den += weight;
             }

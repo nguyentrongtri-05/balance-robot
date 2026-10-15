@@ -46,15 +46,12 @@ volatile float g_motorSpeedfiltered_left  = 0.0f;  /* Vận tốc Kalman bánh t
 volatile float g_motorSpeedfiltered_right = 0.0f;  /* Vận tốc Kalman bánh phải (RPM) */
 volatile float g_motorSpeed               = 0.0f;  /* Vận tốc trung bình sau lọc Kalman (RPM) */
 
-/* Tọa độ Pos (X, Y) sau khi Fusion xung Encoder với góc kalmanYaw (đơn vị: cm) */
-volatile float g_robotX        = 0.0f;  /* Tọa độ X trên mặt phẳng (cm) */
-volatile float g_robotY        = 0.0f;  /* Tọa độ Y trên mặt phẳng (cm) */
-volatile float g_robotDist     = 0.0f;  /* Quãng đường dịch chuyển tổng hợp (cm) */
-
-/* Hệ số quy đổi xung Encoder sang cm:
- * Đường kính bánh 65mm -> Chu vi = 20.42 cm; Encoder 330x4 = 1320 xung/vòng
- * -> 20.42 / 1320 = 0.01547 cm/xung */
-#define WHEEL_CM_PER_PULSE     0.01547f
+/* Tọa độ Pos (X, Y) & Góc Yaw chuẩn vi sai từ 2 Encoder bánh xe D=65mm (không bao giờ trôi) */
+volatile float g_robotX          = 0.0f;  /* Tọa độ X trên mặt phẳng (cm) */
+volatile float g_robotY          = 0.0f;  /* Tọa độ Y trên mặt phẳng (cm) */
+volatile float g_robotDist       = 0.0f;  /* Quãng đường dịch chuyển tổng hợp (cm) */
+volatile float g_encoderYawAngle = 0.0f;  /* Góc Yaw vi sai chuẩn từ xung 2 Encoder (deg) - neo chống trôi cho kalmanYaw */
+volatile float g_encoderYawRate  = 0.0f;  /* Vận tốc góc Yaw vi sai từ 2 Encoder (deg/s) */
 
 /* =====================================================================
  * 3. BIẾN CỦA TASK CONTROL (Trạng thái, Mục tiêu & Xung PWM xuất ra Motor)
@@ -62,7 +59,7 @@ volatile float g_robotDist     = 0.0f;  /* Quãng đường dịch chuyển tổ
 extern FuzzyController_t fuzzyControl;
 volatile uint8_t g_systemEnable = 0;
 
-volatile float g_targetAngle   = 0.0f;
+volatile float g_targetAngle   = 0.0f; /* Điểm cân bằng thực tế đo từ lan5.csv (~2.85 độ) */
 volatile float g_targetYaw     = 0.0f;
 volatile float g_targetSpeed   = 0.0f;
 volatile float g_targetX       = 0.0f;
@@ -73,21 +70,23 @@ volatile float g_motorPWM_left  = 0.0f;
 volatile float g_motorPWM_right = 0.0f;
 
 /* =====================================================================
- * CẤU HÌNH & THÔNG SỐ ĐIỀU KHIỂN CÂN BẰNG, VỊ TRÍ & HƯỚNG XOAY (YAW)
+ * CẤU HÌNH & THÔNG SỐ ĐIỀU KHIỂN CÂN BẰNG, VỊ TRÍ & KHÓA CỨNG GÓC YAW
  * ===================================================================== */
-volatile RobotControlMode_t g_controlMode = CTRL_MODE_DUAL_PID;
-
+//volatile RobotControlMode_t g_controlMode = CTRL_MODE_DUAL_PID;
+volatile RobotControlMode_t g_controlMode = CTRL_MODE_FUZZY;
 volatile float g_Kp_balance  = 48.0f;
 volatile float g_Kd_balance  = 1.20f;
 volatile float g_Kp_position = 2.20f;
 volatile float g_Ki_position = 0.65f;
-volatile float g_Kd_yaw      = 0.80f;  /* Hệ số ghìm lệch vận tốc 2 bánh Encoder */
-volatile float g_Kp_yaw      = 3.50f;  /* Hệ số P giữ góc hướng Yaw từ IMU */
+volatile float g_Kd_yaw      = 1.00f;  /* Hệ số D ghìm lệch vận tốc 2 bánh Encoder */
+volatile float g_Kp_yaw      = 5.00f;  /* Hệ số P khóa cứng góc Yaw (Encoder + IMU Kalman) */
 volatile float g_Kd_yaw_imu  = 0.60f;  /* Hệ số D phanh vận tốc xoay ngang Gyro Z từ IMU */
 
-/* Biến tích phân tọa độ (Coordinate Integral) và lọc vi phân Gyro chống rung rơ hộp số */
+/* Biến tích phân tọa độ (Coordinate Integral), tích phân khóa cứng Yaw & lọc vi phân Gyro */
 volatile float g_posIntegral = 0.0f;
-#define POS_INTEGRAL_MAX     200.0f
+volatile float g_yawIntegral = 0.0f;
+#define POS_INTEGRAL_MAX     500.0f
+#define YAW_INTEGRAL_MAX     45.0f
 static float s_gyroRateFiltered = 0.0f;
 static float s_yawRateFiltered  = 0.0f;
 
@@ -141,10 +140,13 @@ void System_Tasks_Init(void) {
         g_gyroZOffset = (float)sumGzInit / (float)validInit;
     }
 
-    /* 2. Khởi tạo góc mục tiêu ban đầu và đọc offset Gyro từ Flash (Sector 11) */
-    g_targetAngle = 0.0f;
+    /* 2. Khởi tạo góc mục tiêu ban đầu (mặc định 0 độ theo lan5.csv) và đọc Flash (Sector 11) */
+    g_targetAngle = -0.73f;
     RobotFlashConfig_t savedConfig;
     if (Flash_ReadConfig(&savedConfig)) {
+        if (fabsf(savedConfig.targetAngle) > 0.1f && fabsf(savedConfig.targetAngle) < 12.0f) {
+        //    g_targetAngle = savedConfig.targetAngle;
+        }
         g_gyroOffset = savedConfig.gyroOffset;
         if (validInit > 0 && fabsf((float)init_gy) < 500.0f && fabsf((float)init_gy - g_gyroOffset) > 120.0f) {
             g_gyroOffset = (float)sumGyInit / (float)validInit;
@@ -164,7 +166,7 @@ void System_Tasks_Init(void) {
     xTaskCreate(vTaskIMU, "Task_IMU", 512, NULL, 3, NULL);
     xTaskCreate(vTaskEncoder, "Task_Encoder", 512, NULL, 3, NULL);
     xTaskCreate(vTaskControl, "Task_Control", 512, NULL, 4, NULL);
-    xTaskCreate(vTaskUART, "Task_UART", 256, NULL, 1, NULL);
+    xTaskCreate(vTaskUART, "Task_UART", 512, NULL, 2, NULL);
 }
 
 /* =====================================================================
@@ -180,25 +182,22 @@ void Delay_ms(uint32_t ms) {
 uint8_t Robot_Start(void) {
     float diffAngle = fabsf(g_filteredPitch - g_targetAngle);
 
-    /* Điều kiện an toàn: xe phải dựng thẳng (< 15 độ) mới cho chạy */
+    /* Điều kiện an toàn: xe phải dựng thẳng (< 15 độ) mới cho chạy (không chặn cứng vTaskUART) */
     if (diffAngle > 15.0f) {
-        for (int i = 0; i < 3; i++) {
-            GPIO_SetBits(GPIOD, GPIO_Pin_14);
-            for (volatile int d = 0; d < 300000; d++);
-            GPIO_ResetBits(GPIOD, GPIO_Pin_14);
-            for (volatile int d = 0; d < 300000; d++);
-        }
         GPIO_SetBits(GPIOD, GPIO_Pin_14);
         return 0;
     }
 
     g_systemEnable = 1;
     g_posIntegral = 0.0f;
+    g_yawIntegral = 0.0f;
     g_robotX = 0.0f;
     g_robotY = 0.0f;
     g_robotDist = 0.0f;
     g_targetX = 0.0f;
     g_targetY = 0.0f;
+    g_encoderYawAngle = 0.0f;
+    g_encoderYawRate  = 0.0f;
     g_rawYawAngle = 0.0f;
     g_filteredYaw = 0.0f;
     g_targetYaw = 0.0f;
@@ -226,20 +225,11 @@ void Robot_Stop(void) {
     Motor_SetPWM_Right(0.0f);
 
     g_posIntegral = 0.0f;
-    g_robotX = 0.0f;
-    g_robotY = 0.0f;
-    g_robotDist = 0.0f;
-    g_rawYawAngle = 0.0f;
-    g_filteredYaw = 0.0f;
-    Kalman_SetAngle(&kalmanYaw, 0.0f);
+    g_yawIntegral = 0.0f;
     s_gyroRateFiltered = 0.0f;
     s_yawRateFiltered = 0.0f;
     s_prevBalancePWM_L = 0.0f;
     s_prevBalancePWM_R = 0.0f;
-    g_motorSpeedfiltered_left = 0.0f;
-    g_motorSpeedfiltered_right = 0.0f;
-    KalmanSpeed_SetSpeed(&kalmanSpeed_L, 0.0f);
-    KalmanSpeed_SetSpeed(&kalmanSpeed_R, 0.0f);
 
     GPIO_ResetBits(GPIOD, GPIO_Pin_12);
     GPIO_SetBits(GPIOD, GPIO_Pin_14);
@@ -248,9 +238,12 @@ void Robot_Stop(void) {
 void Robot_SetControlMode(RobotControlMode_t mode) {
     g_controlMode = mode;
     g_posIntegral = 0.0f;
+    g_yawIntegral = 0.0f;
     g_robotX = 0.0f;
     g_robotY = 0.0f;
     g_robotDist = 0.0f;
+    g_encoderYawAngle = 0.0f;
+    g_encoderYawRate  = 0.0f;
     g_rawYawAngle = 0.0f;
     g_filteredYaw = 0.0f;
     Kalman_SetAngle(&kalmanYaw, 0.0f);
@@ -393,8 +386,11 @@ uint8_t Robot_AutoCalibrate(void) {
     g_filteredPitch = g_targetAngle;
 
     KalmanAngle_Init(&kalmanYaw);
-    g_rawYawAngle = 0.0f;
-    g_filteredYaw = 0.0f;
+    g_encoderYawAngle = 0.0f;
+    g_encoderYawRate  = 0.0f;
+    g_rawYawAngle     = 0.0f;
+    g_filteredYaw     = 0.0f;
+    g_yawIntegral     = 0.0f;
 
     /* BƯỚC 3: LƯU VÀO FLASH SECTOR 11 */
     GPIO_SetBits(GPIOD, GPIO_Pin_15 | GPIO_Pin_13);
@@ -426,11 +422,18 @@ static void Controller_DualPID(float dt, float *out_pwmL, float *out_pwmR)
     s_gyroRateFiltered = 0.7f * s_gyroRateFiltered + 0.3f * kalmanPitch.rate;
     float balancePWM = (g_Kp_balance * angleError) + (g_Kd_balance * s_gyroRateFiltered);
 
-    /* VÒNG 2: GIỮ TỌA ĐỘ ODOMETRY (X, Y) & VẬN TỐC ENCODER */
+    /* VÒNG 2: GIỮ TỌA ĐỘ ODOMETRY (X, Y) & RÀNG BUỘC VẬN TỐC (< 10 cm/s) */
     float wheelSpeed_L = -g_motorSpeedfiltered_left;
     float wheelSpeed_R = -g_motorSpeedfiltered_right;
-    float v_avg = (wheelSpeed_L + wheelSpeed_R) * 0.5f;
-    float speedError = v_avg - g_targetSpeed;
+    float v_avg = (wheelSpeed_L + wheelSpeed_R) * 0.5f;   /* Vận tốc trung bình (RPM) */
+    float v_cms = v_avg * WHEEL_RPM_TO_CMS;               /* Vận tốc dài của xe (cm/s) */
+
+    /* Ràng buộc vận tốc mục tiêu g_targetSpeed luôn nằm trong [-10 cm/s, +10 cm/s] */
+    float targetSpeed = g_targetSpeed;
+    if (targetSpeed > ROBOT_MAX_SPEED_RPM) targetSpeed = ROBOT_MAX_SPEED_RPM;
+    else if (targetSpeed < -ROBOT_MAX_SPEED_RPM) targetSpeed = -ROBOT_MAX_SPEED_RPM;
+
+    float speedError = v_avg - targetSpeed;
 
     /* Chiếu sai lệch tọa độ (dx, dy) lên hướng đầu xe hiện tại để lấy độ lệch vị trí (cm) */
     float yawRad   = g_filteredYaw * (3.14159265359f / 180.0f);
@@ -442,42 +445,90 @@ static void Controller_DualPID(float dt, float *out_pwmL, float *out_pwmR)
     if (posError > 60.0f) posError = 60.0f;
     else if (posError < -60.0f) posError = -60.0f;
 
-    /* Khâu I theo tọa độ (tích phân độ lệch cm theo thời gian) để xóa sạch sai số xác lập,
-     * ép xe quay về đúng gốc (0, 0) kể cả khi g_targetAngle = 0 lệch với trọng tâm thực */
-    if (fabsf(g_targetSpeed) < 0.5f) {
-        g_posIntegral += posError * dt;
-        if (g_posIntegral > POS_INTEGRAL_MAX) g_posIntegral = POS_INTEGRAL_MAX;
-        else if (g_posIntegral < -POS_INTEGRAL_MAX) g_posIntegral = -POS_INTEGRAL_MAX;
+    /* Giới hạn lực kéo vị trí tối đa ứng với vận tốc trần 10 cm/s (ROBOT_MAX_SPEED_RPM ~ 29.38 RPM) */
+    float effKpPos   = (g_Kp_position > 0.5f) ? g_Kp_position : 0.5f;
+    float maxPosPull = effKpPos * ROBOT_MAX_SPEED_RPM;
+
+    /* Khâu I theo tọa độ:
+     * - Khi posError đổi dấu (xe đi qua đích hoặc xoay đầu quá 90 độ), xả nhanh g_posIntegral để không đẩy ngược chiều
+     * - Chỉ tích phân khi vận tốc xe < 10 cm/s và xe không đang xoay góc lớn (|yawError| < 15 độ) */
+    float yawError = g_filteredYaw - g_targetYaw;
+    if (posError * g_posIntegral < 0.0f) {
+        g_posIntegral *= 0.80f;
+    }
+    if (fabsf(targetSpeed) < 0.5f) {
+        if (fabsf(v_cms) < ROBOT_MAX_SPEED_CMS && fabsf(yawError) < 15.0f) {
+            g_posIntegral += posError * dt;
+            if (g_posIntegral > POS_INTEGRAL_MAX) g_posIntegral = POS_INTEGRAL_MAX;
+            else if (g_posIntegral < -POS_INTEGRAL_MAX) g_posIntegral = -POS_INTEGRAL_MAX;
+        }
     } else {
         g_targetX = g_robotX;
         g_targetY = g_robotY;
         g_posIntegral = 0.0f;
     }
 
-    /* Kết hợp: Phanh vận tốc (D_pos) + Kéo về gốc tọa độ (P_pos) + Bù lệch trọng tâm (I_pos) */
-    float positionPWM = (g_Kp_position * speedError)
-                      + (g_Ki_position * 3.0f * posError)
-                      + (g_Ki_position * 0.8f * g_posIntegral);
+    /* Tính lực kéo về điểm đích và kẹp trần để vận tốc di chuyển về đích không vượt quá 10 cm/s */
+    float posPullPWM = (g_Ki_position * 3.0f * posError)
+                     + (g_Ki_position * 0.8f * g_posIntegral);
+    if (posPullPWM > maxPosPull) posPullPWM = maxPosPull;
+    else if (posPullPWM < -maxPosPull) posPullPWM = -maxPosPull;
+
+    /* Khi xe đang thực hiện lệnh xoay góc lớn (|yawError| > 15 độ), giảm lực kéo tịnh tiến để ưu tiên xoay êm tại chỗ */
+    if (fabsf(yawError) > 15.0f) {
+        posPullPWM *= 0.35f;
+    }
+
+    /* Phanh chủ động nếu vận tốc thực tế của xe vượt ngưỡng 10 cm/s (|v_cms| > 10 cm/s) */
+    float overspeedBrakePWM = 0.0f;
+    if (v_avg > ROBOT_MAX_SPEED_RPM) {
+        overspeedBrakePWM = effKpPos * (v_avg - ROBOT_MAX_SPEED_RPM);
+        if (posPullPWM < 0.0f) posPullPWM = 0.0f;
+    } else if (v_avg < -ROBOT_MAX_SPEED_RPM) {
+        overspeedBrakePWM = effKpPos * (v_avg + ROBOT_MAX_SPEED_RPM);
+        if (posPullPWM > 0.0f) posPullPWM = 0.0f;
+    }
+
+    /* Kết hợp: Phanh vận tốc (D_pos) + Kéo về gốc tọa độ (< 10 cm/s) + Phanh chống vượt tốc */
+    float positionPWM = (g_Kp_position * speedError) + posPullPWM + overspeedBrakePWM;
     if (positionPWM > 250.0f) positionPWM = 250.0f;
     else if (positionPWM < -250.0f) positionPWM = -250.0f;
 
-    /* VÒNG 3: ĐIỀU PHỐI HƯỚNG XOAY YAW (Kết hợp Encoder + Kalman Yaw IMU) */
+    /* VÒNG 3: KHÓA CỨNG HƯỚNG XOAY YAW & RÀNG BUỘC TỐC ĐỘ XOAY ÊM */
     s_yawRateFiltered = 0.70f * s_yawRateFiltered + 0.30f * kalmanYaw.rate;
     float diffSpeed = wheelSpeed_L - wheelSpeed_R;
-    float yawError  = g_filteredYaw - g_targetYaw;
-    float yawPWM    = (g_Kd_yaw * diffSpeed)
-                    + (g_Kp_yaw * yawError)
-                    + (g_Kd_yaw_imu * s_yawRateFiltered);
 
-    if (yawPWM > 200.0f) yawPWM = 200.0f;
-    else if (yawPWM < -200.0f) yawPWM = -200.0f;
+    /* Giới hạn sai số góc đưa vào khâu P ở +-18 độ để khi bấm xoay 45/90/180 độ xe xoay từ từ, không giật lệch bánh */
+    float yawErrorClamped = yawError;
+    if (yawErrorClamped > 18.0f) yawErrorClamped = 18.0f;
+    else if (yawErrorClamped < -18.0f) yawErrorClamped = -18.0f;
+
+    /* Tích phân khóa cứng góc Yaw khi xe đã gần hướng đích (|yawError| < 15 độ) */
+    if (fabsf(yawError) < 15.0f) {
+        if (yawError * g_yawIntegral < 0.0f) {
+            g_yawIntegral *= 0.85f;
+        }
+        g_yawIntegral += yawError * dt;
+        if (g_yawIntegral > YAW_INTEGRAL_MAX) g_yawIntegral = YAW_INTEGRAL_MAX;
+        else if (g_yawIntegral < -YAW_INTEGRAL_MAX) g_yawIntegral = -YAW_INTEGRAL_MAX;
+    } else {
+        g_yawIntegral = 0.0f;
+    }
+
+    float yawPWM = (g_Kp_yaw * yawErrorClamped)
+                 + (1.50f * g_yawIntegral)
+                 + (g_Kd_yaw * diffSpeed)
+                 + (g_Kd_yaw_imu * s_yawRateFiltered);
+
+    if (yawPWM > 110.0f) yawPWM = 110.0f;
+    else if (yawPWM < -110.0f) yawPWM = -110.0f;
 
     *out_pwmL = balancePWM + positionPWM - yawPWM;
     *out_pwmR = balancePWM + positionPWM + yawPWM;
 }
 
 /**
- * @brief BỘ ĐIỀU KHIỂN 2: FUZZY LOGIC (Điều khiển mờ cân bằng kết hợp giữ tọa độ X, Y & hướng Yaw IMU)
+ * @brief BỘ ĐIỀU KHIỂN 2: FUZZY LOGIC (Điều khiển mờ cân bằng kết hợp giữ tọa độ X, Y & khóa cứng Yaw)
  */
 static void Controller_Fuzzy(float dt, float *out_pwmL, float *out_pwmR)
 {
@@ -487,8 +538,15 @@ static void Controller_Fuzzy(float dt, float *out_pwmL, float *out_pwmR)
 
     float wheelSpeed_L = -g_motorSpeedfiltered_left;
     float wheelSpeed_R = -g_motorSpeedfiltered_right;
-    float v_avg = (wheelSpeed_L + wheelSpeed_R) * 0.5f;
-    float speedError = v_avg - g_targetSpeed;
+    float v_avg = (wheelSpeed_L + wheelSpeed_R) * 0.5f;   /* Vận tốc trung bình (RPM) */
+    float v_cms = v_avg * WHEEL_RPM_TO_CMS;               /* Vận tốc dài của xe (cm/s) */
+
+    /* Ràng buộc vận tốc mục tiêu g_targetSpeed luôn nằm trong [-10 cm/s, +10 cm/s] */
+    float targetSpeed = g_targetSpeed;
+    if (targetSpeed > ROBOT_MAX_SPEED_RPM) targetSpeed = ROBOT_MAX_SPEED_RPM;
+    else if (targetSpeed < -ROBOT_MAX_SPEED_RPM) targetSpeed = -ROBOT_MAX_SPEED_RPM;
+
+    float speedError = v_avg - targetSpeed;
 
     float yawRad   = g_filteredYaw * (3.14159265359f / 180.0f);
     float dx       = g_robotX - g_targetX;
@@ -498,34 +556,80 @@ static void Controller_Fuzzy(float dt, float *out_pwmL, float *out_pwmR)
     if (posError > 60.0f) posError = 60.0f;
     else if (posError < -60.0f) posError = -60.0f;
 
-    if (fabsf(g_targetSpeed) < 0.5f) {
-        g_posIntegral += posError * dt;
-        if (g_posIntegral > POS_INTEGRAL_MAX) g_posIntegral = POS_INTEGRAL_MAX;
-        else if (g_posIntegral < -POS_INTEGRAL_MAX) g_posIntegral = -POS_INTEGRAL_MAX;
+    float effKpPos   = (g_Kp_position > 0.5f) ? g_Kp_position : 0.5f;
+    float maxPosPull = effKpPos * ROBOT_MAX_SPEED_RPM;
+
+    float yawError = g_filteredYaw - g_targetYaw;
+    if (posError * g_posIntegral < 0.0f) {
+        g_posIntegral *= 0.80f;
+    }
+    if (fabsf(targetSpeed) < 0.5f) {
+        if (fabsf(v_cms) < ROBOT_MAX_SPEED_CMS && fabsf(yawError) < 15.0f) {
+            g_posIntegral += posError * dt;
+            if (g_posIntegral > POS_INTEGRAL_MAX) g_posIntegral = POS_INTEGRAL_MAX;
+            else if (g_posIntegral < -POS_INTEGRAL_MAX) g_posIntegral = -POS_INTEGRAL_MAX;
+        }
     } else {
         g_targetX = g_robotX;
         g_targetY = g_robotY;
         g_posIntegral = 0.0f;
     }
 
-    float fuzzyPWM = Fuzzy_Compute(&fuzzyControl, errorAngle, dErrorAngle) * 10.0f;
+    /* Đồng bộ hệ số chuẩn hóa ke, kde theo g_Kp_balance & g_Kd_balance:
+     * - Quanh điểm cân bằng 0 độ, độ lợi Fuzzy tương đương đúng (Kp_bal, Kd_bal) nên đứng êm không rung
+     * - Khi xe nghiêng lớn hoặc đang đổ nhanh, luật mờ PS+PS -> PB tự động tăng lực đỡ phi tuyến */
+    fuzzyControl.ke  = g_Kp_balance * 0.015f;
+    fuzzyControl.kde = g_Kd_balance * 0.25f;
+    float fuzzyPWM   = Fuzzy_Compute(&fuzzyControl, errorAngle, dErrorAngle) * 10.0f;
 
-    float positionPWM = (g_Kp_position * speedError)
-                      + (g_Ki_position * 3.0f * posError)
-                      + (g_Ki_position * 0.8f * g_posIntegral);
+    float posPullPWM = (g_Ki_position * 3.0f * posError)
+                     + (g_Ki_position * 0.8f * g_posIntegral);
+    if (posPullPWM > maxPosPull) posPullPWM = maxPosPull;
+    else if (posPullPWM < -maxPosPull) posPullPWM = -maxPosPull;
+
+    if (fabsf(yawError) > 15.0f) {
+        posPullPWM *= 0.35f;
+    }
+
+    float overspeedBrakePWM = 0.0f;
+    if (v_avg > ROBOT_MAX_SPEED_RPM) {
+        overspeedBrakePWM = effKpPos * (v_avg - ROBOT_MAX_SPEED_RPM);
+        if (posPullPWM < 0.0f) posPullPWM = 0.0f;
+    } else if (v_avg < -ROBOT_MAX_SPEED_RPM) {
+        overspeedBrakePWM = effKpPos * (v_avg + ROBOT_MAX_SPEED_RPM);
+        if (posPullPWM > 0.0f) posPullPWM = 0.0f;
+    }
+
+    float positionPWM = (g_Kp_position * speedError) + posPullPWM + overspeedBrakePWM;
     if (positionPWM > 250.0f) positionPWM = 250.0f;
     else if (positionPWM < -250.0f) positionPWM = -250.0f;
 
-    /* VÒNG 3: ĐIỀU PHỐI HƯỚNG XOAY YAW (Kết hợp Encoder + Kalman Yaw IMU) */
+    /* VÒNG 3: KHÓA CỨNG HƯỚNG XOAY YAW & RÀNG BUỘC TỐC ĐỘ XOAY ÊM */
     s_yawRateFiltered = 0.70f * s_yawRateFiltered + 0.30f * kalmanYaw.rate;
     float diffSpeed = wheelSpeed_L - wheelSpeed_R;
-    float yawError  = g_filteredYaw - g_targetYaw;
-    float yawPWM    = (g_Kd_yaw * diffSpeed)
-                    + (g_Kp_yaw * yawError)
-                    + (g_Kd_yaw_imu * s_yawRateFiltered);
 
-    if (yawPWM > 200.0f) yawPWM = 200.0f;
-    else if (yawPWM < -200.0f) yawPWM = -200.0f;
+    float yawErrorClamped = yawError;
+    if (yawErrorClamped > 18.0f) yawErrorClamped = 18.0f;
+    else if (yawErrorClamped < -18.0f) yawErrorClamped = -18.0f;
+
+    if (fabsf(yawError) < 15.0f) {
+        if (yawError * g_yawIntegral < 0.0f) {
+            g_yawIntegral *= 0.85f;
+        }
+        g_yawIntegral += yawError * dt;
+        if (g_yawIntegral > YAW_INTEGRAL_MAX) g_yawIntegral = YAW_INTEGRAL_MAX;
+        else if (g_yawIntegral < -YAW_INTEGRAL_MAX) g_yawIntegral = -YAW_INTEGRAL_MAX;
+    } else {
+        g_yawIntegral = 0.0f;
+    }
+
+    float yawPWM = (g_Kp_yaw * yawErrorClamped)
+                 + (1.50f * g_yawIntegral)
+                 + (g_Kd_yaw * diffSpeed)
+                 + (g_Kd_yaw_imu * s_yawRateFiltered);
+
+    if (yawPWM > 110.0f) yawPWM = 110.0f;
+    else if (yawPWM < -110.0f) yawPWM = -110.0f;
 
     *out_pwmL = fuzzyPWM + positionPWM - yawPWM;
     *out_pwmR = fuzzyPWM + positionPWM + yawPWM;
@@ -547,6 +651,7 @@ static void Robot_Controller_Update(float dt)
         s_gyroRateFiltered = 0.0f;
         s_yawRateFiltered  = 0.0f;
         g_posIntegral      = 0.0f;
+        g_yawIntegral      = 0.0f;
         return;
     }
 
@@ -608,9 +713,10 @@ static void Robot_Controller_Update(float dt)
 /**
  * @brief TASK 1: vTaskIMU (Chu kỳ 5ms - 200Hz, Priority 3)
  *  - Bước 1: Đọc dữ liệu thô MPU6050 -> Tính góc Raw Pitch (g_rawAccPitch, g_rawGyroRate)
- *  - Bước 2: Tính vận tốc góc & góc Raw Yaw (g_rawYawRate, g_rawYawAngle)
- *  - Bước 3: Chạy bộ lọc Kalman riêng cho Pitch (kalmanPitch -> g_filteredPitch)
- *            và bộ lọc Kalman riêng cho Yaw (kalmanYaw -> g_filteredYaw)
+ *  - Bước 2: Khử trôi tĩnh Gyro Z khi 2 bánh không lệch tốc độ (ZUPT) & lấy g_rawYawRate,
+ *            đồng thời lấy góc chuẩn không trôi từ vi sai xung Encoder (g_encoderYawAngle)
+ *  - Bước 3: Chạy bộ lọc Kalman riêng cho Pitch (kalmanPitch: AccPitch + GyroY -> g_filteredPitch)
+ *            và bộ lọc Kalman riêng cho Yaw (kalmanYaw: EncoderYaw + GyroZ -> g_filteredYaw)
  */
 static void vTaskIMU(void *pvParameters)
 {
@@ -643,15 +749,22 @@ static void vTaskIMU(void *pvParameters)
             g_rawGyroRate = azSign * (((float)gy - g_gyroOffset) / 65.5f);
 
             /* -------------------------------------------------------------
-             * [BƯỚC 2] LẤY VẬN TỐC GÓC RAW YAW & GÓC RAW YAW (TRỤC Z)
+             * [BƯỚC 2] KHỬ TRÔI GYRO Z BẰNG ENCODER (ZUPT) & LẤY GÓC YAW VI SAI
+             *  - Khi 2 bánh xe không xoay lệch nhau (|g_encoderYawRate| < 1.5 deg/s),
+             *    mọi giá trị khác 0 của gz đều là trôi nhiệt / giao thoa trục Pitch -> tự bù g_gyroZOffset
+             *  - Góc đo tham chiếu (g_rawYawAngle) lấy từ góc vi sai xung 2 Encoder (g_encoderYawAngle)
+             *    nên tuyệt đối không bao giờ bị trôi theo thời gian!
              * ------------------------------------------------------------- */
-            g_rawYawRate = YAW_GYRO_SIGN * azSign * (((float)gz - g_gyroZOffset) / 65.5f);
-            if (fabsf(g_rawYawRate) > 0.6f) {
-                g_rawYawAngle += g_rawYawRate * 0.005f;
+            if (fabsf(g_encoderYawRate) < 1.5f && fabsf((float)gz - g_gyroZOffset) < 150.0f) {
+                g_gyroZOffset = 0.998f * g_gyroZOffset + 0.002f * (float)gz;
             }
+            g_rawYawRate  = YAW_GYRO_SIGN * azSign * (((float)gz - g_gyroZOffset) / 65.5f);
+            g_rawYawAngle = g_encoderYawAngle;
 
             /* -------------------------------------------------------------
              * [BƯỚC 3] LỌC KALMAN CHO PITCH (kalmanPitch) & YAW (kalmanYaw)
+             *  - kalmanPitch: kết hợp g_rawAccPitch (Gia tốc kế) + g_rawGyroRate (Gyro Y)
+             *  - kalmanYaw  : kết hợp g_encoderYawAngle (Vi sai xung Encoder) + g_rawYawRate (Gyro Z)
              * ------------------------------------------------------------- */
             if (isFirstSample) {
                 Kalman_SetAngle(&kalmanPitch, g_rawAccPitch);
@@ -675,9 +788,10 @@ static void vTaskIMU(void *pvParameters)
 
 /**
  * @brief TASK 2: vTaskEncoder (Chu kỳ 10ms - 100Hz, Priority 3)
- *  - Bước 1: Lấy vận tốc Raw của 2 bánh (g_motorSpeed_left, g_motorSpeed_right)
+ *  - Bước 1: Lấy số xung & vận tốc Raw của 2 bánh (g_motorSpeed_left, g_motorSpeed_right)
  *  - Bước 2: Lọc vận tốc 2 bánh qua Kalman (kalmanSpeed_L, kalmanSpeed_R)
- *  - Bước 3: Tính tọa độ Pos (g_robotX, g_robotY) kết hợp (Fusion) với góc kalmanYaw.angle
+ *  - Bước 3: Tính góc Yaw vi sai chuẩn từ xung 2 Encoder (g_encoderYawAngle) để khóa cứng Yaw,
+ *            đồng thời Fusion số xung Encoder + góc kalmanYaw.angle ra tọa độ 2D (g_robotX, g_robotY)
  */
 static void vTaskEncoder(void *pvParameters)
 {
@@ -686,6 +800,7 @@ static void vTaskEncoder(void *pvParameters)
     const TickType_t xFrequency = pdMS_TO_TICKS(10);
     MOTOR leftMotor = {0};
     MOTOR rightMotor = {0};
+    float prevYawRad = 0.0f;
     int8_t beat = 0;
 
     while (1)
@@ -711,22 +826,39 @@ static void vTaskEncoder(void *pvParameters)
         g_motorSpeed               = (g_motorSpeedfiltered_left + g_motorSpeedfiltered_right) * 0.5f;
 
         /* -------------------------------------------------------------
-         * [BƯỚC 3] TÍNH TỌA ĐỘ POS (X, Y) QUA FUSION VỚI GÓC YAW KALMAN
+         * [BƯỚC 3] KHÓA CỨNG GÓC YAW TỪ VI SAI XUNG ENCODER & FUSION TỌA ĐỘ 2D (X, Y)
+         *  - Bánh xe D = 65mm (C = 20.420352 cm), Khoảng cách 2 bánh W = 17.0 cm
+         *    + Mỗi xung dịch chuyển: WHEEL_CM_PER_PULSE = 0.015470 cm/xung
+         *    + Mỗi xung lệch giữa bánh Trái và Phải xoay góc: YAW_DEG_PER_DIFF_PULSE = 0.05214 deg/xung
+         *  - Tích lũy chính xác góc Yaw từ chênh lệch xung 2 bánh (g_encoderYawAngle):
+         *    Khi 2 bánh lăn cùng số xung -> dPulse_L == dPulse_R -> góc Yaw đứng im tuyệt đối 0.00 deg!
          * ------------------------------------------------------------- */
-        if (g_systemEnable) {
-            float ds_L   = -(float)leftMotor.delta_pulse * WHEEL_CM_PER_PULSE;
-            float ds_R   = -(float)rightMotor.delta_pulse * WHEEL_CM_PER_PULSE;
-            float ds     = (ds_L + ds_R) * 0.5f;
-            float yawRad = kalmanYaw.angle * (3.14159265359f / 180.0f);
+        float vDiff_cms = (-g_motorSpeedfiltered_left - (-g_motorSpeedfiltered_right)) * WHEEL_RPM_TO_CMS;
+        g_encoderYawRate = vDiff_cms * YAW_DEG_PER_DIFF_CM;
 
-            g_robotDist += ds;
-            g_robotX    += ds * cosf(yawRad);
-            g_robotY    += ds * sinf(yawRad);
-        } else {
-            g_robotDist = 0.0f;
-            g_robotX    = 0.0f;
-            g_robotY    = 0.0f;
+        /* Luôn cập nhật góc Yaw vi sai & tọa độ 2D (X, Y) ngay cả ở chế độ Standby (g_systemEnable == 0)
+         * để có thể đẩy xe bằng tay kiểm tra trực tiếp góc Yaw và Bản đồ 2D trên GUI */
+        float dPulse_L       = -(float)leftMotor.delta_pulse;
+        float dPulse_R       = -(float)rightMotor.delta_pulse;
+        float deltaPulseAvg  = 0.5f * (dPulse_L + dPulse_R);
+        float deltaPulseDiff = dPulse_L - dPulse_R;
+
+        if (fabsf(g_encoderYawAngle) < 0.0001f && fabsf(g_robotDist) < 0.0001f) {
+            prevYawRad = 0.0f;
         }
+
+        /* Cập nhật góc Yaw chuẩn từ phần cứng Encoder (neo chống trôi cho kalmanYaw) */
+        g_encoderYawAngle += deltaPulseDiff * YAW_DEG_PER_DIFF_PULSE;
+
+        /* Tính quãng đường ds (cm) và chiếu lên mặt phẳng 2D theo góc kalmanYaw */
+        float ds        = deltaPulseAvg * WHEEL_CM_PER_PULSE;
+        float yawRad    = kalmanYaw.angle * (3.14159265359f / 180.0f);
+        float yawMidRad = 0.5f * (prevYawRad + yawRad);
+        prevYawRad      = yawRad;
+
+        g_robotDist += ds;
+        g_robotX    += ds * cosf(yawMidRad);
+        g_robotY    += ds * sinf(yawMidRad);
 
         if (++beat >= 15) {
             beat = 0;
@@ -771,43 +903,33 @@ static void vTaskUART(void *pvParameters)
 {
     (void)pvParameters;
     TickType_t xLastWakeTime = xTaskGetTickCount();
-    const TickType_t xFrequency = pdMS_TO_TICKS(50);
+    const TickType_t xFrequency = pdMS_TO_TICKS(20); /* Chu kỳ quét lệnh RX 20ms (50Hz) giúp nhận lệnh START/STOP tức thì */
 
-    uint8_t rxState = 0;
-    uint8_t rxId = 0;
-    uint8_t rxLen = 0;
-    uint8_t rxCount = 0;
-    uint8_t rxChecksum = 0;
-    uint8_t beat = 0;
-    uint8_t rxDataBuf[32];
+    uint8_t  rxState = 0;
+    uint8_t  rxId = 0;
+    uint8_t  rxLen = 0;
+    uint8_t  rxCount = 0;
+    uint8_t  rxChecksum = 0;
+    uint8_t  beat = 0;
+    uint8_t  txDivider = 0;
+    uint16_t bootCycle = 0;
+    uint8_t  sendConfigReq = 1; /* Gửi bộ số mặc định của STM32 lên PC khi vừa khởi động / Reset */
+    uint8_t  rxDataBuf[32];
 
     while (1)
     {
         TickType_t xCurrentTime = xTaskGetTickCount();
-        if ((xCurrentTime - xLastWakeTime) > pdMS_TO_TICKS(150)) {
+        if ((xCurrentTime - xLastWakeTime) > pdMS_TO_TICKS(200)) {
             xLastWakeTime = xCurrentTime;
         }
         vTaskDelayUntil(&xLastWakeTime, xFrequency);
 
-        if (++beat >= 10) {
+        if (++beat >= 25) {
             beat = 0;
             GPIO_ToggleBits(GPIOD, GPIO_Pin_15);
         }
 
-        /* 1. Gửi gói tin Telemetry lên máy tính qua DMA (ID = 0x01, len = 32 byte) */
-        RobotTelemetry_t telem;
-        telem.rawPitch         = g_rawAccPitch;
-        telem.filteredPitch    = g_filteredPitch;
-        telem.gyroRate         = kalmanPitch.rate;
-        telem.motorSpeed_left  = g_motorSpeed_left;
-        telem.motorSpeed_right = g_motorSpeed_right;
-        telem.motorPWM_left    = g_motorPWM_left;
-        telem.motorPWM_right   = g_motorPWM_right;
-        telem.targetAngle      = g_targetAngle;
-
-        UART3_SendPacketDMA(0x01, &telem, (uint8_t)sizeof(RobotTelemetry_t));
-
-        /* 2. Nhận và giải mã gói tin từ máy tính: [0xAA] [ID] [len] [Data] [Checksum] [0xFF] */
+        /* 1. Luôn ưu tiên đọc & giải mã gói lệnh từ PC trước ở tốc độ 50Hz (20ms) để không bao giờ trễ lệnh */
         while (UART3_Available() > 0)
         {
             int16_t ch = UART3_ReadChar();
@@ -864,6 +986,7 @@ static void vTaskUART(void *pvParameters)
                             break;
                         case 0x03: /* CALIB */
                             Robot_AutoCalibrate();
+                            sendConfigReq = 1; /* Gửi lại góc cân bằng mới sau khi Calib lên PC */
                             break;
                         case 0x04: /* Set Target Angle (4 byte float) */
                             if (rxLen >= 4) {
@@ -872,7 +995,7 @@ static void vTaskUART(void *pvParameters)
                                 g_targetAngle = newTarget;
                             }
                             break;
-                        case 0x05: /* Set Target Speed (8 byte L/R hoặc 4 byte chung) */
+                        case 0x05: /* Set Target Speed (8 byte L/R hoặc 4 byte chung, ràng buộc < 10 cm/s) */
                             if (rxLen >= 8) {
                                 float newSpeedL = 0.0f, newSpeedR = 0.0f;
                                 memcpy(&newSpeedL, &rxDataBuf[0], 4);
@@ -883,13 +1006,38 @@ static void vTaskUART(void *pvParameters)
                                 memcpy(&newSpeed, rxDataBuf, 4);
                                 g_targetSpeed = newSpeed;
                             }
+                            if (g_targetSpeed > ROBOT_MAX_SPEED_RPM) g_targetSpeed = ROBOT_MAX_SPEED_RPM;
+                            else if (g_targetSpeed < -ROBOT_MAX_SPEED_RPM) g_targetSpeed = -ROBOT_MAX_SPEED_RPM;
+                            break;
+                        case 0x06: /* Set Target Pos (X, Y, Yaw - 12B) hoặc Reset Odometry Origin (0B) */
+                            if (rxLen == 0) {
+                                g_robotX          = 0.0f;
+                                g_robotY          = 0.0f;
+                                g_robotDist       = 0.0f;
+                                g_targetX         = 0.0f;
+                                g_targetY         = 0.0f;
+                                g_encoderYawAngle = 0.0f;
+                                g_encoderYawRate  = 0.0f;
+                                g_rawYawAngle     = 0.0f;
+                                g_filteredYaw     = 0.0f;
+                                g_targetYaw       = 0.0f;
+                                g_posIntegral     = 0.0f;
+                                g_yawIntegral     = 0.0f;
+                                Kalman_SetAngle(&kalmanYaw, 0.0f);
+                            } else if (rxLen >= 12) {
+                                memcpy((void *)&g_targetX,   &rxDataBuf[0], 4);
+                                memcpy((void *)&g_targetY,   &rxDataBuf[4], 4);
+                                memcpy((void *)&g_targetYaw, &rxDataBuf[8], 4);
+                            } else if (rxLen >= 4) {
+                                memcpy((void *)&g_targetYaw, &rxDataBuf[0], 4);
+                            }
                             break;
                         case 0x07: /* Set Control Mode (0 = Dual PID, 1 = Fuzzy) */
                             if (rxLen >= 1 && rxDataBuf[0] <= CTRL_MODE_FUZZY) {
                                 Robot_SetControlMode((RobotControlMode_t)rxDataBuf[0]);
                             }
                             break;
-                        case 0x08: /* Set PID 2 Vòng: Cân bằng (PD) + Vị trí Encoder (PI) + Yaw */
+                        case 0x08: /* Set PID 3 Vòng: Cân bằng (PD) + Vị trí (PI) + Hướng Yaw (Encoder + IMU) */
                             if (rxLen >= 16) {
                                 memcpy((void *)&g_Kp_balance,  &rxDataBuf[0],  4);
                                 memcpy((void *)&g_Kd_balance,  &rxDataBuf[4],  4);
@@ -898,8 +1046,15 @@ static void vTaskUART(void *pvParameters)
                                 if (rxLen >= 20) {
                                     memcpy((void *)&g_Kd_yaw, &rxDataBuf[16], 4);
                                 }
+                                if (rxLen >= 28) {
+                                    memcpy((void *)&g_Kp_yaw,     &rxDataBuf[20], 4);
+                                    memcpy((void *)&g_Kd_yaw_imu, &rxDataBuf[24], 4);
+                                }
                                 g_posIntegral = 0.0f;
                             }
+                            break;
+                        case 0x09: /* PC yêu cầu đọc bộ số cấu hình hiện tại từ STM32 */
+                            sendConfigReq = 1;
                             break;
                         default:
                             break;
@@ -912,6 +1067,64 @@ static void vTaskUART(void *pvParameters)
             default:
                 rxState = 0;
                 break;
+            }
+        }
+
+        /* 2. Sau khi Reset STM32 (t = 300ms và 1.5s), phát gói đồng bộ cấu hình gốc (ID = 0x02) */
+        if (bootCycle <= 80) {
+            bootCycle++;
+            if (bootCycle == 15 || bootCycle == 75) {
+                sendConfigReq = 1;
+            }
+        }
+
+        if (sendConfigReq) {
+            RobotConfigSync_t cfgSync;
+            cfgSync.kp_balance  = g_Kp_balance;
+            cfgSync.kd_balance  = g_Kd_balance;
+            cfgSync.kp_position = g_Kp_position;
+            cfgSync.ki_position = g_Ki_position;
+            cfgSync.kd_yaw      = g_Kd_yaw;
+            cfgSync.kp_yaw      = g_Kp_yaw;
+            cfgSync.kd_yaw_imu  = g_Kd_yaw_imu;
+            cfgSync.targetAngle = g_targetAngle;
+            cfgSync.targetX     = g_targetX;
+            cfgSync.targetY     = g_targetY;
+            cfgSync.targetYaw   = g_targetYaw;
+            cfgSync.controlMode = (float)g_controlMode;
+
+            if (UART3_SendPacketDMA(0x02, &cfgSync, (uint8_t)sizeof(RobotConfigSync_t))) {
+                sendConfigReq = 0;
+                txDivider = 0;
+            }
+        } else {
+            /* 3. Giảm tần số gửi Telemetry xuống 5Hz (200ms) khi đang chạy và 3.3Hz (300ms) khi Standby
+             *    để bộ đệm Bluetooth (COM18) luôn thông thoáng, không bao giờ bị tràn hoặc lag */
+            uint8_t txPeriodTicks = g_systemEnable ? 10u : 15u; /* 10 * 20ms = 200ms (5Hz) | 15 * 20ms = 300ms (3.3Hz) */
+            if (++txDivider >= txPeriodTicks) {
+                txDivider = 0;
+
+                RobotTelemetry_t telem;
+                /* Dữ liệu từ vTaskIMU */
+                telem.rawPitch                 = g_rawAccPitch;
+                telem.filteredPitch            = g_filteredPitch;
+                telem.gyroRate                 = kalmanPitch.rate;
+                telem.rawYaw                   = g_rawYawAngle;
+                telem.filteredYaw              = g_filteredYaw;
+                telem.yawRate                  = kalmanYaw.rate;
+                /* Dữ liệu từ vTaskEncoder */
+                telem.motorSpeed_left          = g_motorSpeed_left;
+                telem.motorSpeed_right         = g_motorSpeed_right;
+                telem.motorSpeedFiltered_left  = g_motorSpeedfiltered_left;
+                telem.motorSpeedFiltered_right = g_motorSpeedfiltered_right;
+                telem.robotX                   = g_robotX;
+                telem.robotY                   = g_robotY;
+                /* Dữ liệu từ vTaskControl */
+                telem.motorPWM_left            = g_motorPWM_left;
+                telem.motorPWM_right           = g_motorPWM_right;
+                telem.targetAngle              = g_targetAngle;
+
+                UART3_SendPacketDMA(0x01, &telem, (uint8_t)sizeof(RobotTelemetry_t));
             }
         }
     }

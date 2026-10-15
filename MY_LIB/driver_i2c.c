@@ -1,7 +1,34 @@
 #include "driver_i2c.h"
 #include <math.h>
 
-#define I2C1_TIMEOUT     100000u
+#define I2C1_TIMEOUT     3000u
+
+static void I2C1_Periph_Config(void)
+{
+    I2C_InitTypeDef I2C_InitStructure;
+
+    I2C_DeInit(I2C1);
+
+    I2C_InitStructure.I2C_ClockSpeed = 400000;
+    I2C_InitStructure.I2C_Mode = I2C_Mode_I2C;
+    I2C_InitStructure.I2C_DutyCycle = I2C_DutyCycle_2;
+    I2C_InitStructure.I2C_OwnAddress1 = 0x00;
+    I2C_InitStructure.I2C_Ack = I2C_Ack_Enable;
+    I2C_InitStructure.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
+
+    I2C_Init(I2C1, &I2C_InitStructure);
+    I2C_AcknowledgeConfig(I2C1, ENABLE);
+    I2C_Cmd(I2C1, ENABLE);
+}
+
+static void I2C1_Recover(void)
+{
+    /* Giải phóng ngay cờ BUSY/START bị kẹt do nhiễu động cơ để không làm treo vTaskIMU & vTaskUART */
+    I2C_GenerateSTOP(I2C1, ENABLE);
+    I2C_SoftwareResetCmd(I2C1, ENABLE);
+    I2C_SoftwareResetCmd(I2C1, DISABLE);
+    I2C1_Periph_Config();
+}
 
 static uint8_t I2C1_WaitEvent(uint32_t event)
 {
@@ -12,6 +39,7 @@ static uint8_t I2C1_WaitEvent(uint32_t event)
         timeout--;
         if (timeout == 0u)
         {
+            I2C1_Recover();
             return 1u;
         }
     }
@@ -40,22 +68,8 @@ static void I2C1_GPIO_Config(void)
 
 void I2C1_MPU6050_Init(void)
 {
-    I2C_InitTypeDef I2C_InitStructure;
-
     I2C1_GPIO_Config();
-
-    I2C_DeInit(I2C1);
-
-    I2C_InitStructure.I2C_ClockSpeed = 400000;
-    I2C_InitStructure.I2C_Mode = I2C_Mode_I2C;
-    I2C_InitStructure.I2C_DutyCycle = I2C_DutyCycle_2;
-    I2C_InitStructure.I2C_OwnAddress1 = 0x00;
-    I2C_InitStructure.I2C_Ack = I2C_Ack_Enable;
-    I2C_InitStructure.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
-
-    I2C_Init(I2C1, &I2C_InitStructure);
-    I2C_AcknowledgeConfig(I2C1, ENABLE);
-    I2C_Cmd(I2C1, ENABLE);
+    I2C1_Periph_Config();
 
     /* Wake up MPU6050 */
     I2C1_WriteReg(MPU6050_I2C_ADDR, MPU6050_REG_PWR_MGMT_1, MPU6050_PWR_MGMT_1_WAKEUP);

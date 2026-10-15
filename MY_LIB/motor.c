@@ -119,8 +119,9 @@ void Motor_SetPWM_Left(float pwm) {
         GPIO_ResetBits(GPIOC, GPIO_Pin_8 | GPIO_Pin_6);
     }
 
-    /* Tính độ rộng xung tương ứng với Duty Cycle (0 - MOTOR_PWM_PERIOD) */
-    uint16_t pulse = (uint16_t)(fabsf(pwm));
+    /* Quy đổi float pwm (0.0f -> 1000.0f) sang độ phân giải phần cứng TIM1 (0 -> 8400 mức)
+     * giúp giữ trọn vẹn phần thập phân lẻ của bộ điều khiển PID/Fuzzy mà không phải đổi lại hệ số PID */
+    uint16_t pulse = (uint16_t)(fabsf(pwm) * ((float)MOTOR_PWM_PERIOD / 1000.0f) + 0.5f);
     if (pulse > MOTOR_PWM_PERIOD) {
         pulse = MOTOR_PWM_PERIOD;
     }
@@ -129,10 +130,10 @@ void Motor_SetPWM_Left(float pwm) {
 }
 
 /**
- * @brief Điều khiển bánh phải (PA9: PWM, PC9 & PC7: Chiều)
+ * @brief Điều khiển bánh phải (PA9/PE11: PWM, PC9 & PC7: Chiều)
  */
 void Motor_SetPWM_Right(float pwm) {
-    /* Giới hạn giá trị PWM từ -100.0f đến 100.0f */
+    /* Giới hạn giá trị PWM từ -1000.0f đến 1000.0f */
     if (pwm > 1000.0f)  pwm = 1000.0f;
     if (pwm < -1000.0f) pwm = -1000.0f;
 
@@ -154,13 +155,13 @@ void Motor_SetPWM_Right(float pwm) {
         GPIO_ResetBits(GPIOC, GPIO_Pin_9 | GPIO_Pin_7);
     }
 
-    /* Tính độ rộng xung tương ứng với Duty Cycle (0 - MOTOR_PWM_PERIOD) */
-      uint16_t pulse = (uint16_t)(fabsf(pwm));
+    /* Quy đổi float pwm (0.0f -> 1000.0f) sang độ phân giải phần cứng TIM1 (0 -> 8400 mức) */
+    uint16_t pulse = (uint16_t)(fabsf(pwm) * ((float)MOTOR_PWM_PERIOD / 1000.0f) + 0.5f);
     if (pulse > MOTOR_PWM_PERIOD) {
         pulse = MOTOR_PWM_PERIOD;
     }
 
-    TIM1->CCR2 = pulse; /* Cập nhật PWM PA9 */
+    TIM1->CCR2 = pulse; /* Cập nhật PWM PE11/PA9 */
 }
 
 /**
