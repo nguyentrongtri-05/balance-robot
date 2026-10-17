@@ -5,7 +5,7 @@
 
 #define ENCODER_PULSES_PER_REV  330u
 #define ENCODER_COUNTS_PER_REV  1320.0f     /* Chế độ TI12 x4: 330 * 4 = 1320 xung/vòng */
-#define ENCODER_SAMPLE_TIME     0.010f      /* Chu kỳ lấy mẫu vTaskEncoder: 10ms (100Hz) */
+#define ENCODER_SAMPLE_TIME     0.005f      /* Chu kỳ lấy mẫu vTaskEncoder: 5ms (200Hz đồng bộ với IMU & Control) */
 
 /* Thông số vật lý bánh xe đường kính D = 65mm (6.5cm) & Khoảng cách 2 bánh W = 19.41cm (chuẩn hóa từ lan8.csv) */
 #define WHEEL_DIAMETER_MM       65.0f       /* Đường kính bánh xe (mm) */

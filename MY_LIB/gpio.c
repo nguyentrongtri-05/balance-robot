@@ -87,11 +87,11 @@ void EXTI1_IRQHandler(void) {
     }
 }
 
-/* NÚT 3 (PC2): CALIB */
+/* NÚT 3 (PC2): CALIB (Đặt cờ yêu cầu để chạy Calib trong Task FreeRTOS, tránh treo/lỗi trong ngắt EXTI) */
 void EXTI2_IRQHandler(void) {
     if (EXTI_GetITStatus(EXTI_Line2) != RESET) {
         if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_2) == Bit_RESET) {
-            Robot_AutoCalibrate();
+            Robot_RequestCalibrate();
             Button_Debounce_WaitRelease(GPIO_Pin_2, EXTI_Line2);
         } else {
             EXTI_ClearITPendingBit(EXTI_Line2);

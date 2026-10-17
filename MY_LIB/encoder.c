@@ -46,6 +46,8 @@ void Encoder_Config(void)
     TIM_EncoderInterfaceConfig(TIM4, TIM_EncoderMode_TI12,
                                TIM_ICPolarity_Rising,
                                TIM_ICPolarity_Rising);
+    /* Bật bộ lọc số phần cứng mức tối đa (IC1F = 0x0F, IC2F = 0x0F) triệt tiêu nhiễu gai EMI từ chổi than Motor */
+    TIM4->CCMR1 |= (0x0Fu << 4) | (0x0Fu << 12);
     TIM_SetCounter(TIM4, 0);
     TIM_Cmd(TIM4, ENABLE);
 
@@ -60,6 +62,7 @@ void Encoder_Config(void)
     TIM_EncoderInterfaceConfig(TIM3, TIM_EncoderMode_TI12,
                                TIM_ICPolarity_Rising,
                                TIM_ICPolarity_Rising);
+    TIM3->CCMR1 |= (0x0Fu << 4) | (0x0Fu << 12);
     TIM_SetCounter(TIM3, 0);
     TIM_Cmd(TIM3, ENABLE);
 }
@@ -69,12 +72,18 @@ void Encoder_ReadStruct(MOTOR *motorLeft, MOTOR *motorRight)
     if (motorLeft)
     {
         motorLeft->pulse = TIM3->CNT;
-        motorLeft->delta_pulse = motorLeft->pulse - motorLeft->pre_pulse;
+        int32_t dPulse = motorLeft->pulse - motorLeft->pre_pulse;
 
-        if (motorLeft->delta_pulse > 32767)
-            motorLeft->delta_pulse -= 65536;
-        else if (motorLeft->delta_pulse < -32768)
-            motorLeft->delta_pulse += 65536;
+        if (dPulse > 32767)
+            dPulse -= 65536;
+        else if (dPulse < -32768)
+            dPulse += 65536;
+
+        /* Bảo vệ chống nhiễu vọt xung bất thường (> 16 xung/5ms ~ 145 RPM) */
+        if (dPulse > 16 || dPulse < -16) {
+            dPulse = motorLeft->delta_pulse;
+        }
+        motorLeft->delta_pulse = dPulse;
 
         motorLeft->speed = 60.0f * (float)motorLeft->delta_pulse /
                            (ENCODER_PULSES_PER_REV * ENCODER_SAMPLE_TIME * 4.0f);
@@ -85,12 +94,17 @@ void Encoder_ReadStruct(MOTOR *motorLeft, MOTOR *motorRight)
     if (motorRight)
     {
         motorRight->pulse = TIM4->CNT;
-        motorRight->delta_pulse = motorRight->pulse - motorRight->pre_pulse;
+        int32_t dPulse = motorRight->pulse - motorRight->pre_pulse;
 
-        if (motorRight->delta_pulse > 32767)
-            motorRight->delta_pulse -= 65536;
-        else if (motorRight->delta_pulse < -32768)
-            motorRight->delta_pulse += 65536;
+        if (dPulse > 32767)
+            dPulse -= 65536;
+        else if (dPulse < -32768)
+            dPulse += 65536;
+
+        if (dPulse > 16 || dPulse < -16) {
+            dPulse = motorRight->delta_pulse;
+        }
+        motorRight->delta_pulse = dPulse;
 
         motorRight->speed = 60.0f * (float)motorRight->delta_pulse /
                             (ENCODER_PULSES_PER_REV * ENCODER_SAMPLE_TIME * 4.0f);

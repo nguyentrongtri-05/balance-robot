@@ -39,6 +39,7 @@ void System_Tasks_Init(void);
 uint8_t Robot_Start(void);
 void Robot_Stop(void);
 uint8_t Robot_AutoCalibrate(void);
+void Robot_RequestCalibrate(void);
 
 #endif /* __MANAGETASK_H */
 

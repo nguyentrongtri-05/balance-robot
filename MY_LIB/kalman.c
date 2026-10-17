@@ -72,25 +72,25 @@ void KalmanSpeed_Init(KalmanSpeed_t *klm, float q_speed, float q_accel, float r_
 }
 
 void KalmanSpeed_InitDefault(KalmanSpeed_t *klm) {
-    /* Bộ tham số tối ưu cho động cơ JGB37-520 (330 PPR x 4 = 1320 xung/vòng)
-     * Q_speed   = 0.05f  (Mô hình vận tốc ổn định cao)
-     * Q_accel   = 50.0f  (Cho phép gia tốc thay đổi linh hoạt theo mô-men)
-     * R_measure = 5.0f   (Nhiễu lượng tử hóa đếm xung: ~4.55 RPM)
+    /* Bộ tham số tối ưu cho động cơ JGB37-520 ở tần số lấy mẫu 200Hz (dt = 5ms):
+     * Q_speed   = 0.08f  (Bám nhanh vận tốc thực ở 200Hz)
+     * Q_accel   = 15.0f  (Giảm vọt lố đạo hàm gia tốc khi lượng tử hóa 1 xung = 9.09 RPM)
+     * R_measure = 14.0f  (Làm mượt bậc thang lượng tử hóa xung ở chu kỳ 5ms)
      */
-    KalmanSpeed_Init(klm, 0.05f, 50.0f, 5.0f);
+    KalmanSpeed_Init(klm, 0.08f, 15.0f, 14.0f);
 }
 
 float KalmanSpeed_GetSpeed(KalmanSpeed_t *klm, float rawSpeed, float dt) {
-    /* 1. Predict (Dự đoán trạng thái & ma trận hiệp phương sai) */
-    float speed_pred = klm->speed + klm->accel * dt;
-    float accel_pred = klm->accel;
+    /* 1. Predict (Dự đoán trạng thái & ma trận hiệp phương sai với hệ số tắt dần gia tốc 0.90) */
+    float accel_pred = klm->accel * 0.90f;
+    float speed_pred = klm->speed + accel_pred * dt;
 
     /* P^- = F * P * F^T + Q
      * Ma trận F = [1  dt; 0  1]
      */
     float p00_temp = klm->P[0][0] + dt * (2.0f * klm->P[0][1] + dt * klm->P[1][1]) + klm->Q_speed;
     float p01_temp = klm->P[0][1] + dt * klm->P[1][1];
-    float p11_temp = klm->P[1][1] + klm->Q_accel;
+    float p11_temp = klm->P[1][1] + klm->Q_accel * dt;
 
     /* 2. Correct / Update (Cập nhật đo lường từ Encoder) */
     float S = p00_temp + klm->R_measure;
