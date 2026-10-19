@@ -35,4 +35,3 @@
 .\objects\driver_i2c.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dac.h
 .\objects\driver_i2c.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dcmi.h
 .\objects\driver_i2c.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_fsmc.h
-.\objects\driver_i2c.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

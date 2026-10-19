@@ -26,13 +26,13 @@
 #define UART_FRAME_HEADER       0xAA
 #define UART_FRAME_TAIL         0xFF
 
-/* Cấu trúc gói dữ liệu Telemetry chuẩn gửi lên máy tính (ID = 0x01, len = 60 byte = 15 float) */
+/* Cấu trúc gói dữ liệu Telemetry chuẩn gửi lên máy tính (ID = 0x01, len = 76 byte = 19 float) */
 typedef struct __attribute__((packed)) {
     /* 1. Dữ liệu từ vTaskIMU (Pitch & Yaw: Raw vs Kalman) */
     float rawPitch;                 /* 1. Góc Pitch thô từ Accelerometer (độ) */
     float filteredPitch;            /* 2. Góc Pitch sau lọc kalmanPitch (độ) */
     float gyroRate;                 /* 3. Vận tốc góc Pitch thực tế (độ/s) */
-    float rawYaw;                   /* 4. Góc Yaw thô tích phân từ Gyro Z (độ) */
+    float rawYaw;                   /* 4. Góc Yaw thô từ vi sai Encoder (độ) */
     float filteredYaw;              /* 5. Góc Yaw sau lọc kalmanYaw (độ) */
     float yawRate;                  /* 6. Vận tốc góc Yaw thực tế (độ/s) */
 
@@ -44,26 +44,32 @@ typedef struct __attribute__((packed)) {
     float robotX;                   /* 11. Tọa độ Pos X trên mặt phẳng (cm) */
     float robotY;                   /* 12. Tọa độ Pos Y trên mặt phẳng (cm) */
 
-    /* 3. Dữ liệu từ vTaskControl (PWM & Góc đặt) */
-    float motorPWM_left;            /* 13. PWM xuất Bánh Trái (-1000 đến 1000) */
-    float motorPWM_right;           /* 14. PWM xuất Bánh Phải (-1000 đến 1000) */
-    float targetAngle;              /* 15. Điểm cân bằng mục tiêu (độ) */
+    /* 3. Dữ liệu từ vTaskControl (Kiến trúc Vòng Lồng Cascade: 90% OutFuzzy + 10% Yaw) */
+    float motorPWM_left;            /* 13. PWM xuất Bánh Trái (-8400 đến +8400) */
+    float motorPWM_right;           /* 14. PWM xuất Bánh Phải (-8400 đến +8400) */
+    float targetAngle;              /* 15. Góc cân bằng đặt thực tế sau Vòng Lồng Cascade (độ) */
+    float outFuzzy;                 /* 16. Ngõ ra Vòng Trong Cân bằng / Fuzzy (tối đa 90% = +-7560 PWM) */
+    float outPosition;              /* 17. Tín hiệu Vòng Ngoài Vị trí 2D (tương đương +-2.5° góc đặt) */
+    float outYaw;                   /* 18. Ngõ ra Vòng Góc Yaw (tối đa 10% = +-840 PWM) */
+    float outSpeed;                 /* 19. Tín hiệu Vòng Ngoài Vận tốc đặt (tương đương +-4.0° góc đặt) */
 } RobotTelemetry_t;
 
-/* Cấu trúc gói đồng bộ Bộ Số Cấu Hình Gốc từ STM32 gửi lên máy tính khi khởi động / Reset (ID = 0x02, len = 48 byte = 12 float) */
+/* Cấu trúc gói đồng bộ Bộ Số Cấu Hình Gốc từ STM32 gửi lên máy tính khi khởi động / Reset (ID = 0x02, len = 56 byte = 14 float) */
 typedef struct __attribute__((packed)) {
-    float kp_balance;               /* 1. Hệ số Kp vòng cân bằng Pitch */
-    float kd_balance;               /* 2. Hệ số Kd vòng cân bằng Pitch */
-    float kp_position;              /* 3. Hệ số Kp vòng vị trí / vận tốc */
-    float ki_position;              /* 4. Hệ số Ki vòng tọa độ 2D (X, Y) */
-    float kd_yaw;                   /* 5. Hệ số Kd ghìm lệch vận tốc 2 bánh Encoder */
-    float kp_yaw;                   /* 6. Hệ số Kp khóa cứng góc Yaw */
-    float kd_yaw_imu;               /* 7. Hệ số Kd phanh vận tốc xoay ngang Gyro Z IMU */
-    float targetAngle;              /* 8. Góc cân bằng mục tiêu (từ Code / Flash) */
+    float kp_balance;               /* 1. Hệ số Kp vòng trong cân bằng Pitch (90% PWM) */
+    float kd_balance;               /* 2. Hệ số Kd vòng trong cân bằng Pitch (90% PWM) */
+    float kp_position;              /* 3. Hệ số Kp vòng ngoài vị trí 2D (sinh góc nghiêng đặt +-2.5°) */
+    float ki_position;              /* 4. Hệ số Ki vòng ngoài vị trí 2D */
+    float kd_yaw;                   /* 5. Hệ số Kd ghìm lệch vận tốc 2 bánh Encoder (10% PWM) */
+    float kp_yaw;                   /* 6. Hệ số Kp khóa cứng góc Yaw (10% PWM) */
+    float kd_yaw_imu;               /* 7. Hệ số Kd phanh vận tốc xoay ngang Gyro Z IMU (10% PWM) */
+    float targetAngle;              /* 8. Góc cân bằng tĩnh gốc (từ Code / Flash) */
     float targetX;                  /* 9. Tọa độ đích X (cm) */
     float targetY;                  /* 10. Tọa độ đích Y (cm) */
     float targetYaw;                /* 11. Góc hướng đích Yaw (độ) */
-    float controlMode;              /* 12. Chế độ điều khiển (0.0f = Dual PID, 1.0f = Fuzzy) */
+    float controlMode;              /* 12. Chế độ điều khiển (0.0f = Dual PID Cascade, 1.0f = Fuzzy Cascade) */
+    float kp_speed;                 /* 13. Hệ số Kp vòng ngoài vận tốc đặt (sinh góc nghiêng đặt +-4.0°) */
+    float ki_speed;                 /* 14. Hệ số Ki vòng ngoài vận tốc đặt */
 } RobotConfigSync_t;
 
 void UART3_Init(uint32_t baudrate);
@@ -75,4 +81,3 @@ uint16_t UART3_Available(void);
 int16_t UART3_ReadChar(void);
 
 #endif /* __DRIVER_UART_H */
-

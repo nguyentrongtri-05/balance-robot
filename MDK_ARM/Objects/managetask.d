@@ -53,5 +53,6 @@
 .\objects\managetask.o: ..\MY_LIB\fuzzy.h
 .\objects\managetask.o: ..\MY_LIB\kalman.h
 .\objects\managetask.o: ..\MY_LIB\driver_flash.h
+.\objects\managetask.o: ..\MY_LIB\pid.h
 .\objects\managetask.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 .\objects\managetask.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

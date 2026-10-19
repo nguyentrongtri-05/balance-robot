@@ -3,20 +3,51 @@
 
 #include "stm32f4xx.h"
 
+/* Giới hạn góc cân bằng hoạt động của Robot: [-15.0° .. +15.0°] */
+#define ROBOT_BALANCE_ANGLE_LIMIT       15.0f
+
+/* ============================================================================
+ * KIẾN TRÚC ĐIỀU KHIỂN VÒNG LỒNG (CASCADED CONTROL ARCHITECTURE - CÁCH 1):
+ *  1. Vòng Ngoài (Outer Loops: Vị trí 2D + Vận tốc đặt):
+ *     - KHÔNG xuất thẳng PWM ra động cơ để tránh xung đột với vòng cân bằng.
+ *     - Tính ra Góc nghiêng đặt bù trừ (Cascade Tilt Offset):
+ *         + Vòng Vận tốc PI -> deltaTheta_speed thuộc [-2.0° .. +2.0°]
+ *         + Vòng Vị trí PI  -> deltaTheta_pos   thuộc [-1.5° .. +1.5°]
+ *         + Tổng góc nghiêng bù trừ kẹp an toàn trong [-2.5° .. +2.5°]
+ *         + Góc đặt đưa vào Vòng Trong: targetPitch_cascade = g_targetAngle - deltaTheta
+ *  2. Vòng Trong (Inner Loop: Fuzzy Logic 5 khâu / PD Cân bằng Pitch):
+ *     - Nhận targetPitch_cascade và xuất trực tiếp 90% tổng công suất PWM (+-7560 / 8400).
+ *  3. Vòng Độc lập Ngang (Yaw PID):
+ *     - Điều khiển góc hướng xoay Yaw với 10% tổng công suất PWM (+-840 / 8400).
+ *     - Tổng công suất động cơ: 90% (7560) + 10% (840) = 100% (8400 PWM).
+ * ============================================================================ */
+#define PWM_LIMIT_BALANCE               7560.0f     /* 90% của 8400 PWM cho Vòng Trong Cân bằng (OutFuzzy / Balance PD) */
+#define PWM_LIMIT_YAW                    840.0f     /* 10% của 8400 PWM cho Vòng Hướng xoay Yaw */
+
+#define CASCADE_CMD_TO_DEG              (1.0f / 420.0f) /* Hệ số quy đổi chuẩn từ đầu ra PI vòng ngoài sang độ nghiêng (deg) */
+#define CASCADE_MAX_SPEED_TILT_DEG      2.2f        /* Giới hạn góc nghiêng tối đa do Vòng Vận tốc đặt sinh ra (+-2.2°) */
+#define CASCADE_MAX_POS_TILT_DEG        1.0f        /* Giới hạn góc nghiêng tối đa do Vòng Vị trí 2D sinh ra (+-1.0°) */
+#define CASCADE_MAX_TOTAL_TILT_DEG      2.5f        /* Giới hạn tổng góc nghiêng đặt bù trừ của Vòng Ngoài (+-2.5°) */
+
+#define PWM_LIMIT_SPEED                 (CASCADE_MAX_SPEED_TILT_DEG / CASCADE_CMD_TO_DEG) /* +-924.0f tương đương +-2.2° */
+#define PWM_LIMIT_POSITION              (CASCADE_MAX_POS_TILT_DEG   / CASCADE_CMD_TO_DEG) /* +-420.0f tương đương +-1.0° */
+
 /* Trạng thái hoạt động của hệ thống (0: STOP, 1: RUN) */
 extern volatile uint8_t g_systemEnable;
 
-/* Các chế độ điều khiển Robot (Giữ Dual PID và Fuzzy) */
+/* Các chế độ điều khiển Robot (Giữ Dual PID và Fuzzy theo cấu trúc Vòng Lồng) */
 typedef enum {
-    CTRL_MODE_DUAL_PID    = 0,  /* PID 2 vòng: Cân bằng PD + Vị trí/Tốc độ PI */
-    CTRL_MODE_FUZZY       = 1   /* Điều khiển Mờ Fuzzy Logic */
+    CTRL_MODE_DUAL_PID    = 0,  /* Vòng lồng Cascade với bộ PD Cân bằng (90% PWM) + Yaw (10% PWM) */
+    CTRL_MODE_FUZZY       = 1   /* Vòng lồng Cascade với bộ Fuzzy 5 khâu (90% PWM) + Yaw (10% PWM) */
 } RobotControlMode_t;
 
 extern volatile RobotControlMode_t g_controlMode;
 
-/* Thông số PID 2 vòng (có thể tinh chỉnh trực tiếp hoặc qua UART) */
+/* Thông số điều khiển Vòng Lồng (có thể tinh chỉnh trực tiếp hoặc qua UART) */
 extern volatile float g_Kp_balance;
 extern volatile float g_Kd_balance;
+extern volatile float g_Kp_speed;
+extern volatile float g_Ki_speed;
 extern volatile float g_Kp_position;
 extern volatile float g_Ki_position;
 extern volatile float g_Kd_yaw;
@@ -26,6 +57,7 @@ extern volatile float g_Kd_yaw_imu;
 /* Các biến góc đo và điều khiển (Pitch & Yaw) */
 extern volatile float g_filteredPitch;
 extern volatile float g_targetAngle;
+extern volatile float g_cascadeTargetAngle;
 extern volatile float g_gyroOffset;
 extern volatile float g_gyroZOffset;
 extern volatile float g_rawYawRate;
@@ -34,12 +66,17 @@ extern volatile float g_filteredYaw;
 extern volatile float g_targetYaw;
 extern volatile float g_targetSpeed;
 
-void Robot_SetControlMode(RobotControlMode_t mode);
-void System_Tasks_Init(void);
+/* Các biến giám sát Telemetry: OutFuzzy (90% PWM), Yaw (10% PWM) & Lượng bù Vòng Ngoài (Vận tốc, Vị trí) */
+extern volatile float g_outFuzzy;
+extern volatile float g_outSpeed;
+extern volatile float g_outPosition;
+extern volatile float g_outYaw;
+
+void    Robot_SetControlMode(RobotControlMode_t mode);
+void    System_Tasks_Init(void);
 uint8_t Robot_Start(void);
-void Robot_Stop(void);
+void    Robot_Stop(void);
 uint8_t Robot_AutoCalibrate(void);
-void Robot_RequestCalibrate(void);
+void    Robot_RequestCalibrate(void);
 
 #endif /* __MANAGETASK_H */
-

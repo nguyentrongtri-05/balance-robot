@@ -24,6 +24,7 @@ typedef struct {
  * @brief Khởi tạo các thông số của bộ điều khiển PID Gia số
  */
 void PID_Init(PID_t *pid, float Kp, float Ki, float Kd, float outMin, float outMax);
+void PID_Reset(PID_t *pid);
 
 /**
  * @brief Tính toán ngõ ra của PID (Sử dụng thuật toán Gia số)

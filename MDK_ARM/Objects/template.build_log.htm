@@ -27,12 +27,11 @@ Project File Date:  10/11/2026
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Target 1'
-compiling kalman.c...
 compiling fuzzy.c...
-..\MY_LIB\fuzzy.c(450): warning:  #167-D: argument of type "float (*)[5]" is incompatible with parameter of type "const float (*)[5]"
+..\MY_LIB\fuzzy.c(257): warning:  #167-D: argument of type "float (*)[5]" is incompatible with parameter of type "const float (*)[5]"
       float defuzzOut = Fuzzy_Defuzzify(fc, fc->rule_weights);
 ..\MY_LIB\fuzzy.c: 1 warning, 0 errors
-compiling encoder.c...
+compiling gpio.c...
 ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
   #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
 ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11582): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM8_STOP"  (declared at line 11575)
@@ -43,7 +42,7 @@ compiling encoder.c...
   #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
 ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
   #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
-..\MY_LIB\encoder.c: 5 warnings, 0 errors
+..\MY_LIB\gpio.c: 5 warnings, 0 errors
 compiling main.c...
 ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11581): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM1_STOP"  (declared at line 11574)
   #define  DBGMCU_APB2_FZ_DBG_TIM1_STOP        DBGMCU_APB1_FZ_DBG_TIM1_STOP    
@@ -67,11 +66,15 @@ compiling managetask.c...
   #define  DBGMCU_APB2_FZ_DBG_TIM10_STOP       DBGMCU_APB1_FZ_DBG_TIM10_STOP
 ..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h(11585): warning:  #47-D: incompatible redefinition of macro "DBGMCU_APB2_FZ_DBG_TIM11_STOP"  (declared at line 11578)
   #define  DBGMCU_APB2_FZ_DBG_TIM11_STOP       DBGMCU_APB1_FZ_DBG_TIM11_STOP
-..\MY_LIB\managetask.c: 5 warnings, 0 errors
+..\MY_LIB\managetask.c(817): warning:  #550-D: variable "outpwm"  was set but never used
+  	float outpwm, pwm_yaw;
+..\MY_LIB\managetask.c(623): warning:  #177-D: function "Robot_Controller_Update"  was declared but never referenced
+  static void Robot_Controller_Update(float dt)
+..\MY_LIB\managetask.c: 7 warnings, 0 errors
 linking...
-Program Size: Code=27178 RO-data=482 RW-data=288 ZI-data=35456  
+Program Size: Code=23322 RO-data=482 RW-data=316 ZI-data=35452  
 FromELF: creating hex file...
-".\Objects\template.axf" - 0 Error(s), 16 Warning(s).
+".\Objects\template.axf" - 0 Error(s), 18 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -83,7 +86,7 @@ Package Vendor: Keil
 <h2>Collection of Component include folders:</h2>
 
 <h2>Collection of Component Files used:</h2>
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>

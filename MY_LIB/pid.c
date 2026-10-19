@@ -18,6 +18,17 @@ void PID_Init(PID_t *pid, float Kp, float Ki, float Kd, float outMin, float outM
     pid->outMax = outMax;
 }
 
+void PID_Reset(PID_t *pid) {
+    if (!pid) return;
+    pid->P_part        = 0.0f;
+    pid->I_Part        = 0.0f;
+    pid->D_part        = 0.0f;
+    pid->Output        = 0.0f;
+    pid->pre_Error     = 0.0f;
+    pid->pre_pre_Error = 0.0f;
+    pid->pre_Output    = 0.0f;
+}
+
 float PID_Compute(PID_t *pid, float setpoint, float measurement, float dt) {
     float Error = setpoint - measurement;
     
