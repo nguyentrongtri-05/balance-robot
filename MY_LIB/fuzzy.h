@@ -4,39 +4,37 @@
 #include <stdint.h>
 
 /* ============================================================================
- * 1. CẤU HÌNH #DEFINE KHÂU KHUẾCH ĐẠI TIỀN XỬ LÝ (PRE-PROCESSING AMPLIFICATION)
- *  - Giới hạn góc cân bằng hoạt động: [-15.0° .. +15.0°]
- *  - Chuẩn hóa tín hiệu vật lý (error góc, dError vận tốc góc) vào [-1.0f .. +1.0f]:
- *      + e_norm  = clamp(error  * FUZZY_PRE_KE,  -1.0f, +1.0f)
- *      + de_norm = clamp(dError * FUZZY_PRE_KDE, -1.0f, +1.0f)
+ * 1. CẤU HÌNH #DEFINE MẶC ĐỊNH CHO KHÂU TIỀN XỬ LÝ (PRE-PROCESSING DEFAULTS)
+ *  - Chuẩn hóa tín hiệu đầu vào vật lý (sai số e, đạo hàm sai số de) về [-1.0f .. +1.0f]:
+ *      + e_norm  = clamp(e  * ke,  e_min,  e_max)
+ *      + de_norm = clamp(de * kde, de_min, de_max)
  * ============================================================================ */
-#define FUZZY_BALANCE_ANGLE_MAX     15.0f                             /* Giới hạn góc cân bằng tối đa: +-15.0 độ */
-#define FUZZY_PRE_KE                (1.0f / FUZZY_BALANCE_ANGLE_MAX)  /* 1/15 = 0.0666667f: ánh xạ [-15°..+15°] -> [-1.0..+1.0] */
-#define FUZZY_PRE_KDE               0.0020f                           /* Hệ số chuẩn hóa đạo hàm góc de (khớp với mốc de +-0.25 / +-0.50) */
+#define FUZZY_BALANCE_ANGLE_MAX     15.0f                             /* Biên độ sai số chuẩn hóa mặc định */
+#define FUZZY_PRE_KE                (1.0f / FUZZY_BALANCE_ANGLE_MAX)  /* Hệ số chuẩn hóa sai số e mặc định (1/15) */
+#define FUZZY_PRE_KDE               0.0020f                           /* Hệ số chuẩn hóa đạo hàm sai số de mặc định */
 
-#define FUZZY_PRE_E_MIN            -1.0f        /* Giới hạn dưới chuẩn hóa của đầu vào e_norm (-1.0) */
-#define FUZZY_PRE_E_MAX             1.0f        /* Giới hạn trên chuẩn hóa của đầu vào e_norm (+1.0) */
-#define FUZZY_PRE_DE_MIN           -1.0f        /* Giới hạn dưới chuẩn hóa của đầu vào de_norm (-1.0) */
-#define FUZZY_PRE_DE_MAX            1.0f        /* Giới hạn trên chuẩn hóa của đầu vào de_norm (+1.0) */
+#define FUZZY_PRE_E_MIN            -1.0f        /* Giới hạn dưới miền chuẩn hóa của e_norm (-1.0) */
+#define FUZZY_PRE_E_MAX             1.0f        /* Giới hạn trên miền chuẩn hóa của e_norm (+1.0) */
+#define FUZZY_PRE_DE_MIN           -1.0f        /* Giới hạn dưới miền chuẩn hóa của de_norm (-1.0) */
+#define FUZZY_PRE_DE_MAX            1.0f        /* Giới hạn trên miền chuẩn hóa của de_norm (+1.0) */
 #define FUZZY_PRE_DE_LPF_ALPHA      0.38f       /* Hệ số lọc thông thấp EMA cho đạo hàm de ở tiền xử lý */
 
 /* ============================================================================
  * 2. CẤU HÌNH #DEFINE MIỀN HÀM LIÊN THUỘC ĐẦU VÀO CHUẨN HÓA [-1.0 .. +1.0]
- *  - Tập ZE của sai số góc e_norm là Hình thang (Trapezoid) có đáy nhỏ nằm ngang
- *    (độ phụ thuộc = 1.0) từ -0.002 đến +0.002.
- *  - Đỉnh NS/PS đặt tại +-0.25 (tương ứng +-3.75 độ).
- *  - Tập NB/PB là Hình thang biên (TrapezoidLeft/Right) cố định mu = 1.0 từ
- *    +-0.50 (tương ứng +-7.50 độ) đến +-1.00 (+-15.0 độ).
+ *  - Áp dụng đồng nhất cho cả 2 kênh đầu vào e_norm và de_norm:
+ *      + Tập ZE: Hình thang cân (Trapezoid) có đỉnh phẳng bằng 1.0 từ -0.002 đến +0.002
+ *      + Tập NS / PS: Tam giác (Triangle) có đỉnh tại +-0.25
+ *      + Tập NB / PB: Hình thang biên (TrapezoidLeft/Right) bằng 1.0 từ +-0.50 đến +-1.00
  * ============================================================================ */
-/* Miền hàm liên thuộc cho Sai số góc đã chuẩn hóa e_norm thuộc [-1.0 .. +1.0] */
-#define FUZZY_MF_E_NB_NS           -0.50f       /* Điểm bắt đầu cố định tập NB = 1.0 trên [-1.0 .. -0.50] (-7.50 độ) */
-#define FUZZY_MF_E_NS_ZE           -0.25f       /* Đỉnh tập NS / chân trái hình thang ZE của e_norm (-3.75 độ) */
+/* Miền hàm liên thuộc cho Sai số chuẩn hóa e_norm thuộc [-1.0 .. +1.0] */
+#define FUZZY_MF_E_NB_NS           -0.50f       /* Điểm bắt đầu cố định tập NB = 1.0 trên [-1.0 .. -0.50] */
+#define FUZZY_MF_E_NS_ZE           -0.25f       /* Đỉnh tập NS / chân trái hình thang ZE của e_norm (-0.25) */
 #define FUZZY_MF_E_ZE_FLAT_MIN     -0.002f      /* Điểm đầu khoảng nằm ngang tập hình thang ZE của e_norm (-0.002) */
 #define FUZZY_MF_E_ZE_FLAT_MAX      0.002f      /* Điểm cuối khoảng nằm ngang tập hình thang ZE của e_norm (+0.002) */
-#define FUZZY_MF_E_ZE_PS            0.25f       /* Đỉnh tập PS / chân phải hình thang ZE của e_norm (+3.75 độ) */
-#define FUZZY_MF_E_PS_PB            0.50f       /* Điểm bắt đầu cố định tập PB = 1.0 trên [+0.50 .. +1.0] (+7.50 độ) */
+#define FUZZY_MF_E_ZE_PS            0.25f       /* Đỉnh tập PS / chân phải hình thang ZE của e_norm (+0.25) */
+#define FUZZY_MF_E_PS_PB            0.50f       /* Điểm bắt đầu cố định tập PB = 1.0 trên [+0.50 .. +1.0] */
 
-/* Miền hàm liên thuộc cho Đạo hàm sai số góc đã chuẩn hóa de_norm thuộc [-1.0 .. +1.0] (Giống hệt e_norm) */
+/* Miền hàm liên thuộc cho Đạo hàm sai số chuẩn hóa de_norm thuộc [-1.0 .. +1.0] */
 #define FUZZY_MF_DE_NB_NS          -0.50f       /* Điểm bắt đầu cố định tập NB = 1.0 trên [-1.0 .. -0.50] */
 #define FUZZY_MF_DE_NS_ZE          -0.25f       /* Đỉnh tập NS / chân trái hình thang ZE của de_norm (-0.25) */
 #define FUZZY_MF_DE_ZE_FLAT_MIN    -0.002f      /* Điểm đầu khoảng nằm ngang tập hình thang ZE của de_norm (-0.002) */
@@ -48,15 +46,11 @@
  * 3. CẤU HÌNH #DEFINE DẢI GIÁ TRỊ KHÂU GIẢI MỜ CHUẨN HÓA [-1.0 .. +1.0]
  *  - Đầu ra của khâu giải mờ (u_defuzz) gồm 7 biến ngôn ngữ:
  *      { NB, NM, NS, ZE, PS, PM, PB } nằm trong dải [-1.0f .. +1.0f]
- *  - Với FUZZY_POST_KU = 7560 (90% PWM):
- *      + NS / PS (+-0.28): +-2117 PWM (~25.2% PWM) giữ cân bằng êm ở góc nhỏ.
- *      + NM / PM (+-0.64): +-4838 PWM (~57.6% PWM) chuyển tiếp mượt khi cả e và de cùng lệch.
- *      + NB / PB (+-1.00): +-7560 PWM ( 90.0% PWM) bung tối đa công suất khi nghiêng lớn.
  * ============================================================================ */
 #define FUZZY_DEFUZZ_RANGE_MIN     -1.00f       /* Biên âm của khâu giải mờ (-1.0) */
 #define FUZZY_DEFUZZ_RANGE_MAX      1.00f       /* Biên dương của khâu giải mờ (+1.0) */
-#define FUZZY_DEFUZZ_SMALL_RATIO    0.28f       /* Tỉ lệ vùng nhỏ NS/PS (+-0.28 <-> +-2117 PWM) */
-#define FUZZY_DEFUZZ_MEDIUM_RATIO   0.64f       /* Tỉ lệ vùng vừa NM/PM (+-0.64 <-> +-4838 PWM) */
+#define FUZZY_DEFUZZ_SMALL_RATIO    0.28f       /* Tỉ lệ mức nhỏ NS/PS (+-0.28) */
+#define FUZZY_DEFUZZ_MEDIUM_RATIO   0.64f       /* Tỉ lệ mức vừa NM/PM (+-0.64) */
 
 #define FUZZY_DEFUZZ_OUT_NB        (FUZZY_DEFUZZ_RANGE_MIN)                              /* -1.00f */
 #define FUZZY_DEFUZZ_OUT_NM        (FUZZY_DEFUZZ_RANGE_MIN * FUZZY_DEFUZZ_MEDIUM_RATIO)  /* -0.64f */
@@ -67,18 +61,15 @@
 #define FUZZY_DEFUZZ_OUT_PB        (FUZZY_DEFUZZ_RANGE_MAX)                              /* +1.00f */
 
 /* ============================================================================
- * 4. CẤU HÌNH #DEFINE KHÂU KHUẾCH ĐẠI HẬU XỬ LÝ (VÒNG TRONG CASCADE: 90% OUTPWM)
- *  - Trong kiến trúc Vòng Lồng (Cascaded Control), Vòng trong (OutFuzzy) trực tiếp
- *    chịu trách nhiệm cân bằng và tạo lực đẩy tiến/lùi với 90% công suất (7560 PWM),
- *    10% còn lại (840 PWM) dành cho Vòng Góc Yaw.
+ * 4. CẤU HÌNH #DEFINE MẶC ĐỊNH CHO KHÂU HẬU XỬ LÝ (POST-PROCESSING DEFAULTS)
  * ============================================================================ */
-#define FUZZY_POST_KU            7560.0f        /* 90% của 8400: khuếch đại [-1.0 .. +1.0] ra [-7560 .. +7560] */
-#define FUZZY_POST_OUT_MIN      -7560.0f        /* Ngưỡng bão hòa dưới của OutFuzzy (90% PWM) */
-#define FUZZY_POST_OUT_MAX       7560.0f        /* Ngưỡng bão hòa trên của OutFuzzy (90% PWM) */
+#define FUZZY_POST_KU            7560.0f        /* Hệ số khuếch đại đầu ra hậu xử lý mặc định */
+#define FUZZY_POST_OUT_MIN      -7560.0f        /* Ngưỡng bão hòa dưới mặc định */
+#define FUZZY_POST_OUT_MAX       7560.0f        /* Ngưỡng bão hòa trên mặc định */
 #define FUZZY_POST_EMA_ALPHA        0.78f       /* Hệ số lọc thông thấp EMA hậu xử lý */
-#define FUZZY_POST_MAX_DELTA     1200.0f        /* Giới hạn bước nhảy đầu ra tối đa mỗi chu kỳ 5ms (thang 8400) */
+#define FUZZY_POST_MAX_DELTA     1200.0f        /* Giới hạn bước nhảy đầu ra tối đa mỗi chu kỳ */
 
-/* Số lượng tập mờ ngôn ngữ đầu vào (5 tập: NB, NS, ZE, PS, PB) & đầu ra (7 tập: NB, NM, NS, ZE, PS, PM, PB) */
+/* Số lượng tập mờ đầu vào (5 tập: NB, NS, ZE, PS, PB) & đầu ra (7 tập: NB, NM, NS, ZE, PS, PM, PB) */
 #define FUZZY_NUM_STATES             5u
 #define FUZZY_NUM_OUT_STATES         7u
 
@@ -102,7 +93,7 @@ typedef enum {
     PB = 6
 } FuzzyState_t;
 
-/* Cấu trúc lưu trữ tham số và trạng thái của bộ điều khiển Fuzzy */
+/* Cấu trúc dữ liệu tổng quát của bộ điều khiển Fuzzy (Dùng chung cho cả FuzzyPD và FuzzyPI) */
 typedef struct {
     /* 1. Tham số Khâu Tiền Xử Lý (Pre-processing) */
     float ke;
@@ -117,15 +108,15 @@ typedef struct {
     /* 2. Tham số Khâu Mờ Hóa (Fuzzification Membership Limits) */
     float e_limit_nb_ns;
     float e_limit_ns_ze;
-    float e_ze_flat_min;    /* Cạnh phẳng trái hình thang ZE của e_norm (-0.002) */
-    float e_ze_flat_max;    /* Cạnh phẳng phải hình thang ZE của e_norm (+0.002) */
+    float e_ze_flat_min;
+    float e_ze_flat_max;
     float e_limit_ze_ps;
     float e_limit_ps_pb;
 
     float de_limit_nb_ns;
     float de_limit_ns_ze;
-    float de_ze_flat_min;   /* Cạnh phẳng trái hình thang ZE của de_norm (-0.002) */
-    float de_ze_flat_max;   /* Cạnh phẳng phải hình thang ZE của de_norm (+0.002) */
+    float de_ze_flat_min;
+    float de_ze_flat_max;
     float de_limit_ze_ps;
     float de_limit_ps_pb;
 
@@ -140,13 +131,16 @@ typedef struct {
     float out_pm;
     float out_pb;
 
-    /* 4. Tham số Khâu Hậu Xử Lý (Post-processing) */
-    float ku;
-    float post_out_min;
-    float post_out_max;
-    float post_ema_alpha;
-    float post_max_delta;
-    float post_prev_output;
+    /* 4. Tham số Khâu Hậu Xử Lý (Post-processing & Trạng thái tích phân cho FuzzyPI) */
+    float   ku;
+    float   post_out_min;
+    float   post_out_max;
+    float   post_ema_alpha;
+    float   post_max_delta;
+    float   post_prev_output;
+    float   pi_prev_error;
+    float   pi_integral_output;
+    uint8_t pi_is_first_sample;
 
     /* 5. Mảng trạng thái mờ phục vụ tính toán 5 khâu */
     float mu_e[FUZZY_NUM_STATES];
@@ -155,9 +149,10 @@ typedef struct {
 } FuzzyController_t;
 
 /* ============================================================================
- * CÁC HÀM TÍNH TOÁN CƠ SỞ & 5 KHÂU CỦA THUẬT TOÁN FUZZY
+ * CÁC HÀM KHỞI TẠO, HÀM LIÊN THUỘC CƠ SỞ & 5 KHÂU TỔNG QUÁT CỦA FUZZY
  * ============================================================================ */
 void  Fuzzy_Init(FuzzyController_t *fc);
+void  Fuzzy_SetParams(FuzzyController_t *fc, float ke, float kde, float ku, float outMin, float outMax);
 void  Fuzzy_Reset(FuzzyController_t *fc);
 
 /* Nhóm hàm tính toán Hàm Liên Thuộc (Membership Function Primitives) */
@@ -166,12 +161,15 @@ float Fuzzy_MF_TrapezoidLeft(float x, float a, float b);
 float Fuzzy_MF_TrapezoidRight(float x, float a, float b);
 float Fuzzy_MF_Trapezoid(float x, float a, float b, float c, float d);
 
-/* 5 khâu xử lý chuẩn của bộ điều khiển Fuzzy */
+/* 5 khâu xử lý tổng quát của bộ điều khiển Fuzzy */
 void  Fuzzy_PreProcess(FuzzyController_t *fc, float setpoint, float currentVal, float dCurrentVal, float *out_eNorm, float *out_deNorm);
 void  Fuzzy_Fuzzify(FuzzyController_t *fc, float eNorm, float deNorm, float mu_e[FUZZY_NUM_STATES], float mu_de[FUZZY_NUM_STATES]);
 void  Fuzzy_Inference(const float mu_e[FUZZY_NUM_STATES], const float mu_de[FUZZY_NUM_STATES], float ruleWeights[FUZZY_NUM_STATES][FUZZY_NUM_STATES]);
 float Fuzzy_Defuzzify(FuzzyController_t *fc, const float ruleWeights[FUZZY_NUM_STATES][FUZZY_NUM_STATES]);
 float Fuzzy_PostProcess(FuzzyController_t *fc, float defuzzOutput);
-float Fuzzy_Compute(FuzzyController_t *fc, float setpoint, float currentVal, float dCurrentVal);
+
+/* 2 hàm thực thi bộ điều khiển Fuzzy PD và Fuzzy PI */
+float FuzzyPD_Compute(FuzzyController_t *fc, float setpoint, float currentVal, float dCurrentVal);
+float FuzzyPI_Compute(FuzzyController_t *fc, float setpoint, float currentVal, float dt);
 
 #endif /* __FUZZY_H */

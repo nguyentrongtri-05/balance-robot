@@ -597,9 +597,9 @@ static void vTaskControl(void *pvParameters)
                 s_cascadeTiltFiltered = 0.85f * s_cascadeTiltFiltered + 0.15f * deltaAngle;
                 targetAngle = g_targetAngle - s_cascadeTiltFiltered;
 
-                /* 3. Vòng Trong (Fuzzy 5 khâu -> 90% OutPWM = +-7560) */
+                /* 3. Vòng Trong (Fuzzy PD 5 khâu -> 90% OutPWM = +-7560) */
                 if (g_controlMode == CTRL_MODE_FUZZY) {
-                    pwm_fuzzy = Fuzzy_Compute(&fuzzyControl, targetAngle, g_filteredPitch, kalmanPitch.rate);
+                    pwm_fuzzy = FuzzyPD_Compute(&fuzzyControl, targetAngle, g_filteredPitch, kalmanPitch.rate);
                 } else {
                     s_gyroRateFiltered = 0.80f * s_gyroRateFiltered + 0.20f * kalmanPitch.rate;
                     pwm_fuzzy = g_Kp_balance * (g_filteredPitch - targetAngle) + g_Kd_balance * s_gyroRateFiltered;
