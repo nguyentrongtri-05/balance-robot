@@ -63,10 +63,8 @@ typedef struct {
     float out_pm;
     float out_pb;
 
-    /* 4. Tham số Khâu Hậu Xử Lý (Post-processing Ku) */
+    /* 4. Tham số Khâu Hậu Xử Lý (Post-processing: nhân hệ số khuếch đại Ku) */
     float ku;
-    float post_out_min;
-    float post_out_max;
 
     /* Giá trị e, de sau chuẩn hóa và bão hòa [-1..+1] của lần tính gần nhất (phục vụ debug / telemetry) */
     float e_norm;
@@ -82,7 +80,7 @@ typedef struct {
  * CÁC HÀM KHỞI TẠO, HÀM LIÊN THUỘC CƠ SỞ & CÁC KHÂU CỦA BỘ ĐIỀU KHIỂN FUZZY PD
  * ============================================================================ */
 void  Fuzzy_Init(FuzzyController_t *fc,
-                 float ke, float kde, float ku, float outMin, float outMax,
+                 float ke, float kde, float ku,
                  float e_nb, float e_ns, float e_ze,
                  float de_nb, float de_ns, float de_ze,
                  float out_small, float out_med);

@@ -39,7 +39,7 @@ void Fuzzy_Reset(FuzzyController_t *fc) {
 }
 
 void Fuzzy_Init(FuzzyController_t *fc,
-                float ke, float kde, float ku, float outMin, float outMax,
+                float ke, float kde, float ku,
                 float e_nb, float e_ns, float e_ze,
                 float de_nb, float de_ns, float de_ze,
                 float out_small, float out_med) {
@@ -89,10 +89,8 @@ void Fuzzy_Init(FuzzyController_t *fc,
     fc->out_pm            =  out_m_val;
     fc->out_pb            =  1.00f;
 
-    /* 4. Tham số Khâu Hậu Xử Lý (nhập trực tiếp từ hàm Init) */
+    /* 4. Tham số Khâu Hậu Xử Lý (nhân hệ số khuếch đại Ku) */
     fc->ku                = ku;
-    fc->post_out_min      = outMin;
-    fc->post_out_max      = outMax;
 
     Fuzzy_Reset(fc);
 }
@@ -238,12 +236,12 @@ float Fuzzy_Defuzzify(FuzzyController_t *fc, float ruleWeights[FUZZY_NUM_STATES]
 /* ============================================================================
  * KHÂU 5: HẬU XỬ LÝ TỔNG QUÁT (POST-PROCESSING STAGE)
  *  - Khuếch đại tín hiệu giải mờ (đã bão hòa [-1.0 .. +1.0]) qua hệ số Ku
- *    và giới hạn trong dải vật lý [post_out_min, post_out_max]
+ *    -> Đầu ra tự động nằm trong [-Ku, +Ku]
  * ============================================================================ */
 float Fuzzy_PostProcess(FuzzyController_t *fc, float defuzzOutput) {
     if (!fc) return 0.0f;
 
-    return Fuzzy_Clamp(defuzzOutput * fc->ku, fc->post_out_min, fc->post_out_max);
+    return defuzzOutput * fc->ku;
 }
 
 /* ============================================================================
@@ -254,7 +252,7 @@ float Fuzzy_PostProcess(FuzzyController_t *fc, float defuzzOutput) {
  *  - Khâu 3: Suy diễn mờ (Fuzzy Inference 5x5)
  *  - Khâu 4: Giải mờ (Defuzzification)
  *  - Bão hòa trước Hậu xử lý: Kẹp u_defuzz vào đoạn [-1.0 .. +1.0] trước khi nhân Ku
- *  - Khâu 5: Hậu xử lý (Post-processing Ku)
+ *  - Khâu 5: Hậu xử lý (Post-processing: nhân hệ số khuếch đại Ku)
  * ============================================================================ */
 float FuzzyPD_Compute(FuzzyController_t *fc, float setpoint, float currentVal, float dCurrentVal) {
     if (!fc) return 0.0f;
