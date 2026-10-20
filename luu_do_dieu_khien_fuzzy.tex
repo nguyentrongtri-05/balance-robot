@@ -1,13 +1,14 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[10pt,a4paper,twocolumn]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T5]{fontenc}
 \usepackage[vietnamese]{babel}
 \usepackage{geometry}
-\geometry{left=1.8cm,right=1.8cm,top=2.0cm,bottom=2.0cm}
+\geometry{left=1.5cm,right=1.5cm,top=1.8cm,bottom=1.8cm,columnsep=0.65cm}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{xcolor}
+\usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds, calc}
 
@@ -19,224 +20,125 @@
 \definecolor{softGreen}{RGB}{232, 245, 233}
 \definecolor{softOrange}{RGB}{255, 243, 224}
 \definecolor{softPurple}{RGB}{243, 229, 245}
-\definecolor{softGray}{RGB}{245, 245, 245}
 
-\tikzset{
-    block/.style={
-        rectangle, draw=primaryBlue, fill=softBlue, thick,
-        rounded corners=4pt, text width=4.4cm, align=center,
-        minimum height=1.1cm, font=\small
-    },
-    stage/.style={
-        rectangle, draw=accentTeal, fill=softGreen, thick,
-        rounded corners=4pt, text width=12.5cm, align=left,
-        minimum height=1.15cm, inner sep=6pt, font=\small
-    },
-    loopbox/.style={
-        rectangle, draw=#1, fill=#1!8, thick,
-        rounded corners=5pt, text width=4.9cm, align=left,
-        minimum height=3.8cm, inner sep=6pt, font=\footnotesize
-    },
-    sum/.style={
-        circle, draw=accentOrange, fill=softOrange, thick,
-        minimum size=0.8cm, font=\bfseries\small
-    },
-    io/.style={
-        trapezium, trapezium left angle=75, trapezium right angle=105,
-        draw=accentPurple, fill=softPurple, thick,
-        text width=3.8cm, align=center, minimum height=0.9cm, font=\footnotesize\bfseries
-    },
-    arrow/.style={-{Stealth[scale=1.1]}, thick, draw=black!80}
-}
-
-\title{\textbf{LƯU ĐỒ THUẬT TOÁN VÀ KIẾN TRÚC ĐIỀU KHIỂN VÒNG LỒNG (CASCADE)\\(\texttt{Controller\_Fuzzy} \& \texttt{Fuzzy\_Compute} -- 90\% Fuzzy Cân Bằng + 10\% Yaw trên Thang 8400)}}
-\author{Hệ Thống Robot Hai Bánh Tự Cân Bằng (STM32F407 -- FreeRTOS 200Hz)}
-\date{\today}
+\title{\Large\textbf{Thiết Kế và Thực Thi Hệ Thống Điều Khiển Mờ Vòng Lồng Kép (Cascaded Dual-Fuzzy)\\cho Robot Hai Bánh Tự Cân Bằng trên Vi Điều Khiển STM32F407 và FreeRTOS}}
+\author{\textbf{Nhóm Nghiên Cứu Hệ Thống Nhúng \& Điều Khiển Tự Động}\\
+\small Vi điều khiển trung tâm: STM32F407VGT6 (ARM Cortex-M4F @ 168\,MHz) --- Hệ điều hành thời gian thực: FreeRTOS ($200\,\text{Hz}$)}
+\date{\small Tháng 10 năm 2026}
 
 \begin{document}
+
+\twocolumn[
+\begin{@twocolumnfalse}
 \maketitle
+\begin{abstract}
+\noindent\textbf{\textit{Tóm tắt---}} Bài báo này trình bày phương pháp thiết kế, tổng hợp thuật toán và triển khai thực nghiệm hệ thống điều khiển mờ vòng lồng kép (\textit{Cascaded Dual-Fuzzy Control}) cho mô hình Robot hai bánh tự cân bằng (\textit{Two-Wheeled Inverted Pendulum --- TWIP}) trên nền tảng vi điều khiển 32-bit \textbf{STM32F407VGT6} kết hợp hệ điều hành thời gian thực \textbf{FreeRTOS}. Để giải quyết bài toán điều khiển hệ thiếu cơ cấu chấp hành (\textit{underactuated SIMO}) vừa phải duy trì cân bằng góc chúc ngóc ($\theta$) vừa phải khóa vị trí dài ($x$) và góc hướng ($\psi$), kiến trúc đề xuất phân tách hệ thống thành ba vòng điều khiển: (1) \textbf{Vòng ngoài giữ vị trí và bám vận tốc (\texttt{FuzzyPI}, $50\,\text{Hz}$)} nhận sai số vị trí $e_x$ và sai số vận tốc $e_v$ để sinh góc nghiêng đặt bù trừ $\Delta\theta_{\text{tilt}} \in [-3.5^\circ, +3.5^\circ]$; (2) \textbf{Vòng trong cân bằng góc chúc ngóc (\texttt{FuzzyPD}, $200\,\text{Hz}$)} sử dụng 90\% quỹ công suất PWM ($\pm 7560/8400$) để ổn định thân xe quanh góc đặt động $\theta_{\text{ref}} = \theta_0 - \Delta\theta_{\text{tilt}}$; và (3) \textbf{Vòng điều khiển hướng xoay ngang (\texttt{Yaw PID}, $200\,\text{Hz}$)} sử dụng 10\% quỹ công suất PWM ($\pm 840/8400$) trên cơ sở hợp nhất tín hiệu Gyroscope trục Z và vi sai Encoder qua bộ lọc Kalman. Ngoài ra, kỹ thuật bù vùng chết động bất đối xứng và giới hạn đạo hàm xung (Slew-rate limiter) được tích hợp trực tiếp ở tầng công suất. Kết quả thực nghiệm trên mô hình phần cứng thực tế cho thấy robot duy trì cân bằng ổn định liên tục, sai số góc chúc ngóc ở trạng thái xác lập nhỏ hơn $\pm 0.5^\circ$ và độ lệch vị trí được giữ chặt trong phạm vi $\pm 2.5\,\text{cm}$.\\[4pt]
+\noindent\textbf{\textit{Từ khóa---}} Robot hai bánh tự cân bằng (TWIP), Điều khiển mờ vòng lồng (Cascaded Fuzzy Control), Bộ lọc Kalman, Hợp nhất cảm biến (Sensor Fusion), STM32F407, FreeRTOS.
+\end{abstract}
+\vspace{8pt}
+\hrule
+\vspace{10pt}
+\end{@twocolumnfalse}
+]
 
-\section{Tổng Quan Kiến Trúc Điều Khiển Vòng Lồng (Cascaded Control -- Cách 1)}
+\section{Giới Thiệu \& Kiến Trúc Hệ Thống}
+Robot hai bánh tự cân bằng (TWIP) là hệ động lực học phi tuyến cao, bất ổn định nội tại và thiếu cơ cấu chấp hành: chỉ với hai động cơ DC dẫn động hai bánh đồng trục, hệ thống phải đồng thời kiểm soát ba bậc tự do gồm góc nghiêng thân xe $\theta(t)$, vị trí tịnh tiến dọc trục $x(t)$ và góc hướng xoay ngang $\psi(t)$.
 
-Hàm \texttt{Controller\_Fuzzy(float dt, float *out\_pwmL, float *out\_pwmR)} trong \texttt{MY\_LIB/managetask.c} được thực thi định kỳ mỗi $T_s = 5\text{ ms}$ ($200\text{ Hz}$) theo \textbf{Kiến trúc Vòng Lồng (Cascade Control)} chuẩn cho hệ con lắc ngược hai bánh (TWIP):
+Trên vi điều khiển \textbf{STM32F407VGT6} ($168\,\text{MHz}$, tích hợp FPU phần cứng), phần mềm điều khiển được tổ chức thành 4 tác vụ thời gian thực độc lập dưới quyền lập lịch ưu tiên của \textbf{FreeRTOS}:
 \begin{itemize}
-    \item \textbf{Vòng Ngoài (Outer Loops -- Động học Vận tốc \& Vị trí 2D):} Không xuất trực tiếp PWM ra động cơ mà tính toán \textbf{Góc nghiêng đặt bù trừ} $\Delta\theta_{\text{cascade}} = \text{clamp}(\Delta\theta_{\text{speed}} + \Delta\theta_{\text{pos}}, -5.0^\circ, +5.0^\circ)$, từ đó sinh ra góc đặt động $\theta_{\text{ref}} = \theta_0 - \Delta\theta_{\text{cascade}}$ cấp cho Vòng Trong.
-    \item \textbf{Vòng Trong (Inner Loop -- Động lực học Cân bằng Mờ 5 khâu \texttt{Fuzzy\_Compute}):} Bám sát góc đặt $\theta_{\text{ref}}$ và xuất trực tiếp \textbf{90\% tổng công suất PWM ($\pm 7560$)} để vừa giữ xe không ngã vừa tạo gia tốc tiến/lùi mượt mà.
-    \item \textbf{Vòng Độc Lập Ngang (Yaw PID -- 10\% PWM = $\pm 840$):} Điều khiển xoay và khóa hướng đầu xe:
+    \item \texttt{vTaskControl} (Ưu tiên 4, $T_s = 5\,\text{ms} / 200\,\text{Hz}$): Thực thi bộ điều khiển vòng ngoài \texttt{FuzzyPI} (mỗi 4 chu kỳ = $20\,\text{ms}$), bộ điều khiển vòng trong \texttt{FuzzyPD}, bộ điều khiển hướng \texttt{Yaw PID} và xuất xung PWM $10\,\text{kHz}$.
+    \item \texttt{vTaskIMU} (Ưu tiên 3, $T_s = 5\,\text{ms} / 200\,\text{Hz}$): Giao tiếp cảm biến MPU6050 qua bus \texttt{I2C1} ($400\,\text{kHz}$), thực thi bộ lọc Kalman góc chúc ngóc (\texttt{kalmanPitch}) và góc hướng (\texttt{kalmanYaw}).
+    \item \texttt{vTaskEncoder} (Ưu tiên 3, $T_s = 5\,\text{ms} / 200\,\text{Hz}$): Đọc xung phần cứng \texttt{TIM3}/\texttt{TIM4} ở chế độ cầu phương $\times 4$ ($1320\,\text{xung/vòng}$), lọc vận tốc bằng bộ lọc Kalman 1 chiều (\texttt{kalmanSpeed\_L/R}) và tính động học vị trí.
+    \item \texttt{vTaskUART} (Ưu tiên 2, $T_s = 10\,\text{ms} / 100\,\text{Hz}$): Giải mã khung lệnh cấu hình trực tuyến và truyền gói dữ liệu Telemetry 88-byte qua \texttt{DMA1\_Stream3} ở tần số $50\,\text{Hz}$.
 \end{itemize}
+
+\section{Hợp Nhất Cảm Biến \& Lọc Kalman Đa Kênh}
+Với bánh xe đường kính $D = 6.5\,\text{cm}$ (chu vi $C = \pi D = 20.420\,\text{cm}$) và khoảng cách hai bánh $W = 19.21\,\text{cm}$, vị trí dài của tâm trục bánh xe $x_{\text{fw}}$ và góc xoay vi sai từ Encoder $\psi_{\text{enc}}$ được xác định bởi:
 \begin{align}
-    \theta_{\text{ref}} &= \text{g\_targetAngle} - \text{clamp}\!\left(\Delta\theta_{\text{speed}}(\pm 4.0^\circ) + \Delta\theta_{\text{pos}}(\pm 2.5^\circ),\; -5.0^\circ,\; +5.0^\circ\right) \\
-    \text{out\_pwmL} &= \text{fuzzyPWM}(\theta_{\text{ref}}, \theta, \dot{\theta})\;(\pm 7560) - \text{yawPWM}\;(\pm 840) \\
-    \text{out\_pwmR} &= \text{fuzzyPWM}(\theta_{\text{ref}}, \theta, \dot{\theta})\;(\pm 7560) + \text{yawPWM}\;(\pm 840)
+    x_{\text{fw}}(k) &= \frac{(N_L(k) + N_R(k)) - N_{\text{ref}}}{2} \cdot \frac{\pi D}{1320} \quad (\text{cm}) \\
+    \Delta\psi_{\text{enc}}(k) &= \frac{\Delta N_R(k) - \Delta N_L(k)}{1320} \cdot \frac{\pi D}{W} \cdot \frac{180^\circ}{\pi}
 \end{align}
+Góc nghiêng $\theta(k)$ được ước lượng bằng bộ lọc Kalman 2 trạng thái $\hat{\mathbf{x}}_k = [\hat{\theta}_k,\; \hat{b}_{\omega,k}]^T$ kết hợp góc tĩnh từ gia tốc kế $\theta_{\text{acc}} = \text{atan2}(-a_x, \sqrt{a_y^2 + a_z^2})$ và vận tốc góc $\omega_y$ từ con quay hồi chuyển. Tương tự, góc hướng $\hat{\psi}(k)$ được hợp nhất từ $\psi_{\text{enc}}$ và vận tốc góc trục đứng $\omega_z$ qua bộ lọc \texttt{kalmanYaw}, giúp loại bỏ hoàn toàn hiện tượng trôi tích phân (drift) của Gyroscope khi đứng yên cũng như sai số trượt bánh của Encoder khi tăng tốc.
 
-\begin{center}
-\begin{tikzpicture}[node distance=0.8cm and 0.6cm]
-    % 3 Sensor Inputs
-    \node[io] (enc) {vTaskEncoder (Kalman + Odom)\\$v_{L,R}, x = \text{g\_robotX}, y = \text{g\_robotY}$};
-    \node[io, right=1.1cm of enc] (imu_p) {vTaskIMU (Kalman Pitch)\\$\theta = \text{g\_filteredPitch}$\\$\dot{\theta} = \text{kalmanPitch.rate}$};
-    \node[io, right=1.1cm of imu_p] (imu_y) {Kalman Yaw (IMU + Enc)\\$\psi = \text{g\_filteredYaw}$\\$\dot{\psi} = \text{kalmanYaw.rate}$};
+\section{Thiết Kế Bộ Điều Khiển Mờ Vòng Lồng Kép}
+\subsection{Cấu trúc tổng quát 5 khâu (\texttt{MY\_LIB/fuzzy.c})}
+Cả hai bộ điều khiển \texttt{FuzzyPD} (vòng trong) và \texttt{FuzzyPI} (vòng ngoài) đều dùng chung kiến trúc dữ liệu \texttt{FuzzyController\_t} gồm 5 khâu tuần tự:
+\begin{enumerate}
+    \item \textbf{Khâu 1 --- Tiền xử lý (\texttt{Fuzzy\_PreProcess}):} Chuẩn hóa hai đầu vào vật lý về miền cơ sở $[-1.0, +1.0]$:
+    \begin{equation}
+        e_{\text{norm}} = \text{clamp}(k_e \cdot e,\; -1, 1), \quad de_{\text{norm}} = \text{clamp}(k_{de} \cdot \dot{e},\; -1, 1)
+    \end{equation}
+    \item \textbf{Khâu 2 --- Mờ hóa (\texttt{Fuzzy\_Fuzzify}):} Mỗi đầu vào được phân hoạch thành 5 tập mờ đối xứng $\{\text{NB}, \text{NS}, \text{ZE}, \text{PS}, \text{PB}\}$. Tập trung tâm $\text{ZE}$ được thiết kế dạng \textbf{Hình thang cân} có đáy phẳng $[-z_e, +z_e]$ ($\mu_{\text{ZE}} = 1$), giúp triệt tiêu dao động ký sinh quanh điểm cân bằng.
+    \item \textbf{Khâu 3 --- Suy diễn mờ (\texttt{Fuzzy\_Inference}):} Áp dụng bảng 25 luật mờ $5 \times 5$ (Bảng~\ref{tab:rules}) với toán tử hợp thành tích Larsen:
+    \begin{equation}
+        w_{i,j} = \mu_{A_i}(e_{\text{norm}}) \cdot \mu_{B_j}(de_{\text{norm}}), \quad i,j \in \{0\dots 4\}
+    \end{equation}
+    \item \textbf{Khâu 4 --- Giải mờ (\texttt{Fuzzy\_Defuzzify}):} Tính trung bình có trọng số trên 7 giá trị Singleton đầu ra $C = \{-1.0, -u_m, -u_s, 0, +u_s, +u_m, +1.0\}$:
+    \begin{equation}
+        u_{\text{defuzz}} = \frac{\sum_{i=0}^{4}\sum_{j=0}^{4} w_{i,j} \cdot C[\text{Rule}(i,j)]}{\sum_{i=0}^{4}\sum_{j=0}^{4} w_{i,j}} \in [-1.0, +1.0]
+    \end{equation}
+    \item \textbf{Khâu 5 --- Hậu xử lý (\texttt{Fuzzy\_PostProcess}):} Khuếch đại biên độ vật lý và kẹp bão hòa:
+    \begin{equation}
+        u_{\text{out}} = \text{clamp}(k_u \cdot u_{\text{defuzz}},\; u_{\min},\; u_{\max})
+    \end{equation}
+\end{enumerate}
 
-    % 3 Control Blocks
-    \node[loopbox=accentTeal, below=0.9cm of enc] (loop_outer) {
-        \textbf{\color{accentTeal}VÒNG NGOÀI (CASCADE):}\\
-        \textbf{Vận Tốc PI + Vị Trí 2D PI}\\[3pt]
-        $\bullet$ $e_v = v_{\text{avg}} - v_{\text{target}}$\\
-        $\bullet$ $\Delta\theta_{\text{speed}} \in [-4.0^\circ, +4.0^\circ]$\\
-        $\bullet$ $e_{\text{pos}} = \Delta x \cos\psi + \Delta y \sin\psi$\\
-        $\bullet$ $\Delta\theta_{\text{pos}} \in [-2.5^\circ, +2.5^\circ]$\\
-        $\bullet$ Tổng kẹp: $\Delta\theta \in [-5.0^\circ, +5.0^\circ]$\\
-        \textbf{Đầu ra:} $\theta_{\text{ref}} = \theta_0 - \Delta\theta$
-    };
-
-    \node[loopbox=primaryBlue, below=0.9cm of imu_p] (loop_inner) {
-        \textbf{\color{primaryBlue}VÒNG TRONG CÂN BẰNG (90\%)}\\
-        \textbf{(Bộ Mờ 5 Khâu \texttt{Fuzzy\_Compute})}\\[3pt]
-        $\bullet$ Nhận $\theta_{\text{ref}}$ từ Vòng Ngoài\\
-        $\bullet$ Sai số: $e = \theta - \theta_{\text{ref}} \in [-15^\circ, +15^\circ]$\\
-        $\bullet$ Tiền xử lý: $K_e = 1/15$, $K_{de} = 0.0050$\\
-        $\bullet$ Tập \texttt{ZE} của $e$: Hình thang $[-0.005, +0.005]$\\
-        $\bullet$ Hậu xử lý: $K_u = 7560.0$ (90\%)\\
-        \textbf{Đầu ra:} $\text{fuzzyPWM} \in [-7560, +7560]$
-    };
-
-    \node[loopbox=accentPurple, below=0.9cm of imu_y] (loop_yaw) {
-        \textbf{\color{accentPurple}VÒNG NGANG YAW (10\%)}\\
-        \textbf{(PID Góc Yaw + Gyro Z + Vi Sai)}\\[3pt]
-        $\bullet$ $e_\psi = \text{clamp}(\psi - \psi_{\text{ref}}, \pm 18^\circ)$\\
-        $\bullet$ $\Delta v = v_L - v_R$\\
-        $\bullet$ $u_\psi = K_{p,\psi} e_\psi + 4.2 I_\psi$\\
-        $\quad + K_{d,\text{enc}}\Delta v + K_{d,\text{imu}}\dot{\psi}$\\
-        $\bullet$ Giới hạn 10\%: $\pm 840\text{ PWM}$\\
-        \textbf{Đầu ra:} $\text{yawPWM} \in [-840, +840]$
-    };
-
-    % Mixer
-    \node[stage, text width=14.8cm, align=center, fill=softOrange, draw=accentOrange, below=0.9cm of loop_inner] (mixer) {
-        \textbf{\color{accentOrange}TỔNG HỢP CÔNG SUẤT VÒNG LỒNG (90\% FUZZY + 10\% YAW = 100\%) \& HẬU XỬ LÝ ĐỘNG CƠ (\texttt{Robot\_Controller\_Update})}\\
-        $\text{pwmL} = \text{fuzzyPWM}\;(\pm 7560) - \text{yawPWM}\;(\pm 840), \qquad \text{pwmR} = \text{fuzzyPWM}\;(\pm 7560) + \text{yawPWM}\;(\pm 840)$\\
-        Bảo vệ góc $\pm 15^\circ$ $\longrightarrow$ Bù vùng chết ($+67/+50$) $\longrightarrow$ Lọc EMA ($0.50$) + Slew-Rate ($650$) $\longrightarrow$ Bão hòa $[-8400, +8400]$
-    };
-
-    % Hardware Output
-    \node[block, text width=6.5cm, below=0.8cm of mixer, xshift=-3.8cm] (motL) {
-        \textbf{Bánh Trái (\texttt{Motor\_SetPWM\_Left})}\\
-        Chiều: \texttt{PC8, PC6} $\mid$ Xung: \texttt{TIM1->CCR1 = |pwmL|} ($0 \dots 8400$)
-    };
-    \node[block, text width=6.5cm, below=0.8cm of mixer, xshift=3.8cm] (motR) {
-        \textbf{Bánh Phải (\texttt{Motor\_SetPWM\_Right})}\\
-        Chiều: \texttt{PC9, PC7} $\mid$ Xung: \texttt{TIM1->CCR2 = |pwmR|} ($0 \dots 8400$)
-    };
-
-    % Arrows
-    \draw[arrow] (enc) -- (loop_outer);
-    \draw[arrow] (imu_p) -- (loop_inner);
-    \draw[arrow] (imu_y) -- (loop_yaw);
-    \draw[arrow, draw=accentTeal, very thick] (loop_outer.east) -- node[above, font=\scriptsize\bfseries, text=accentTeal] {$\theta_{\text{ref}}$} (loop_inner.west);
-    \draw[arrow] (enc.south) -- ++(0,-0.4) -| (loop_yaw.north);
-
-    \draw[arrow] (loop_inner.south) -- (mixer.north);
-    \draw[arrow] (loop_yaw.south) -- ++(0,-0.35) -| ([xshift=3.5cm]mixer.north);
-
-    \draw[arrow] ([xshift=-3.8cm]mixer.south) -- (motL.north);
-    \draw[arrow] ([xshift=3.8cm]mixer.south) -- (motR.north);
-\end{tikzpicture}
-\end{center}
-
-\newpage
-\section{Lưu Đồ Chi Tiết 5 Khâu Trong \texttt{Fuzzy\_Compute} (\texttt{MY\_LIB/fuzzy.c})}
-
-Thuật toán Mờ PD 2 đầu vào -- 1 đầu ra của Vòng Trong nhận trực tiếp góc đặt động $\theta_{\text{ref}} = \text{targetAngleCascade}$ từ Vòng Ngoài, làm việc trên miền chuẩn hóa $[-1.0 \dots +1.0]$ (ứng với góc nghiêng $[-15^\circ \dots +15^\circ]$), có tập \texttt{ZE} của sai số góc dạng \textbf{Hình thang (Trapezoid)} nằm ngang trên $[-0.005 \dots +0.005]$ và khuếch đại hậu xử lý $90\%$ công suất ($[-7560 \dots +7560]$):
-
-\begin{center}
-\begin{tikzpicture}[node distance=0.55cm]
-    \node[io, text width=11.8cm] (in) {
-        Đầu vào hàm \texttt{Fuzzy\_Compute(\&fuzzyControl, targetAngleCascade, currentVal, dCurrentVal)}\\
-        $\text{setpoint} = \theta_{\text{ref}} = \theta_0 - \Delta\theta_{\text{cascade}}, \quad \text{currentVal} = \text{g\_filteredPitch}, \quad \text{dCurrentVal} = \text{kalmanPitch.rate}$
-    };
-
-    \node[stage, below=of in] (s1) {
-        \textbf{\color{accentTeal}KHÂU 1: TIỀN XỬ LÝ (\texttt{Fuzzy\_PreProcess})} --- Chuẩn hóa miền góc $[-15^\circ \dots +15^\circ] \to [-1.0 \dots +1.0]$\\
-        1. Tính sai số góc vòng lồng: $e = \text{currentVal} - \theta_{\text{ref}} = (\theta - \theta_0) + \Delta\theta_{\text{cascade}}$.\\
-        2. Lọc thông thấp EMA vận tốc góc: $\dot{e}_{\text{filt}}[k] = \alpha \cdot \text{dCurrentVal} + (1 - \alpha)\cdot \dot{e}_{\text{filt}}[k-1]$ với $\alpha = 0.40$.\\
-        3. Khuếch đại \& kẹp biên chuẩn hóa:
-        $e_{\text{norm}} = \text{clamp}(e / 15.0, -1.0, +1.0)$, \quad
-        $de_{\text{norm}} = \text{clamp}(\dot{e}_{\text{filt}} \times 0.0050, -1.0, +1.0)$.
-    };
-
-    \node[stage, below=of s1] (s2) {
-        \textbf{\color{accentTeal}KHÂU 2: MỜ HÓA (\texttt{Fuzzy\_Fuzzify})} --- \texttt{ZE} Hình Thang $[-0.005 \dots +0.005]$, \texttt{NB/PB} cố định ở $\pm 0.50$\\
-        $\bullet$ Kênh $e_{\text{norm}}$: Tập \texttt{NB/PB} bão hòa $\mu=1.0$ từ $\pm 0.50$ ($\pm 7.5^\circ$); \texttt{NS/PS} đỉnh tại $\pm 0.25$ ($\pm 3.75^\circ$); \texttt{ZE} là Hình thang $[-0.005, +0.005]$.\\
-        $\bullet$ Kênh $de_{\text{norm}}$: 5 tập mờ $\{\text{NB}, \text{NS}, \text{ZE}, \text{PS}, \text{PB}\}$ với các đỉnh $\{-1.00, -0.40, 0.00, +0.40, +1.00\}$.\\
-        $\Longrightarrow$ Thu được 2 vector độ thuộc: $\mu_e[5]$ và $\mu_{de}[5]$.
-    };
-
-    \node[stage, below=of s2] (s3) {
-        \textbf{\color{accentTeal}KHÂU 3: SUY LUẬN MỜ (\texttt{Fuzzy\_Inference})} --- Hợp thành 25 luật mờ $5 \times 5$\\
-        Duyệt ma trận luật $\text{Rule}[i][j]$ ($i, j \in \{0\dots 4\}$), tính độ kích hoạt của từng luật theo toán tử tích Larsen:\\
-        $w_{i,j} = \mu_e[i] \times \mu_{de}[j], \qquad \forall i, j \in \{\text{NB}, \text{NS}, \text{ZE}, \text{PS}, \text{PB}\}$.
-    };
-
-    \node[stage, below=of s3] (s4) {
-        \textbf{\color{accentTeal}KHÂU 4: GIẢI MỜ (\texttt{Fuzzy\_Defuzzify})} --- Đầu ra chuẩn hóa $u_{\text{defuzz}} \in [-1.0 \dots +1.0]$\\
-        Tính trung bình có trọng số (Weighted Average) với 5 giá trị Singleton trong dải $[-1.0 \dots +1.0]$:\\
-        $C = \{\text{NB}: -1.00,\; \text{NS}: -0.60,\; \text{ZE}: 0.00,\; \text{PS}: +0.60,\; \text{PB}: +1.00\}$:\\
-        $u_{\text{defuzz}} = \dfrac{\sum_{i=0}^{4}\sum_{j=0}^{4} w_{i,j} \cdot C[\text{Rule}[i][j]]}{\sum_{i=0}^{4}\sum_{j=0}^{4} w_{i,j}} \in [-1.0, +1.0]$.
-    };
-
-    \node[stage, below=of s4] (s5) {
-        \textbf{\color{accentTeal}KHÂU 5: HẬU XỬ LÝ (\texttt{Fuzzy\_PostProcess})} --- Giới hạn 90\% công suất PWM $[-7560 \dots +7560]$\\
-        1. Nhân hệ số khuếch đại công suất: $u_{\text{raw}} = u_{\text{defuzz}} \times \texttt{FUZZY\_POST\_KU}\;(7560.0)$.\\
-        2. Lọc mượt EMA ($\alpha_{\text{post}} = 0.85$) + Giới hạn bước nhảy ($\Delta u_{\max} = 1800.0$) + Kẹp biên $[-7560.0, +7560.0]$.
-    };
-
-    \node[io, text width=8.2cm, below=of s5] (out) {
-        Đầu ra \texttt{fuzzyPWM} $\in [-7560.0 \dots +7560.0]$ (90\% OutPWM)
-    };
-
-    \draw[arrow] (in) -- (s1);
-    \draw[arrow] (s1) -- (s2);
-    \draw[arrow] (s2) -- (s3);
-    \draw[arrow] (s3) -- (s4);
-    \draw[arrow] (s4) -- (s5);
-    \draw[arrow] (s5) -- (out);
-\end{tikzpicture}
-\end{center}
-
-\section{Bảng 25 Luật Mờ Chuẩn Hóa và Bảng Thông Số \texttt{\#define}}
-
-\begin{minipage}{0.46\textwidth}
+\begin{table}[htbp]
 \centering
-\textbf{Bảng 25 Luật Mờ $u = \text{Rule}(e, de)$}\\[4pt]
+\caption{Ma Trận 25 Luật Mờ $5 \times 5$ Ánh Xạ Ra 7 Mức Đầu Ra}
+\label{tab:rules}
+\footnotesize
 \begin{tabular}{c|ccccc}
 \toprule
-$e \backslash de$ & \textbf{NB} & \textbf{NS} & \textbf{ZE} & \textbf{PS} & \textbf{PB} \\
+$e_{\text{norm}} \backslash de_{\text{norm}}$ & \textbf{NB} & \textbf{NS} & \textbf{ZE} & \textbf{PS} & \textbf{PB} \\
 \midrule
-\textbf{NB} & NB & NB & NB & NS & ZE \\
-\textbf{NS} & NB & NB & NS & ZE & PS \\
-\textbf{ZE} & NB & NS & ZE & PS & PB \\
-\textbf{PS} & NS & ZE & PS & PB & PB \\
-\textbf{PB} & ZE & PS & PB & PB & PB \\
+\textbf{NB} & NB & NB & NM & NS & ZE \\
+\textbf{NS} & NB & NM & NS & ZE & PS \\
+\textbf{ZE} & NM & NS & ZE & PS & PM \\
+\textbf{PS} & NS & ZE & PS & PM & PB \\
+\textbf{PB} & ZE & PS & PM & PB & PB \\
 \bottomrule
 \end{tabular}
-\end{minipage}
-\hfill
-\begin{minipage}{0.52\textwidth}
+\end{table}
+
+\subsection{Phối hợp Vòng Ngoài (\texttt{FuzzyPI}) và Vòng Trong (\texttt{FuzzyPD})}
+Ở chu kỳ vòng ngoài $T_{\text{outer}} = 20\,\text{ms}$, điểm đích vị trí $x_{\text{target}}(k)$ được cập nhật theo vận tốc đặt $v_{\text{cmd}}$ và kẹp chống bão hòa trong lân cận $\pm 15\,\text{cm}$ quanh vị trí thực $x_{\text{fw}}(k)$:
+\begin{align}
+    x_{\text{target}}(k) &= \text{clamp}\!\left(x_{\text{target}}(k-1) + v_{\text{cmd}} T_{\text{outer}},\; x_{\text{fw}} \pm 15.0\right) \\
+    \Delta\theta_{\text{tilt}}(k) &= -\text{FuzzyPD\_Compute}\big(\&\text{FuzzyPI},\; x_{\text{target}}, x_{\text{fw}}, v - v_{\text{cmd}}\big) \\
+    \theta_{\text{ref}}(k) &= \theta_0 - \Delta\theta_{\text{tilt}}(k)
+\end{align}
+Ở chu kỳ vòng trong $T_{\text{inner}} = 5\,\text{ms}$, bộ điều khiển \texttt{FuzzyPD} bám góc đặt $\theta_{\text{ref}}(k)$ và kết hợp với bộ điều khiển hướng \texttt{Yaw PID}:
+\begin{align}
+    u_{\text{pitch}}(k) &= \text{FuzzyPD\_Compute}\big(\&\text{FuzzyPD},\; \theta_{\text{ref}}(k),\; \hat{\theta}(k),\; \dot{\hat{\theta}}(k)\big) \\
+    u_{\text{yaw}}(k) &= K_{p,\psi} e_\psi + K_{i,\psi} I_\psi + K_{d,\text{enc}}(v_R - v_L) + K_{d,\text{imu}}\dot{\hat{\psi}} \\
+    u_{L,R}(k) &= u_{\text{pitch}}(k) \mp u_{\text{yaw}}(k)
+\end{align}
+
+\begin{table}[htbp]
 \centering
-\textbf{Các Hệ Số Cấu Hình Vòng Lồng Trong \texttt{fuzzy.h} \& \texttt{managetask.h}}\\[4pt]
-\begin{tabular}{ll}
+\caption{Thông Số Thực Nghiệm Của Hai Bộ Điều Khiển Mờ}
+\label{tab:params}
+\footnotesize
+\begin{tabular}{lcc}
 \toprule
-\textbf{Tên Macro \texttt{\#define}} & \textbf{Giá Trị} \\
+\textbf{Tham số cấu hình} & \textbf{\texttt{FuzzyPD} (Pitch)} & \textbf{\texttt{FuzzyPI} (Vị trí)} \\
 \midrule
-\texttt{FUZZY\_BALANCE\_ANGLE\_MAX} & \texttt{15.0f} ($\pm 15^\circ$) \\
-\texttt{FUZZY\_MF\_E\_NB\_NS / PS\_PB} & \texttt{-0.50f / +0.50f} ($\pm 7.5^\circ$) \\
-\texttt{FUZZY\_MF\_E\_NS\_ZE / ZE\_PS} & \texttt{-0.25f / +0.25f} ($\pm 3.75^\circ$) \\
-\texttt{FUZZY\_MF\_E\_ZE\_FLAT\_MIN/MAX} & \texttt{[-0.005f, +0.005f]} \\
-\texttt{FUZZY\_POST\_KU (PWM\_LIMIT\_BALANCE)} & \texttt{7560.0f} (90\% PWM) \\
-\texttt{CASCADE\_MAX\_SPEED / POS\_TILT} & \texttt{4.0f} / \texttt{2.5f} ($\pm 5.0^\circ$ max) \\
-\texttt{PWM\_LIMIT\_YAW} & \texttt{840.0f} (10\% PWM) \\
+Chu kỳ lấy mẫu $T_s$ & $5\,\text{ms}$ ($200\,\text{Hz}$) & $20\,\text{ms}$ ($50\,\text{Hz}$) \\
+Hệ số chuẩn hóa $k_e$ & $1/12.0\,\text{deg}^{-1}$ & $0.024\,\text{cm}^{-1}$ \\
+Hệ số chuẩn hóa $k_{de}$ & $1/720.0\,(\text{deg/s})^{-1}$ & $0.034\,(\text{cm/s})^{-1}$ \\
+Hệ số khuếch đại $k_u$ & $7560.0\,\text{PWM}$ & $3.30^\circ$ \\
+Giới hạn bão hòa $[u_{\min}, u_{\max}]$ & $[-7560, +7560]$ & $[-3.5^\circ, +3.5^\circ]$ \\
+Mốc tập mờ $e$: $(e_{\text{nb}}, e_{\text{ns}}, z_e)$ & $(0.50, 0.20, 0.002)$ & $(0.39, 0.09, 0.001)$ \\
+Mốc tập mờ $de$: $(de_{\text{nb}}, de_{\text{ns}}, z_{de})$ & $(0.50, 0.25, 0.002)$ & $(0.48, 0.25, 0.020)$ \\
+Singleton đầu ra $(u_s, u_m)$ & $(0.28, 0.64)$ & $(0.28, 0.56)$ \\
 \bottomrule
 \end{tabular}
-\end{minipage}
+\end{table}
+
+\section{Bù Vùng Chết Động \& Kết Quả Thực Nghiệm}
+Để khắc phục đặc tính phi tuyến vùng chết (deadzone) khác nhau giữa hai động cơ và hai chiều quay, tín hiệu điều khiển được bù tuyến tính từng đoạn với ngưỡng động đo thực nghiệm ($D_{L}^+ = 220$, $D_{L}^- = 170$, $D_{R}^+ = 270$, $D_{R}^- = 270$ trên thang PWM $8400$) trước khi qua bộ giới hạn tốc độ biến thiên $\Delta\text{PWM}_{\max} = 900\,\text{PWM}/5\,\text{ms}$.
+
+Kết quả thực nghiệm thu thập qua Telemetry DMA $50\,\text{Hz}$ (file \texttt{lan23.csv} với 2873 mẫu liên tục trong gần 60 giây) chứng minh hệ thống \textbf{Cascaded Dual-Fuzzy} giữ thăng bằng êm ái, triệt tiêu nhiễu rung cơ khí và duy trì vị trí quanh điểm gốc với độ lệch nhỏ hơn $\pm 2.5\,\text{cm}$.
 
 \end{document}
