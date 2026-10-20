@@ -77,7 +77,9 @@ void KalmanSpeed_InitDefault(KalmanSpeed_t *klm) {
      * Q_accel   = 15.0f  (Giảm vọt lố đạo hàm gia tốc khi lượng tử hóa 1 xung = 9.09 RPM)
      * R_measure = 14.0f  (Làm mượt bậc thang lượng tử hóa xung ở chu kỳ 5ms)
      */
-    KalmanSpeed_Init(klm, 0.08f, 15.0f, 14.0f);
+    /* Bộ số cho tần số cập nhật 50Hz (dt = 20ms, 1 xung = 2.27 RPM): chọn bằng mô phỏng so với
+     * bộ cũ cho 200Hz (0.08, 15, 14). Giữ bộ cũ ở 50Hz sẽ làm tốc độ trễ ~120ms thay vì 50ms. */
+    KalmanSpeed_Init(klm, 0.32f, 60.0f, 1.0f);
 }
 
 float KalmanSpeed_GetSpeed(KalmanSpeed_t *klm, float rawSpeed, float dt) {

@@ -1,5 +1,6 @@
 #include "fuzzy.h"
 #include <string.h>
+#include <math.h>
 
 /* ============================================================================
  * BẢNG LUẬT MỜ 5x5 VỚI 7 BIẾN NGÔN NGỮ ĐẦU RA u (FUZZY RULE BASE MATRIX)
@@ -29,75 +30,70 @@ static float Fuzzy_Clamp(float val, float minVal, float maxVal) {
 void Fuzzy_Reset(FuzzyController_t *fc) {
     if (!fc) return;
 
-    fc->de_filtered_state  = 0.0f;
-    fc->post_prev_output   = 0.0f;
-    fc->pi_prev_error      = 0.0f;
     fc->pi_integral_output = 0.0f;
-    fc->pi_is_first_sample = 1u;
+    fc->e_norm             = 0.0f;
+    fc->de_norm            = 0.0f;
 
     memset(fc->mu_e,         0, sizeof(fc->mu_e));
     memset(fc->mu_de,        0, sizeof(fc->mu_de));
     memset(fc->rule_weights, 0, sizeof(fc->rule_weights));
 }
 
-void Fuzzy_Init(FuzzyController_t *fc) {
+void Fuzzy_Init(FuzzyController_t *fc,
+                float ke, float kde, float ku, float outMin, float outMax,
+                float e_nb, float e_ns, float e_ze,
+                float de_nb, float de_ns, float de_ze,
+                float out_small, float out_med) {
     if (!fc) return;
 
-    /* 1. Khởi tạo tham số Khâu Tiền Xử Lý */
-    fc->ke                = FUZZY_PRE_KE;
-    fc->kde               = FUZZY_PRE_KDE;
-    fc->e_min             = FUZZY_PRE_E_MIN;
-    fc->e_max             = FUZZY_PRE_E_MAX;
-    fc->de_min            = FUZZY_PRE_DE_MIN;
-    fc->de_max            = FUZZY_PRE_DE_MAX;
-    fc->de_lpf_alpha      = FUZZY_PRE_DE_LPF_ALPHA;
+    /* 1. Tham số Khâu Tiền Xử Lý (nhập trực tiếp từ hàm Init) */
+    fc->ke                = ke;
+    fc->kde               = kde;
+    fc->e_min             = -1.0f;
+    fc->e_max             =  1.0f;
+    fc->de_min            = -1.0f;
+    fc->de_max            =  1.0f;
 
-    /* 2. Khởi tạo miền Hàm Liên Thuộc Khâu Mờ Hóa [-1.0 .. +1.0] */
-    fc->e_limit_nb_ns     = FUZZY_MF_E_NB_NS;
-    fc->e_limit_ns_ze     = FUZZY_MF_E_NS_ZE;
-    fc->e_ze_flat_min     = FUZZY_MF_E_ZE_FLAT_MIN;
-    fc->e_ze_flat_max     = FUZZY_MF_E_ZE_FLAT_MAX;
-    fc->e_limit_ze_ps     = FUZZY_MF_E_ZE_PS;
-    fc->e_limit_ps_pb     = FUZZY_MF_E_PS_PB;
+    /* 2. Cấu hình dải biến ngôn ngữ đầu vào e và de (chuẩn hóa đối xứng quanh 0) */
+    float e_nb_val  = fabsf(e_nb);
+    float e_ns_val  = fabsf(e_ns);
+    float e_ze_val  = fabsf(e_ze);
+    float de_nb_val = fabsf(de_nb);
+    float de_ns_val = fabsf(de_ns);
+    float de_ze_val = fabsf(de_ze);
 
-    fc->de_limit_nb_ns    = FUZZY_MF_DE_NB_NS;
-    fc->de_limit_ns_ze    = FUZZY_MF_DE_NS_ZE;
-    fc->de_ze_flat_min    = FUZZY_MF_DE_ZE_FLAT_MIN;
-    fc->de_ze_flat_max    = FUZZY_MF_DE_ZE_FLAT_MAX;
-    fc->de_limit_ze_ps    = FUZZY_MF_DE_ZE_PS;
-    fc->de_limit_ps_pb    = FUZZY_MF_DE_PS_PB;
+    fc->e_limit_nb_ns     = -e_nb_val;
+    fc->e_limit_ns_ze     = -e_ns_val;
+    fc->e_ze_flat_min     = -e_ze_val;
+    fc->e_ze_flat_max     =  e_ze_val;
+    fc->e_limit_ze_ps     =  e_ns_val;
+    fc->e_limit_ps_pb     =  e_nb_val;
 
-    /* 3. Khởi tạo dải giá trị & 7 Singleton Khâu Giải Mờ [-1.0 .. +1.0] */
-    fc->defuzz_min        = FUZZY_DEFUZZ_RANGE_MIN;
-    fc->defuzz_max        = FUZZY_DEFUZZ_RANGE_MAX;
-    fc->out_nb            = FUZZY_DEFUZZ_OUT_NB;
-    fc->out_nm            = FUZZY_DEFUZZ_OUT_NM;
-    fc->out_ns            = FUZZY_DEFUZZ_OUT_NS;
-    fc->out_ze            = FUZZY_DEFUZZ_OUT_ZE;
-    fc->out_ps            = FUZZY_DEFUZZ_OUT_PS;
-    fc->out_pm            = FUZZY_DEFUZZ_OUT_PM;
-    fc->out_pb            = FUZZY_DEFUZZ_OUT_PB;
+    fc->de_limit_nb_ns    = -de_nb_val;
+    fc->de_limit_ns_ze    = -de_ns_val;
+    fc->de_ze_flat_min    = -de_ze_val;
+    fc->de_ze_flat_max    =  de_ze_val;
+    fc->de_limit_ze_ps    =  de_ns_val;
+    fc->de_limit_ps_pb    =  de_nb_val;
 
-    /* 4. Khởi tạo tham số Khâu Hậu Xử Lý */
-    fc->ku                = FUZZY_POST_KU;
-    fc->post_out_min      = FUZZY_POST_OUT_MIN;
-    fc->post_out_max      = FUZZY_POST_OUT_MAX;
-    fc->post_ema_alpha    = FUZZY_POST_EMA_ALPHA;
-    fc->post_max_delta    = FUZZY_POST_MAX_DELTA;
+    /* 3. Cấu hình dải 7 mức Singleton Khâu Giải Mờ đầu ra u */
+    float out_s_val = fabsf(out_small);
+    float out_m_val = fabsf(out_med);
 
-    Fuzzy_Reset(fc);
-}
+    fc->defuzz_min        = -1.00f;
+    fc->defuzz_max        =  1.00f;
+    fc->out_nb            = -1.00f;
+    fc->out_nm            = -out_m_val;
+    fc->out_ns            = -out_s_val;
+    fc->out_ze            =  0.00f;
+    fc->out_ps            =  out_s_val;
+    fc->out_pm            =  out_m_val;
+    fc->out_pb            =  1.00f;
 
-void Fuzzy_SetParams(FuzzyController_t *fc, float ke, float kde, float ku, float outMin, float outMax) {
-    if (!fc) return;
-
-    Fuzzy_Init(fc);
-    fc->ke            = ke;
-    fc->kde           = kde;
-    fc->ku            = ku;
-    fc->post_out_min  = outMin;
-    fc->post_out_max  = outMax;
-    fc->post_max_delta = 0.0f;
+    /* 4. Tham số Khâu Hậu Xử Lý (nhập trực tiếp từ hàm Init) */
+    fc->ku                = ku;
+    fc->post_out_min      = outMin;
+    fc->post_out_max      = outMax;
 
     Fuzzy_Reset(fc);
 }
@@ -138,8 +134,7 @@ float Fuzzy_MF_Trapezoid(float x, float a, float b, float c, float d) {
 /* ============================================================================
  * KHÂU 1: TIỀN XỬ LÝ TỔNG QUÁT (PRE-PROCESSING STAGE)
  *  - Tính sai số: rawError = currentVal - setpoint
- *  - Lọc thông thấp EMA đạo hàm sai số de_filtered_state
- *  - Chuẩn hóa qua ke, kde và kẹp vào miền [-1.0f .. +1.0f]
+ *  - Chuẩn hóa e qua ke, de qua kde và kẹp vào miền [-1.0f .. +1.0f]
  * ============================================================================ */
 void Fuzzy_PreProcess(FuzzyController_t *fc,
                       float setpoint,
@@ -150,11 +145,12 @@ void Fuzzy_PreProcess(FuzzyController_t *fc,
     if (!fc) return;
 
     float rawError = currentVal - setpoint;
-    float alpha    = Fuzzy_Clamp(fc->de_lpf_alpha, 0.05f, 1.0f);
-    fc->de_filtered_state = (1.0f - alpha) * fc->de_filtered_state + alpha * dCurrentVal;
 
-    float e_scaled  = Fuzzy_Clamp(rawError * fc->ke,                fc->e_min,  fc->e_max);
-    float de_scaled = Fuzzy_Clamp(fc->de_filtered_state * fc->kde,  fc->de_min, fc->de_max);
+    float e_scaled  = Fuzzy_Clamp(rawError    * fc->ke,  fc->e_min,  fc->e_max);
+    float de_scaled = Fuzzy_Clamp(dCurrentVal * fc->kde, fc->de_min, fc->de_max);
+
+    fc->e_norm  = e_scaled;
+    fc->de_norm = de_scaled;
 
     if (out_eNorm)  *out_eNorm  = e_scaled;
     if (out_deNorm) *out_deNorm = de_scaled;
@@ -210,7 +206,7 @@ void Fuzzy_Inference(const float mu_e[FUZZY_NUM_STATES],
  * KHÂU 4: GIẢI MỜ TỔNG QUÁT (DEFUZZIFICATION STAGE RA MIỀN [-1.0 .. +1.0])
  *  - Trung bình trọng số 7 Singleton {NB, NM, NS, ZE, PS, PM, PB}
  * ============================================================================ */
-float Fuzzy_Defuzzify(FuzzyController_t *fc, const float ruleWeights[FUZZY_NUM_STATES][FUZZY_NUM_STATES]) {
+float Fuzzy_Defuzzify(FuzzyController_t *fc, float ruleWeights[FUZZY_NUM_STATES][FUZZY_NUM_STATES]) {
     if (!fc || !ruleWeights) return 0.0f;
 
     const float singletons[FUZZY_NUM_OUT_STATES] = {
@@ -244,28 +240,12 @@ float Fuzzy_Defuzzify(FuzzyController_t *fc, const float ruleWeights[FUZZY_NUM_S
 
 /* ============================================================================
  * KHÂU 5: HẬU XỬ LÝ TỔNG QUÁT (POST-PROCESSING STAGE)
- *  - Khuếch đại tín hiệu giải mờ qua hệ số ku, lọc mượt EMA và kẹp bão hòa [out_min, out_max]
+ *  - Khuếch đại tín hiệu giải mờ qua hệ số ku và kẹp bão hòa [out_min, out_max]
  * ============================================================================ */
 float Fuzzy_PostProcess(FuzzyController_t *fc, float defuzzOutput) {
     if (!fc) return 0.0f;
 
-    float scaledOut   = defuzzOutput * fc->ku;
-    float alpha       = Fuzzy_Clamp(fc->post_ema_alpha, 0.05f, 1.0f);
-    float smoothedOut = alpha * scaledOut + (1.0f - alpha) * fc->post_prev_output;
-
-    if (fc->post_max_delta > 0.0f) {
-        float delta = smoothedOut - fc->post_prev_output;
-        if (delta > fc->post_max_delta) {
-            smoothedOut = fc->post_prev_output + fc->post_max_delta;
-        } else if (delta < -fc->post_max_delta) {
-            smoothedOut = fc->post_prev_output - fc->post_max_delta;
-        }
-    }
-
-    float finalOut = Fuzzy_Clamp(smoothedOut, fc->post_out_min, fc->post_out_max);
-    fc->post_prev_output = finalOut;
-
-    return finalOut;
+    return Fuzzy_Clamp(defuzzOutput * fc->ku, fc->post_out_min, fc->post_out_max);
 }
 
 /* ============================================================================
@@ -291,29 +271,21 @@ float FuzzyPD_Compute(FuzzyController_t *fc, float setpoint, float currentVal, f
 /* ============================================================================
  * HÀM ĐIỀU KHIỂN FUZZY PI GIA SỐ TỔNG HỢP CHẠY TRỌN VẸN 5 KHÂU
  * ============================================================================ */
-float FuzzyPI_Compute(FuzzyController_t *fc, float setpoint, float currentVal, float dt) {
+float FuzzyPI_Compute(FuzzyController_t *fc, float setpoint, float currentVal, float dCurrentVal) {
     if (!fc) return 0.0f;
-
-    float rawError = currentVal - setpoint;
-    float dError   = 0.0f;
-    if (!fc->pi_is_first_sample && dt > 1e-6f) {
-        dError = (rawError - fc->pi_prev_error) / dt;
-    }
-    fc->pi_prev_error      = rawError;
-    fc->pi_is_first_sample = 0u;
 
     float eNorm  = 0.0f;
     float deNorm = 0.0f;
     // tiền xử lý
-    Fuzzy_PreProcess(fc, setpoint, currentVal, dError, &eNorm, &deNorm);
+    Fuzzy_PreProcess(fc, setpoint, currentVal, dCurrentVal, &eNorm, &deNorm);
     // mờ hóa
     Fuzzy_Fuzzify(fc, eNorm, deNorm, fc->mu_e, fc->mu_de);
     // suy diễn
     Fuzzy_Inference(fc->mu_e, fc->mu_de, fc->rule_weights);
     // giải mờ
     float defuzzOut = Fuzzy_Defuzzify(fc, fc->rule_weights);
-    // hậu xử lý (cộng dồn gia số theo chu kỳ dt)
-    float deltaOut = Fuzzy_PostProcess(fc, defuzzOut) * dt;
+    // hậu xử lý (cộng dồn gia số: u(k) = u(k-1) + delta_u)
+    float deltaOut = Fuzzy_PostProcess(fc, defuzzOut);
     fc->pi_integral_output = Fuzzy_Clamp(fc->pi_integral_output + deltaOut,
                                          fc->post_out_min,
                                          fc->post_out_max);

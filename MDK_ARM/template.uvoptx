@@ -180,6 +180,21 @@
           <WinNumber>1</WinNumber>
           <ItemText>g_motorSpeedTarget_right</ItemText>
         </Ww>
+        <Ww>
+          <count>6</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>FuzzyPI</ItemText>
+        </Ww>
+        <Ww>
+          <count>7</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>outpwm_R</ItemText>
+        </Ww>
+        <Ww>
+          <count>8</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>outpwm_L</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
@@ -231,6 +246,11 @@
           <count>9</count>
           <WinNumber>2</WinNumber>
           <ItemText>exti_pc4_count</ItemText>
+        </Ww>
+        <Ww>
+          <count>10</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>FuzzyPD</ItemText>
         </Ww>
       </WatchWindow2>
       <Tracepoint>
