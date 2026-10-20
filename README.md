@@ -7,7 +7,7 @@
 
 Dự án thiết kế và triển khai hệ thống điều khiển **Robot hai bánh tự cân bằng (Two-Wheeled Inverted Pendulum — TWIP)** thời gian thực trên vi điều khiển **STM32F407VGT6** (ARM Cortex-M4F @ 168 MHz) sử dụng hệ điều hành thời gian thực **FreeRTOS**.
 
-Hệ thống kết hợp **Bộ lọc Kalman** đa kênh (Pitch IMU, Yaw hợp nhất Encoder + Gyro Z, và vận tốc 2 bánh xe) cùng **Kiến trúc Điều khiển Mờ Vòng Lồng (Cascaded Dual-Fuzzy Control)** gồm Vòng ngoài giữ vị trí – vận tốc (`FuzzyPI`, 50 Hz) và Vòng trong cân bằng góc chúc ngóc (`FuzzyPD`, 200 Hz, 90% PWM) phối hợp với bộ điều khiển hướng xoay ngang (`Yaw PID`, 10% PWM).
+Hệ thống kết hợp **Bộ lọc Kalman** đa kênh (Pitch IMU, Yaw hợp nhất Encoder + Gyro Z, và vận tốc 2 bánh xe) cùng **Kiến trúc Điều khiển Mờ Vòng Lồng (Cascaded Dual-Fuzzy Control)** gồm Vòng ngoài giữ vị trí – vận tốc (`FuzzyPD_Pos`, 50 Hz) và Vòng trong cân bằng góc chúc ngóc (`FuzzyPD`, 200 Hz, 90% PWM) phối hợp với bộ điều khiển hướng xoay ngang (`Yaw PID`, 10% PWM).
 
 📄 **Tài liệu bài báo kỹ thuật & lưu đồ thuật toán:** [`luu_do_dieu_khien_fuzzy.pdf`](./luu_do_dieu_khien_fuzzy.pdf) (Mã nguồn LaTeX: [`luu_do_dieu_khien_fuzzy.tex`](./luu_do_dieu_khien_fuzzy.tex))
 
@@ -54,10 +54,10 @@ Hệ thống kết hợp **Bộ lọc Kalman** đa kênh (Pitch IMU, Yaw hợp n
 ```text
 BTL_NMDKTM/
 ├── MDK_ARM/
-│   ├── main.c                      # Điểm vào chương trình, khởi tạo FuzzyPD & FuzzyPI, chạy FreeRTOS
+│   ├── main.c                      # Điểm vào chương trình, khởi tạo FuzzyPD & FuzzyPD_Pos, chạy FreeRTOS
 │   └── template.uvprojx            # Project Keil MDK-ARM uVision 5
 ├── MY_LIB/
-│   ├── fuzzy.c / fuzzy.h           # Bộ điều khiển Mờ 5 khâu tổng quát (FuzzyPD_Compute & FuzzyPI_Compute)
+│   ├── fuzzy.c / fuzzy.h           # Bộ điều khiển Mờ 5 khâu tổng quát (FuzzyPD_Compute & FuzzyPD_Compute)
 │   ├── kalman.c / kalman.h         # Bộ lọc Kalman góc nghiêng (Pitch/Yaw) & Kalman vận tốc bánh xe
 │   ├── pid.c / pid.h               # Bộ điều khiển PID số có chống bão hòa tích phân (Anti-windup)
 │   ├── managetask.c / managetask.h # Quản lý 4 Task FreeRTOS, vòng điều khiển Cascade & giao thức UART
@@ -83,7 +83,7 @@ Hệ thống giải quyết bài toán điều khiển hệ **SIMO phi tuyến b
 ```mermaid
 flowchart LR
     subgraph OUTER["Vòng Ngoài Giữ Vị Trí & Vận Tốc (50 Hz / 20 ms)"]
-        ENC["Encoder TIM3/TIM4<br/>x_fw (cm), v_cms (cm/s)"] --> FPI["FuzzyPI (Giữ vị trí)<br/>e = x - x_target<br/>de = v - v_cmd"]
+        ENC["Encoder TIM3/TIM4<br/>x_fw (cm), v_cms (cm/s)"] --> FPI["FuzzyPD_Pos (Giữ vị trí)<br/>e = x - x_target<br/>de = v - v_cmd"]
         FPI -->|"tiltOffset (±3.5°)"| SUM_ANG(("−"))
         TH0["g_targetAngle<br/>(Góc cân bằng tĩnh)"] --> SUM_ANG
     end
@@ -103,7 +103,7 @@ flowchart LR
 ```
 
 ### Nguyên lý phối hợp 3 vòng điều khiển
-1. **Vòng Ngoài — Giữ Vị Trí & Bám Vận Tốc (`FuzzyPI`, chu kỳ $T_{\text{outer}} = 20\text{ ms} / 50\text{ Hz}$):**
+1. **Vòng Ngoài — Giữ Vị Trí & Bám Vận Tốc (`FuzzyPD_Pos`, chu kỳ $T_{\text{outer}} = 20\text{ ms} / 50\text{ Hz}$):**
    - Nhận sai số vị trí dài $e_x = x_{\text{fw}} - x_{\text{target}}\;(\text{cm})$ và sai số vận tốc dài $e_v = v_{\text{cms}} - v_{\text{cmd}}\;(\text{cm/s})$.
    - Điểm đích $x_{\text{target}}$ tự động dịch chuyển mượt theo vận tốc đặt $v_{\text{cmd}}$ và được kẹp chống bão hòa (anti-windup) trong phạm vi $\pm 15\text{ cm}$ quanh vị trí xe hiện tại.
    - Tính toán góc nghiêng đặt bù trừ $\Delta\theta_{\text{tilt}} \in [-3.5^\circ, +3.5^\circ]$, từ đó điều chỉnh góc đặt cho vòng trong:
@@ -122,7 +122,7 @@ flowchart LR
 
 ## 4. Thiết Kế Bộ Điều Khiển Mờ 5 Khâu (`fuzzy.c`)
 
-Thư viện [`MY_LIB/fuzzy.c`](./MY_LIB/fuzzy.c) được thiết kế tổng quát hóa theo cấu trúc hướng đối tượng bằng ngôn ngữ C (`FuzzyController_t`), dùng chung cho cả `FuzzyPD` và `FuzzyPI` với **5 khâu xử lý chuẩn**:
+Thư viện [`MY_LIB/fuzzy.c`](./MY_LIB/fuzzy.c) được thiết kế tổng quát hóa theo cấu trúc hướng đối tượng bằng ngôn ngữ C (`FuzzyController_t`), dùng chung cho cả `FuzzyPD` và `FuzzyPD_Pos` với **5 khâu xử lý chuẩn**:
 
 1. **Khâu 1 — Tiền xử lý (`Fuzzy_PreProcess`):**
    Chuẩn hóa sai số $e = y - r$ và đạo hàm $de = \dot{y}$ về miền cơ sở $[-1.0, +1.0]$ thông qua hệ số tỉ lệ $k_e, k_{de}$.
@@ -137,7 +137,7 @@ Thư viện [`MY_LIB/fuzzy.c`](./MY_LIB/fuzzy.c) được thiết kế tổng qu
 
 ### Bảng thông số cấu hình thực tế trong `main.c`
 
-| Tham Số | `FuzzyPD` (Vòng Trong Pitch — 200 Hz) | `FuzzyPI` (Vòng Ngoài Vị Trí/Vận Tốc — 50 Hz) |
+| Tham Số | `FuzzyPD` (Vòng Trong Pitch — 200 Hz) | `FuzzyPD_Pos` (Vòng Ngoài Vị Trí/Vận Tốc — 50 Hz) |
 | :--- | :--- | :--- |
 | **Hệ số chuẩn hóa $k_e$** | $1/12.0 \approx 0.0833\;\text{độ}^{-1}$ (bão hòa ở $\pm 12^\circ$) | $0.024\;\text{cm}^{-1}$ (bão hòa ở $\pm 41.7\text{ cm}$) |
 | **Hệ số chuẩn hóa $k_{de}$** | $1/720.0 \approx 0.00139\;(\text{độ/s})^{-1}$ (bão hòa ở $\pm 720^\circ/\text{s}$) | $0.034\;(\text{cm/s})^{-1}$ (bão hòa ở $\pm 29.4\text{ cm/s}$) |
@@ -155,7 +155,7 @@ Hệ thống được phân chia thành 4 tác vụ lập lịch ưu tiên (Pree
 
 | Tên Task | Độ Ưu Tiên | Chu Kỳ ($f_s$) | Stack | Chức Năng Chính |
 | :--- | :---: | :---: | :---: | :--- |
-| `vTaskControl` | **4 (Cao nhất)** | $5\text{ ms}$ ($200\text{ Hz}$) | 1024 words | Thực thi vòng ngoài `FuzzyPI` (mỗi 4 chu kỳ = $20\text{ ms}$), vòng trong `FuzzyPD`, vòng `Yaw PID`, bù vùng chết và xuất PWM |
+| `vTaskControl` | **4 (Cao nhất)** | $5\text{ ms}$ ($200\text{ Hz}$) | 1024 words | Thực thi vòng ngoài `FuzzyPD_Pos` (mỗi 4 chu kỳ = $20\text{ ms}$), vòng trong `FuzzyPD`, vòng `Yaw PID`, bù vùng chết và xuất PWM |
 | `vTaskIMU` | **3** | $5\text{ ms}$ ($200\text{ Hz}$) | 512 words | Đọc MPU6050 qua I2C1, tính góc Pitch thô, cập nhật bộ lọc `kalmanPitch` và hợp nhất `kalmanYaw` |
 | `vTaskEncoder` | **3** | $5\text{ ms}$ ($200\text{ Hz}$) | 512 words | Đọc bộ đếm phần cứng TIM3/TIM4, lọc vận tốc `kalmanSpeed_L/R`, tích lũy tổng xung vị trí và góc Yaw vi sai |
 | `vTaskUART` | **2** | $10\text{ ms}$ ($100\text{ Hz}$) | 512 words | Giải mã khung lệnh điều khiển từ PC/Bluetooth và phát gói Telemetry 88-byte bằng DMA ở tần số $50\text{ Hz}$ |
@@ -172,9 +172,9 @@ Khung truyền nhị phân tốc độ cao trên `USART3` (`115200 bps`):
 
 ### Các gói dữ liệu từ STM32 gửi lên PC (TX DMA)
 - **`ID = 0x01` (`RobotTelemetry_t` — 88 bytes = 22 biến `float`, tần số 50 Hz):**
-  Gồm góc `rawPitch`, `filteredPitch`, `gyroRate`, `rawYaw`, `filteredYaw`, `yawRate`, vận tốc bánh xe `Raw/Kalman L/R`, `PWM L/R`, `targetAngle`, `outFuzzy`, `outYaw`, `outSpeed`, cùng 6 biến chẩn đoán chuyên sâu của bộ Mờ (`velCmd`, `dVel`, `pdENorm`, `pdDeNorm`, `piENorm`, `piDeNorm`).
+  Gồm góc `rawPitch`, `filteredPitch`, `gyroRate`, `rawYaw`, `filteredYaw`, `yawRate`, vận tốc bánh xe `Raw/Kalman L/R`, `PWM L/R`, `targetAngle`, `outFuzzy`, `outYaw`, `outSpeed`, cùng 6 biến chẩn đoán chuyên sâu của bộ Mờ (`velCmd`, `dVel`, `pitchENorm`, `pitchDeNorm`, `posENorm`, `posDeNorm`).
 - **`ID = 0x02` (`RobotConfigSync_t` — 64 bytes = 16 biến `float`):**
-  Đồng bộ toàn bộ thông số PID, góc cân bằng tĩnh `targetAngle`, chế độ điều khiển và 6 hệ số tỉ lệ `(ke, kde, ku)` của `FuzzyPD` & `FuzzyPI` lên giao diện máy tính.
+  Đồng bộ toàn bộ thông số PID, góc cân bằng tĩnh `targetAngle`, chế độ điều khiển và 6 hệ số tỉ lệ `(ke, kde, ku)` của `FuzzyPD` & `FuzzyPD_Pos` lên giao diện máy tính.
 
 ### Các mã lệnh từ PC gửi xuống STM32 (RX Interrupt)
 - `0x01`: **START** — Kích hoạt chế độ điều khiển cân bằng.
@@ -182,7 +182,7 @@ Khung truyền nhị phân tốc độ cao trên `USART3` (`115200 bps`):
 - `0x03`: **AUTO CALIB** — Lấy mẫu trung bình 200 mẫu IMU, xác định `targetAngle` và `gyroOffset`, lưu vào Flash Sector 11.
 - `0x04` – `0x08`: Cập nhật trực tiếp góc cân bằng gốc, vận tốc đặt, góc hướng đích Yaw, chế độ điều khiển (`Dual-PID` / `Fuzzy`) và bộ hệ số PID.
 - `0x09`: Yêu cầu đồng bộ lại gói cấu hình `0x02`.
-- `0x0A`: **LIVE FUZZY TUNING** — Nạp nóng 6 hệ số `(ke, kde, ku)` của `FuzzyPD` và `FuzzyPI` trong lúc xe đang chạy mà không cần biên dịch lại firmware.
+- `0x0A`: **LIVE FUZZY TUNING** — Nạp nóng 6 hệ số `(ke, kde, ku)` của `FuzzyPD` và `FuzzyPD_Pos` trong lúc xe đang chạy mà không cần biên dịch lại firmware.
 
 ---
 
@@ -203,3 +203,4 @@ Khung truyền nhị phân tốc độ cao trên `USART3` (`115200 bps`):
 2. **Khởi chạy cân bằng:**
    - Đặt xe đứng gần vị trí cân bằng, nhấn nút **Start (`PC0`)** hoặc nút **▶ START** trên GUI. Đèn LED Xanh Lá (`PD12`) bật sáng, xe tự động giữ cân bằng và khóa vị trí tại chỗ.
    - Nếu xe bị nghiêng quá giới hạn an toàn $\pm 15^\circ$, hệ thống tự động ngắt PWM (`Robot_Stop()`) và bật đèn LED Đỏ (`PD14`).
+

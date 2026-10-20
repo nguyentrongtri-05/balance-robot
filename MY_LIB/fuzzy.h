@@ -27,9 +27,9 @@ typedef enum {
     PB = 6
 } FuzzyState_t;
 
-/* Cấu trúc dữ liệu tổng quát của bộ điều khiển Fuzzy (Dùng chung cho cả FuzzyPD và FuzzyPI) */
+/* Cấu trúc dữ liệu tổng quát của bộ điều khiển Fuzzy PD (Dùng chung cho cả 2 khâu FuzzyPD_Pitch và FuzzyPD_Pos nối tiếp) */
 typedef struct {
-    /* 1. Tham số Khâu Tiền Xử Lý (Pre-processing) */
+    /* 1. Tham số Khâu Tiền Xử Lý (Pre-processing) & Bão hòa đầu vào [-1..+1] */
     float ke;
     float kde;
     float e_min;
@@ -52,7 +52,7 @@ typedef struct {
     float de_limit_ze_ps;
     float de_limit_ps_pb;
 
-    /* 3. Tham số Khâu Giải Mờ (Defuzzification - 7 biến ngôn ngữ đầu ra u) */
+    /* 3. Tham số Khâu Giải Mờ (Defuzzification - 7 biến ngôn ngữ đầu ra u) & Bão hòa trước Ku [-1..+1] */
     float defuzz_min;
     float defuzz_max;
     float out_nb;
@@ -63,24 +63,23 @@ typedef struct {
     float out_pm;
     float out_pb;
 
-    /* 4. Tham số Khâu Hậu Xử Lý (Post-processing & Trạng thái tích phân cho FuzzyPI) */
+    /* 4. Tham số Khâu Hậu Xử Lý (Post-processing Ku) */
     float ku;
     float post_out_min;
     float post_out_max;
-    float pi_integral_output;
 
-    /* Giá trị e, de đã chuẩn hóa [-1..+1] của lần tính gần nhất (phục vụ debug / telemetry) */
+    /* Giá trị e, de sau chuẩn hóa và bão hòa [-1..+1] của lần tính gần nhất (phục vụ debug / telemetry) */
     float e_norm;
     float de_norm;
 
-    /* 5. Mảng trạng thái mờ phục vụ tính toán 5 khâu */
+    /* 5. Mảng trạng thái mờ phục vụ tính toán các khâu */
     float mu_e[FUZZY_NUM_STATES];
     float mu_de[FUZZY_NUM_STATES];
     float rule_weights[FUZZY_NUM_STATES][FUZZY_NUM_STATES];
 } FuzzyController_t;
 
 /* ============================================================================
- * CÁC HÀM KHỞI TẠO, HÀM LIÊN THUỘC CƠ SỞ & 5 KHÂU TỔNG QUÁT CỦA FUZZY
+ * CÁC HÀM KHỞI TẠO, HÀM LIÊN THUỘC CƠ SỞ & CÁC KHÂU CỦA BỘ ĐIỀU KHIỂN FUZZY PD
  * ============================================================================ */
 void  Fuzzy_Init(FuzzyController_t *fc,
                  float ke, float kde, float ku, float outMin, float outMax,
@@ -95,15 +94,14 @@ float Fuzzy_MF_TrapezoidLeft(float x, float a, float b);
 float Fuzzy_MF_TrapezoidRight(float x, float a, float b);
 float Fuzzy_MF_Trapezoid(float x, float a, float b, float c, float d);
 
-/* 5 khâu xử lý tổng quát của bộ điều khiển Fuzzy */
+/* Các khâu xử lý tổng quát của bộ điều khiển Fuzzy PD */
 void  Fuzzy_PreProcess(FuzzyController_t *fc, float setpoint, float currentVal, float dCurrentVal, float *out_eNorm, float *out_deNorm);
 void  Fuzzy_Fuzzify(FuzzyController_t *fc, float eNorm, float deNorm, float mu_e[FUZZY_NUM_STATES], float mu_de[FUZZY_NUM_STATES]);
 void  Fuzzy_Inference(const float mu_e[FUZZY_NUM_STATES], const float mu_de[FUZZY_NUM_STATES], float ruleWeights[FUZZY_NUM_STATES][FUZZY_NUM_STATES]);
 float Fuzzy_Defuzzify(FuzzyController_t *fc, float ruleWeights[FUZZY_NUM_STATES][FUZZY_NUM_STATES]);
 float Fuzzy_PostProcess(FuzzyController_t *fc, float defuzzOutput);
 
-/* 2 hàm thực thi bộ điều khiển Fuzzy PD và Fuzzy PI (cùng cấu trúc tham số đầu vào) */
+/* Hàm thực thi bộ điều khiển Fuzzy PD (dùng chung cho cả vòng ngoài FuzzyPD_Pos và vòng trong FuzzyPD_Pitch) */
 float FuzzyPD_Compute(FuzzyController_t *fc, float setpoint, float currentVal, float dCurrentVal);
-float FuzzyPI_Compute(FuzzyController_t *fc, float setpoint, float currentVal, float dCurrentVal);
 
 #endif /* __FUZZY_H */

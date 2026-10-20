@@ -32,7 +32,7 @@
 \begin{@twocolumnfalse}
 \maketitle
 \begin{abstract}
-\noindent\textbf{\textit{Tóm tắt---}} Bài báo này trình bày phương pháp thiết kế, tổng hợp thuật toán và triển khai thực nghiệm hệ thống điều khiển mờ vòng lồng kép (\textit{Cascaded Dual-Fuzzy Control}) cho mô hình Robot hai bánh tự cân bằng (\textit{Two-Wheeled Inverted Pendulum --- TWIP}) trên nền tảng vi điều khiển 32-bit \textbf{STM32F407VGT6} kết hợp hệ điều hành thời gian thực \textbf{FreeRTOS}. Để giải quyết bài toán điều khiển hệ thiếu cơ cấu chấp hành (\textit{underactuated SIMO}) vừa phải duy trì cân bằng góc chúc ngóc ($\theta$) vừa phải khóa vị trí dài ($x$) và góc hướng ($\psi$), kiến trúc đề xuất phân tách hệ thống thành ba vòng điều khiển: (1) \textbf{Vòng ngoài giữ vị trí và bám vận tốc (\texttt{FuzzyPI}, $50\,\text{Hz}$)} nhận sai số vị trí $e_x$ và sai số vận tốc $e_v$ để sinh góc nghiêng đặt bù trừ $\Delta\theta_{\text{tilt}} \in [-3.5^\circ, +3.5^\circ]$; (2) \textbf{Vòng trong cân bằng góc chúc ngóc (\texttt{FuzzyPD}, $200\,\text{Hz}$)} sử dụng 90\% quỹ công suất PWM ($\pm 7560/8400$) để ổn định thân xe quanh góc đặt động $\theta_{\text{ref}} = \theta_0 - \Delta\theta_{\text{tilt}}$; và (3) \textbf{Vòng điều khiển hướng xoay ngang (\texttt{Yaw PID}, $200\,\text{Hz}$)} sử dụng 10\% quỹ công suất PWM ($\pm 840/8400$) trên cơ sở hợp nhất tín hiệu Gyroscope trục Z và vi sai Encoder qua bộ lọc Kalman. Ngoài ra, kỹ thuật bù vùng chết động bất đối xứng và giới hạn đạo hàm xung (Slew-rate limiter) được tích hợp trực tiếp ở tầng công suất. Kết quả thực nghiệm trên mô hình phần cứng thực tế cho thấy robot duy trì cân bằng ổn định liên tục, sai số góc chúc ngóc ở trạng thái xác lập nhỏ hơn $\pm 0.5^\circ$ và độ lệch vị trí được giữ chặt trong phạm vi $\pm 2.5\,\text{cm}$.\\[4pt]
+\noindent\textbf{\textit{Tóm tắt---}} Bài báo này trình bày phương pháp thiết kế, tổng hợp thuật toán và triển khai thực nghiệm hệ thống điều khiển mờ vòng lồng kép (\textit{Cascaded Dual-Fuzzy Control}) cho mô hình Robot hai bánh tự cân bằng (\textit{Two-Wheeled Inverted Pendulum --- TWIP}) trên nền tảng vi điều khiển 32-bit \textbf{STM32F407VGT6} kết hợp hệ điều hành thời gian thực \textbf{FreeRTOS}. Để giải quyết bài toán điều khiển hệ thiếu cơ cấu chấp hành (\textit{underactuated SIMO}) vừa phải duy trì cân bằng góc chúc ngóc ($\theta$) vừa phải khóa vị trí dài ($x$) và góc hướng ($\psi$), kiến trúc đề xuất phân tách hệ thống thành ba vòng điều khiển: (1) \textbf{Vòng ngoài giữ vị trí và bám vận tốc (\texttt{FuzzyPD_Pos}, $50\,\text{Hz}$)} nhận sai số vị trí $e_x$ và sai số vận tốc $e_v$ để sinh góc nghiêng đặt bù trừ $\Delta\theta_{\text{tilt}} \in [-3.5^\circ, +3.5^\circ]$; (2) \textbf{Vòng trong cân bằng góc chúc ngóc (\texttt{FuzzyPD}, $200\,\text{Hz}$)} sử dụng 90\% quỹ công suất PWM ($\pm 7560/8400$) để ổn định thân xe quanh góc đặt động $\theta_{\text{ref}} = \theta_0 - \Delta\theta_{\text{tilt}}$; và (3) \textbf{Vòng điều khiển hướng xoay ngang (\texttt{Yaw PID}, $200\,\text{Hz}$)} sử dụng 10\% quỹ công suất PWM ($\pm 840/8400$) trên cơ sở hợp nhất tín hiệu Gyroscope trục Z và vi sai Encoder qua bộ lọc Kalman. Ngoài ra, kỹ thuật bù vùng chết động bất đối xứng và giới hạn đạo hàm xung (Slew-rate limiter) được tích hợp trực tiếp ở tầng công suất. Kết quả thực nghiệm trên mô hình phần cứng thực tế cho thấy robot duy trì cân bằng ổn định liên tục, sai số góc chúc ngóc ở trạng thái xác lập nhỏ hơn $\pm 0.5^\circ$ và độ lệch vị trí được giữ chặt trong phạm vi $\pm 2.5\,\text{cm}$.\\[4pt]
 \noindent\textbf{\textit{Từ khóa---}} Robot hai bánh tự cân bằng (TWIP), Điều khiển mờ vòng lồng (Cascaded Fuzzy Control), Bộ lọc Kalman, Hợp nhất cảm biến (Sensor Fusion), STM32F407, FreeRTOS.
 \end{abstract}
 \vspace{8pt}
@@ -46,7 +46,7 @@ Robot hai bánh tự cân bằng (TWIP) là hệ động lực học phi tuyến
 
 Trên vi điều khiển \textbf{STM32F407VGT6} ($168\,\text{MHz}$, tích hợp FPU phần cứng), phần mềm điều khiển được tổ chức thành 4 tác vụ thời gian thực độc lập dưới quyền lập lịch ưu tiên của \textbf{FreeRTOS}:
 \begin{itemize}
-    \item \texttt{vTaskControl} (Ưu tiên 4, $T_s = 5\,\text{ms} / 200\,\text{Hz}$): Thực thi bộ điều khiển vòng ngoài \texttt{FuzzyPI} (mỗi 4 chu kỳ = $20\,\text{ms}$), bộ điều khiển vòng trong \texttt{FuzzyPD}, bộ điều khiển hướng \texttt{Yaw PID} và xuất xung PWM $10\,\text{kHz}$.
+    \item \texttt{vTaskControl} (Ưu tiên 4, $T_s = 5\,\text{ms} / 200\,\text{Hz}$): Thực thi bộ điều khiển vòng ngoài \texttt{FuzzyPD_Pos} (mỗi 4 chu kỳ = $20\,\text{ms}$), bộ điều khiển vòng trong \texttt{FuzzyPD}, bộ điều khiển hướng \texttt{Yaw PID} và xuất xung PWM $10\,\text{kHz}$.
     \item \texttt{vTaskIMU} (Ưu tiên 3, $T_s = 5\,\text{ms} / 200\,\text{Hz}$): Giao tiếp cảm biến MPU6050 qua bus \texttt{I2C1} ($400\,\text{kHz}$), thực thi bộ lọc Kalman góc chúc ngóc (\texttt{kalmanPitch}) và góc hướng (\texttt{kalmanYaw}).
     \item \texttt{vTaskEncoder} (Ưu tiên 3, $T_s = 5\,\text{ms} / 200\,\text{Hz}$): Đọc xung phần cứng \texttt{TIM3}/\texttt{TIM4} ở chế độ cầu phương $\times 4$ ($1320\,\text{xung/vòng}$), lọc vận tốc bằng bộ lọc Kalman 1 chiều (\texttt{kalmanSpeed\_L/R}) và tính động học vị trí.
     \item \texttt{vTaskUART} (Ưu tiên 2, $T_s = 10\,\text{ms} / 100\,\text{Hz}$): Giải mã khung lệnh cấu hình trực tuyến và truyền gói dữ liệu Telemetry 88-byte qua \texttt{DMA1\_Stream3} ở tần số $50\,\text{Hz}$.
@@ -62,7 +62,7 @@ Góc nghiêng $\theta(k)$ được ước lượng bằng bộ lọc Kalman 2 tr
 
 \section{Thiết Kế Bộ Điều Khiển Mờ Vòng Lồng Kép}
 \subsection{Cấu trúc tổng quát 5 khâu (\texttt{MY\_LIB/fuzzy.c})}
-Cả hai bộ điều khiển \texttt{FuzzyPD} (vòng trong) và \texttt{FuzzyPI} (vòng ngoài) đều dùng chung kiến trúc dữ liệu \texttt{FuzzyController\_t} gồm 5 khâu tuần tự:
+Cả hai bộ điều khiển \texttt{FuzzyPD} (vòng trong) và \texttt{FuzzyPD_Pos} (vòng ngoài) đều dùng chung kiến trúc dữ liệu \texttt{FuzzyController\_t} gồm 5 khâu tuần tự:
 \begin{enumerate}
     \item \textbf{Khâu 1 --- Tiền xử lý (\texttt{Fuzzy\_PreProcess}):} Chuẩn hóa hai đầu vào vật lý về miền cơ sở $[-1.0, +1.0]$:
     \begin{equation}
@@ -101,11 +101,11 @@ $e_{\text{norm}} \backslash de_{\text{norm}}$ & \textbf{NB} & \textbf{NS} & \tex
 \end{tabular}
 \end{table}
 
-\subsection{Phối hợp Vòng Ngoài (\texttt{FuzzyPI}) và Vòng Trong (\texttt{FuzzyPD})}
+\subsection{Phối hợp Vòng Ngoài (\texttt{FuzzyPD_Pos}) và Vòng Trong (\texttt{FuzzyPD})}
 Ở chu kỳ vòng ngoài $T_{\text{outer}} = 20\,\text{ms}$, điểm đích vị trí $x_{\text{target}}(k)$ được cập nhật theo vận tốc đặt $v_{\text{cmd}}$ và kẹp chống bão hòa trong lân cận $\pm 15\,\text{cm}$ quanh vị trí thực $x_{\text{fw}}(k)$:
 \begin{align}
     x_{\text{target}}(k) &= \text{clamp}\!\left(x_{\text{target}}(k-1) + v_{\text{cmd}} T_{\text{outer}},\; x_{\text{fw}} \pm 15.0\right) \\
-    \Delta\theta_{\text{tilt}}(k) &= -\text{FuzzyPD\_Compute}\big(\&\text{FuzzyPI},\; x_{\text{target}}, x_{\text{fw}}, v - v_{\text{cmd}}\big) \\
+    \Delta\theta_{\text{tilt}}(k) &= -\text{FuzzyPD\_Compute}\big(\&\text{FuzzyPD_Pos},\; x_{\text{target}}, x_{\text{fw}}, v - v_{\text{cmd}}\big) \\
     \theta_{\text{ref}}(k) &= \theta_0 - \Delta\theta_{\text{tilt}}(k)
 \end{align}
 Ở chu kỳ vòng trong $T_{\text{inner}} = 5\,\text{ms}$, bộ điều khiển \texttt{FuzzyPD} bám góc đặt $\theta_{\text{ref}}(k)$ và kết hợp với bộ điều khiển hướng \texttt{Yaw PID}:
@@ -122,7 +122,7 @@ $e_{\text{norm}} \backslash de_{\text{norm}}$ & \textbf{NB} & \textbf{NS} & \tex
 \footnotesize
 \begin{tabular}{lcc}
 \toprule
-\textbf{Tham số cấu hình} & \textbf{\texttt{FuzzyPD} (Pitch)} & \textbf{\texttt{FuzzyPI} (Vị trí)} \\
+\textbf{Tham số cấu hình} & \textbf{\texttt{FuzzyPD} (Pitch)} & \textbf{\texttt{FuzzyPD_Pos} (Vị trí)} \\
 \midrule
 Chu kỳ lấy mẫu $T_s$ & $5\,\text{ms}$ ($200\,\text{Hz}$) & $20\,\text{ms}$ ($50\,\text{Hz}$) \\
 Hệ số chuẩn hóa $k_e$ & $1/12.0\,\text{deg}^{-1}$ & $0.024\,\text{cm}^{-1}$ \\

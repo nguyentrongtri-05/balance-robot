@@ -49,8 +49,8 @@ volatile float g_encoderYawRate  = 0.0f;
 /* =====================================================================
  * 3. BIẾN CỦA TASK CONTROL (Trạng thái, Mục tiêu & Xung PWM xuất ra Motor)
  * ===================================================================== */
-extern FuzzyController_t FuzzyPD;
-extern FuzzyController_t FuzzyPI;
+extern FuzzyController_t FuzzyPD_Pitch;
+extern FuzzyController_t FuzzyPD_Pos;
 volatile uint8_t g_systemEnable = 0;
 
 volatile float g_targetAngle        = -0.73f;
@@ -64,11 +64,11 @@ volatile float g_outFuzzy       = 0.0f;
 volatile float g_outSpeed       = 0.0f;
 volatile float g_outYaw         = 0.0f;
 volatile float g_velCmd         = 0.0f;   /* debug: vận tốc đặt vòng ngoài (RPM) */
-volatile float g_dVel           = 0.0f;   /* debug: gia tốc dVel đưa vào FuzzyPI (RPM/s) */
+volatile float g_dVel           = 0.0f;   /* debug: gia tốc dVel đưa vào FuzzyPD_Pos (RPM/s) */
 
 /* =====================================================================
  * CẤU HÌNH KIẾN TRÚC ĐIỀU KHIỂN VÒNG LỒNG (CASCADED CONTROL):
- *  - Vòng Ngoài (Vận tốc FuzzyPI / PID_Vel):
+ *  - Vòng Ngoài (Vận tốc FuzzyPD_Pos / PID_Vel):
  *      Sinh ra Góc nghiêng đặt bù trừ tiltOffset (kẹp an toàn +-2.5°)
  *      -> Góc đặt Vòng Trong: g_cascadeTargetAngle = g_targetAngle - tiltOffset
  *  - Vòng Trong (FuzzyPD / Balance PD):
@@ -138,8 +138,8 @@ static void Reset_OdometryAndStates(void) {
     s_prevBalancePWM_L    = 0.0f;
     s_prevBalancePWM_R    = 0.0f;
     PID_Reset(&PID_Vel);
-    Fuzzy_Reset(&FuzzyPD);
-    Fuzzy_Reset(&FuzzyPI);
+    Fuzzy_Reset(&FuzzyPD_Pitch);
+    Fuzzy_Reset(&FuzzyPD_Pos);
     Kalman_SetAngle(&kalmanYaw, 0.0f);
 }
 
@@ -220,8 +220,8 @@ uint8_t Robot_Start(void) {
     KalmanSpeed_SetSpeed(&kalmanSpeed_L, 0.0f);
     KalmanSpeed_SetSpeed(&kalmanSpeed_R, 0.0f);
     PID_Reset(&PID_Vel);
-    Fuzzy_Reset(&FuzzyPD);
-    Fuzzy_Reset(&FuzzyPI);
+    Fuzzy_Reset(&FuzzyPD_Pitch);
+    Fuzzy_Reset(&FuzzyPD_Pos);
 
     GPIO_SetBits(GPIOD, GPIO_Pin_12);
     GPIO_ResetBits(GPIOD, GPIO_Pin_14);
@@ -236,8 +236,8 @@ void Robot_Stop(void) {
     s_prevBalancePWM_L    = 0.0f;
     s_prevBalancePWM_R    = 0.0f;
     PID_Reset(&PID_Vel);
-    Fuzzy_Reset(&FuzzyPD);
-    Fuzzy_Reset(&FuzzyPI);
+    Fuzzy_Reset(&FuzzyPD_Pitch);
+    Fuzzy_Reset(&FuzzyPD_Pos);
 
     GPIO_ResetBits(GPIOD, GPIO_Pin_12);
     GPIO_SetBits(GPIOD, GPIO_Pin_14);
@@ -247,8 +247,8 @@ void Robot_SetControlMode(RobotControlMode_t mode) {
     g_controlMode = mode;
     Reset_OdometryAndStates();
     PID_Reset(&PID_Vel);
-    Fuzzy_Reset(&FuzzyPD);
-    Fuzzy_Reset(&FuzzyPI);
+    Fuzzy_Reset(&FuzzyPD_Pitch);
+    Fuzzy_Reset(&FuzzyPD_Pos);
     Motor_Stop();
 }
 
@@ -589,7 +589,7 @@ static void vTaskControl(void *pvParameters)
     uint8_t outerCnt = 0;
 
     /* dVel tính trực tiếp từ tổng xung encoder (không qua Kalman): Kalman tốc độ bị lượng tử hóa
-     * 9.1 RPM/xung/5ms nên dVel từ Kalman nhiễu rất lớn (de_norm của FuzzyPI bão hòa liên tục).
+     * 9.1 RPM/xung/5ms nên dVel từ Kalman nhiễu rất lớn (de_norm của FuzzyPD_Pos bão hòa liên tục).
      * Với tổng xung S(k) lấy mỗi chu kỳ vòng ngoài 20ms:
      *   dVel = [S(k) - 2*S(k-W) + S(k-2W)] / (44 * (W*0.02)^2)   (RPM/s, trung bình 2 bánh)
      * rồi lọc thông thấp bậc 1. Độ phân giải ~3.6 RPM/s mỗi xung (W = 4), trễ khoảng 80ms. */
@@ -641,7 +641,7 @@ static void vTaskControl(void *pvParameters)
                     g_dVel   = dVel;
 
                     if (g_controlMode == CTRL_MODE_FUZZY) {
-                        /* FuzzyPI giữ vị trí (đầu ra TRỰC TIẾP, không cộng dồn):
+                        /* FuzzyPD_Pos giữ vị trí (đầu ra TRỰC TIẾP, không cộng dồn):
                          *   e  = x - xTarget            (cm)
                          *   de = v - vel_cmd            (cm/s)
                          *   tilt = Fuzzy(e, de): thành phần theo de tạo giảm chấn, e kéo về điểm đích.
@@ -656,7 +656,7 @@ static void vTaskControl(void *pvParameters)
                         float vcmd_cms = vel_cmd * WHEEL_RPM_TO_CMS;
                         xTarget += vcmd_cms * OUTER_LOOP_DT;                         /* điểm đích trôi theo vận tốc đặt */
                         xTarget  = Clamp_Float(xTarget, x_fw - POS_TARGET_LEAD_MAX_CM, x_fw + POS_TARGET_LEAD_MAX_CM);
-                        tiltOffset = -FuzzyPD_Compute(&FuzzyPI, xTarget, x_fw, v_cms - vcmd_cms);
+                        tiltOffset = -FuzzyPD_Compute(&FuzzyPD_Pos, xTarget, x_fw, v_cms - vcmd_cms);
                     } else {
                         tiltOffset = PID_Compute(&PID_Vel, vel_cmd, vel, OUTER_LOOP_DT);
                     }
@@ -665,7 +665,7 @@ static void vTaskControl(void *pvParameters)
 
                 /* 3. Vòng Trong Cân bằng Pitch (chu kỳ 5ms, 90% OutPWM = +-7560) */
                 if (g_controlMode == CTRL_MODE_FUZZY) {
-                    pwm_fuzzy = FuzzyPD_Compute(&FuzzyPD, targetAngle, g_filteredPitch, kalmanPitch.rate);
+                    pwm_fuzzy = FuzzyPD_Compute(&FuzzyPD_Pitch, targetAngle, g_filteredPitch, kalmanPitch.rate);
                 } else {
                     pwm_fuzzy = g_Kp_balance * (g_filteredPitch - targetAngle) + g_Kd_balance * kalmanPitch.rate;
                 }
@@ -739,8 +739,8 @@ static void vTaskControl(void *pvParameters)
                 Motor_Stop();
             }
             PID_Reset(&PID_Vel);
-            Fuzzy_Reset(&FuzzyPD);
-            Fuzzy_Reset(&FuzzyPI);
+            Fuzzy_Reset(&FuzzyPD_Pitch);
+            Fuzzy_Reset(&FuzzyPD_Pos);
             dVel                  = 0.0f;
             pulseHead             = 0;
             pulseCnt              = 0;
@@ -916,12 +916,12 @@ static void vTaskUART(void *pvParameters)
                         if (rxLen >= 24) {
                             float fz[6];
                             memcpy(fz, rxDataBuf, sizeof(fz));
-                            if (fz[0] > 0.0f && fz[0] < 1.0e6f) FuzzyPD.ke  = fz[0];
-                            if (fz[1] > 0.0f && fz[1] < 1.0e6f) FuzzyPD.kde = fz[1];
-                            if (fz[2] > 0.0f && fz[2] < 1.0e6f) FuzzyPD.ku  = fz[2];
-                            if (fz[3] > 0.0f && fz[3] < 1.0e6f) FuzzyPI.ke  = fz[3];
-                            if (fz[4] > 0.0f && fz[4] < 1.0e6f) FuzzyPI.kde = fz[4];
-                            if (fz[5] >= 0.0f && fz[5] < 1.0e6f) FuzzyPI.ku = fz[5];  /* cho phép ku_PI = 0 để tắt vòng ngoài */
+                            if (fz[0] > 0.0f && fz[0] < 1.0e6f) FuzzyPD_Pitch.ke  = fz[0];
+                            if (fz[1] > 0.0f && fz[1] < 1.0e6f) FuzzyPD_Pitch.kde = fz[1];
+                            if (fz[2] > 0.0f && fz[2] < 1.0e6f) FuzzyPD_Pitch.ku  = fz[2];
+                            if (fz[3] > 0.0f && fz[3] < 1.0e6f) FuzzyPD_Pos.ke    = fz[3];
+                            if (fz[4] > 0.0f && fz[4] < 1.0e6f) FuzzyPD_Pos.kde   = fz[4];
+                            if (fz[5] >= 0.0f && fz[5] < 1.0e6f) FuzzyPD_Pos.ku    = fz[5];  /* cho phép ku_PI = 0 để tắt vòng ngoài */
                             sendConfigReq = 1;   /* gửi lại bộ số hiện tại để app xác nhận */
                         }
                         break;
@@ -971,12 +971,12 @@ static void vTaskUART(void *pvParameters)
             cfgSync.controlMode = (float)g_controlMode;
             cfgSync.kp_speed    = g_Kp_speed;
             cfgSync.ki_speed    = g_Ki_speed;
-            cfgSync.pd_ke       = FuzzyPD.ke;
-            cfgSync.pd_kde      = FuzzyPD.kde;
-            cfgSync.pd_ku       = FuzzyPD.ku;
-            cfgSync.pi_ke       = FuzzyPI.ke;
-            cfgSync.pi_kde      = FuzzyPI.kde;
-            cfgSync.pi_ku       = FuzzyPI.ku;
+            cfgSync.pitch_ke    = FuzzyPD_Pitch.ke;
+            cfgSync.pitch_kde   = FuzzyPD_Pitch.kde;
+            cfgSync.pitch_ku    = FuzzyPD_Pitch.ku;
+            cfgSync.pos_ke      = FuzzyPD_Pos.ke;
+            cfgSync.pos_kde     = FuzzyPD_Pos.kde;
+            cfgSync.pos_ku      = FuzzyPD_Pos.ku;
 
             if (UART3_SendPacketDMA(0x02, &cfgSync, (uint8_t)sizeof(RobotConfigSync_t))) {
                 sendConfigReq = 0;
@@ -1004,10 +1004,10 @@ static void vTaskUART(void *pvParameters)
             telem.outSpeed                 = g_outSpeed;
             telem.velCmd                   = g_velCmd;
             telem.dVel                     = g_dVel;
-            telem.pdENorm                  = FuzzyPD.e_norm;
-            telem.pdDeNorm                 = FuzzyPD.de_norm;
-            telem.piENorm                  = FuzzyPI.e_norm;
-            telem.piDeNorm                 = FuzzyPI.de_norm;
+            telem.pitchENorm               = FuzzyPD_Pitch.e_norm;
+            telem.pitchDeNorm              = FuzzyPD_Pitch.de_norm;
+            telem.posENorm                 = FuzzyPD_Pos.e_norm;
+            telem.posDeNorm                = FuzzyPD_Pos.de_norm;
 
             UART3_SendPacketDMA(0x01, &telem, (uint8_t)sizeof(RobotTelemetry_t));
         }

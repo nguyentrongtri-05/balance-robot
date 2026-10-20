@@ -25,14 +25,13 @@ static float Fuzzy_Clamp(float val, float minVal, float maxVal) {
 }
 
 /* ============================================================================
- * KHỞI TẠO, CẤU HÌNH THAM SỐ TỔNG QUÁT & RESET BỘ ĐIỀU KHIỂN MỜ
+ * KHỞI TẠO, CẤU HÌNH THAM SỐ TỔNG QUÁT & RESET BỘ ĐIỀU KHIỂN MỜ FUZZY PD
  * ============================================================================ */
 void Fuzzy_Reset(FuzzyController_t *fc) {
     if (!fc) return;
 
-    fc->pi_integral_output = 0.0f;
-    fc->e_norm             = 0.0f;
-    fc->de_norm            = 0.0f;
+    fc->e_norm  = 0.0f;
+    fc->de_norm = 0.0f;
 
     memset(fc->mu_e,         0, sizeof(fc->mu_e));
     memset(fc->mu_de,        0, sizeof(fc->mu_de));
@@ -46,7 +45,7 @@ void Fuzzy_Init(FuzzyController_t *fc,
                 float out_small, float out_med) {
     if (!fc) return;
 
-    /* 1. Tham số Khâu Tiền Xử Lý (nhập trực tiếp từ hàm Init) */
+    /* 1. Tham số Khâu Tiền Xử Lý & Bão hòa đầu vào [-1.0 .. +1.0] */
     fc->ke                = ke;
     fc->kde               = kde;
     fc->e_min             = -1.0f;
@@ -76,7 +75,7 @@ void Fuzzy_Init(FuzzyController_t *fc,
     fc->de_limit_ze_ps    =  de_ns_val;
     fc->de_limit_ps_pb    =  de_nb_val;
 
-    /* 3. Cấu hình dải 7 mức Singleton Khâu Giải Mờ đầu ra u */
+    /* 3. Cấu hình dải 7 mức Singleton Khâu Giải Mờ đầu ra u & Bão hòa [-1.0 .. +1.0] trước Ku */
     float out_s_val = fabsf(out_small);
     float out_m_val = fabsf(out_med);
 
@@ -134,7 +133,8 @@ float Fuzzy_MF_Trapezoid(float x, float a, float b, float c, float d) {
 /* ============================================================================
  * KHÂU 1: TIỀN XỬ LÝ TỔNG QUÁT (PRE-PROCESSING STAGE)
  *  - Tính sai số: rawError = currentVal - setpoint
- *  - Chuẩn hóa e qua ke, de qua kde và kẹp vào miền [-1.0f .. +1.0f]
+ *  - Chuẩn hóa e_norm = rawError * ke, de_norm = dCurrentVal * kde
+ *  (Khâu bão hòa [-1.0 .. +1.0] được thực hiện ngay sau bước Tiền xử lý)
  * ============================================================================ */
 void Fuzzy_PreProcess(FuzzyController_t *fc,
                       float setpoint,
@@ -146,11 +146,8 @@ void Fuzzy_PreProcess(FuzzyController_t *fc,
 
     float rawError = currentVal - setpoint;
 
-    float e_scaled  = Fuzzy_Clamp(rawError    * fc->ke,  fc->e_min,  fc->e_max);
-    float de_scaled = Fuzzy_Clamp(dCurrentVal * fc->kde, fc->de_min, fc->de_max);
-
-    fc->e_norm  = e_scaled;
-    fc->de_norm = de_scaled;
+    float e_scaled  = rawError    * fc->ke;
+    float de_scaled = dCurrentVal * fc->kde;
 
     if (out_eNorm)  *out_eNorm  = e_scaled;
     if (out_deNorm) *out_deNorm = de_scaled;
@@ -203,8 +200,9 @@ void Fuzzy_Inference(const float mu_e[FUZZY_NUM_STATES],
 }
 
 /* ============================================================================
- * KHÂU 4: GIẢI MỜ TỔNG QUÁT (DEFUZZIFICATION STAGE RA MIỀN [-1.0 .. +1.0])
+ * KHÂU 4: GIẢI MỜ TỔNG QUÁT (DEFUZZIFICATION STAGE)
  *  - Trung bình trọng số 7 Singleton {NB, NM, NS, ZE, PS, PM, PB}
+ *  (Khâu bão hòa [-1.0 .. +1.0] được đặt ngay sau Giải mờ, trước Hậu xử lý Ku)
  * ============================================================================ */
 float Fuzzy_Defuzzify(FuzzyController_t *fc, float ruleWeights[FUZZY_NUM_STATES][FUZZY_NUM_STATES]) {
     if (!fc || !ruleWeights) return 0.0f;
@@ -234,13 +232,13 @@ float Fuzzy_Defuzzify(FuzzyController_t *fc, float ruleWeights[FUZZY_NUM_STATES]
         }
     }
 
-    float defuzzOut = (denominator > 1e-6f) ? (numerator / denominator) : 0.0f;
-    return Fuzzy_Clamp(defuzzOut, fc->defuzz_min, fc->defuzz_max);
+    return (denominator > 1e-6f) ? (numerator / denominator) : 0.0f;
 }
 
 /* ============================================================================
  * KHÂU 5: HẬU XỬ LÝ TỔNG QUÁT (POST-PROCESSING STAGE)
- *  - Khuếch đại tín hiệu giải mờ qua hệ số ku và kẹp bão hòa [out_min, out_max]
+ *  - Khuếch đại tín hiệu giải mờ (đã bão hòa [-1.0 .. +1.0]) qua hệ số Ku
+ *    và giới hạn trong dải vật lý [post_out_min, post_out_max]
  * ============================================================================ */
 float Fuzzy_PostProcess(FuzzyController_t *fc, float defuzzOutput) {
     if (!fc) return 0.0f;
@@ -249,45 +247,42 @@ float Fuzzy_PostProcess(FuzzyController_t *fc, float defuzzOutput) {
 }
 
 /* ============================================================================
- * HÀM ĐIỀU KHIỂN FUZZY PD TỔNG HỢP CHẠY TRỌN VẸN 5 KHÂU
+ * HÀM ĐIỀU KHIỂN FUZZY PD TỔNG HỢP
+ *  - Khâu 1: Tiền xử lý (chuẩn hóa e_norm = e * ke, de_norm = de * kde)
+ *  - Bão hòa đầu vào: Kẹp e_norm, de_norm vào đoạn [-1.0 .. +1.0] sau Tiền xử lý
+ *  - Khâu 2: Mờ hóa (Fuzzification)
+ *  - Khâu 3: Suy diễn mờ (Fuzzy Inference 5x5)
+ *  - Khâu 4: Giải mờ (Defuzzification)
+ *  - Bão hòa trước Hậu xử lý: Kẹp u_defuzz vào đoạn [-1.0 .. +1.0] trước khi nhân Ku
+ *  - Khâu 5: Hậu xử lý (Post-processing Ku)
  * ============================================================================ */
 float FuzzyPD_Compute(FuzzyController_t *fc, float setpoint, float currentVal, float dCurrentVal) {
     if (!fc) return 0.0f;
 
     float eNorm  = 0.0f;
     float deNorm = 0.0f;
-    // tiền xử lý
+
+    /* 1. Khâu Tiền xử lý: chuẩn hóa e_norm và de_norm */
     Fuzzy_PreProcess(fc, setpoint, currentVal, dCurrentVal, &eNorm, &deNorm);
-    // mờ hóa
+
+    /* Bão hòa [-1.0 .. +1.0] ngay sau khâu Tiền xử lý */
+    eNorm       = Fuzzy_Clamp(eNorm,  fc->e_min,  fc->e_max);
+    deNorm      = Fuzzy_Clamp(deNorm, fc->de_min, fc->de_max);
+    fc->e_norm  = eNorm;
+    fc->de_norm = deNorm;
+
+    /* 2. Khâu Mờ hóa */
     Fuzzy_Fuzzify(fc, eNorm, deNorm, fc->mu_e, fc->mu_de);
-    // suy diễn
+
+    /* 3. Khâu Suy diễn mờ */
     Fuzzy_Inference(fc->mu_e, fc->mu_de, fc->rule_weights);
-    // giải mờ
+
+    /* 4. Khâu Giải mờ */
     float defuzzOut = Fuzzy_Defuzzify(fc, fc->rule_weights);
-    // hậu xử lý
+
+    /* Bão hòa [-1.0 .. +1.0] trước khâu Hậu xử lý Ku */
+    defuzzOut = Fuzzy_Clamp(defuzzOut, fc->defuzz_min, fc->defuzz_max);
+
+    /* 5. Khâu Hậu xử lý Ku */
     return Fuzzy_PostProcess(fc, defuzzOut);
-}
-
-/* ============================================================================
- * HÀM ĐIỀU KHIỂN FUZZY PI GIA SỐ TỔNG HỢP CHẠY TRỌN VẸN 5 KHÂU
- * ============================================================================ */
-float FuzzyPI_Compute(FuzzyController_t *fc, float setpoint, float currentVal, float dCurrentVal) {
-    if (!fc) return 0.0f;
-
-    float eNorm  = 0.0f;
-    float deNorm = 0.0f;
-    // tiền xử lý
-    Fuzzy_PreProcess(fc, setpoint, currentVal, dCurrentVal, &eNorm, &deNorm);
-    // mờ hóa
-    Fuzzy_Fuzzify(fc, eNorm, deNorm, fc->mu_e, fc->mu_de);
-    // suy diễn
-    Fuzzy_Inference(fc->mu_e, fc->mu_de, fc->rule_weights);
-    // giải mờ
-    float defuzzOut = Fuzzy_Defuzzify(fc, fc->rule_weights);
-    // hậu xử lý (cộng dồn gia số: u(k) = u(k-1) + delta_u)
-    float deltaOut = Fuzzy_PostProcess(fc, defuzzOut);
-    fc->pi_integral_output = Fuzzy_Clamp(fc->pi_integral_output + deltaOut,
-                                         fc->post_out_min,
-                                         fc->post_out_max);
-    return fc->pi_integral_output;
 }
