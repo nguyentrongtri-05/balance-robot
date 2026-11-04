@@ -8,13 +8,13 @@
 
 /* ============================================================================
  * KIẾN TRÚC ĐIỀU KHIỂN VÒNG LỒNG (CASCADED DUAL-FUZZYPD ARCHITECTURE):
- *  1. Vòng Ngoài Vị trí / Vận tốc (FuzzyPD_Pos / PID_Vel, chu kỳ 20ms):
+ *  1. Vòng Ngoài Vị trí / Vận tốc (FuzzyPD_Pos / PID_Vel, chu kỳ 5ms / 200Hz):
  *     - Nhận sai số vị trí và sai số vận tốc đo từ Encoder -> tính góc nghiêng bù trừ
- *       tiltOffset thuộc [-3.5° .. +3.5°].
+ *       tiltOffset thuộc [-3.3° .. +3.3°] (FuzzyPD_Pos) hoặc [-2.5° .. +2.5°] (PID_Vel).
  *     - Góc đặt đưa vào Vòng Trong: targetAngle = g_targetAngle - tiltOffset.
- *  2. Vòng Trong Cân bằng Pitch (FuzzyPD_Pitch / Balance PD, chu kỳ 5ms):
+ *  2. Vòng Trong Cân bằng Pitch (FuzzyPD_Pitch / Balance PD, chu kỳ 5ms / 200Hz):
  *     - Nhận targetAngle và xuất trực tiếp 90% tổng công suất PWM (+-7560 / 8400).
- *  3. Vòng Độc lập Ngang (Yaw PID, chu kỳ 5ms):
+ *  3. Vòng Độc lập Ngang (Yaw PID, chu kỳ 5ms / 200Hz):
  *     - Điều khiển góc hướng xoay Yaw với 10% tổng công suất PWM (+-840 / 8400).
  *     - Tổng công suất động cơ: 90% (7560) + 10% (840) = 100% (8400 PWM).
  * ============================================================================ */

@@ -64,7 +64,7 @@ volatile float g_outFuzzy       = 0.0f;
 volatile float g_outSpeed       = 0.0f;
 volatile float g_outYaw         = 0.0f;
 volatile float g_velCmd         = 0.0f;   /* debug: vận tốc đặt vòng ngoài (RPM) */
-volatile float g_dVel           = 0.0f;   /* debug: gia tốc dVel đưa vào FuzzyPD_Pos (RPM/s) */
+volatile float g_dVel           = 0.0f;   /* debug: gia tốc góc bánh xe trung bình (RPM/s) */
 
 /* =====================================================================
  * CẤU HÌNH KIẾN TRÚC ĐIỀU KHIỂN VÒNG LỒNG (CASCADED CONTROL):
@@ -88,13 +88,9 @@ volatile float g_Kd_yaw_imu  = 3.78f;
 volatile float g_yawIntegral   = 0.0f;
 #define YAW_INTEGRAL_MAX       25.0f
 
-/* Vòng ngoài vận tốc chạy chậm hơn vòng trong: 4 x 5ms = 20ms (50Hz)
- * -> dVel = (vel - vel_prev) / 0.02 ít nhiễu hơn mà không cần bộ lọc EMA */
-#define OUTER_LOOP_DIV         4u
+/* Chu kỳ điều khiển đồng bộ toàn hệ thống (Vòng ngoài + Vòng trong + Yaw): 5ms (200Hz) */
+#define CONTROL_LOOP_DT         0.005f
 #define POS_TARGET_LEAD_MAX_CM  15.0f   /* Giới hạn điểm đích lệch xa vị trí hiện tại tối đa (chống windup khi xe không theo kịp) */
-#define TEST_PWM_MAX            2000.0f /* Giới hạn PWM khi dò vùng chết bánh xe (lệnh 0x0B) */
-#define TEST_PWM_TIMEOUT_MS     500u    /* Tự tắt động cơ nếu quá thời gian này không nhận lệnh 0x0B mới */
-#define OUTER_LOOP_DT          (0.005f * (float)OUTER_LOOP_DIV)
 
 /* Bù vùng chết động cơ (67/50 trên thang PWM 8400 bước) và giới hạn tốc độ thay đổi PWM (bảo vệ cơ khí) */
 /* Vùng chết bù từng bánh, từng chiều (POS = PWM dương/tiến, NEG = PWM âm/lùi), đặt bằng ~80% vùng chết ĐỘNG đo từ log chạy cân bằng
@@ -219,9 +215,6 @@ uint8_t Robot_Start(void) {
 
     KalmanSpeed_SetSpeed(&kalmanSpeed_L, 0.0f);
     KalmanSpeed_SetSpeed(&kalmanSpeed_R, 0.0f);
-    PID_Reset(&PID_Vel);
-    Fuzzy_Reset(&FuzzyPD_Pitch);
-    Fuzzy_Reset(&FuzzyPD_Pos);
 
     GPIO_SetBits(GPIOD, GPIO_Pin_12);
     GPIO_ResetBits(GPIOD, GPIO_Pin_14);
@@ -246,19 +239,12 @@ void Robot_Stop(void) {
 void Robot_SetControlMode(RobotControlMode_t mode) {
     g_controlMode = mode;
     Reset_OdometryAndStates();
-    PID_Reset(&PID_Vel);
-    Fuzzy_Reset(&FuzzyPD_Pitch);
-    Fuzzy_Reset(&FuzzyPD_Pos);
     Motor_Stop();
 }
 
 static volatile uint8_t s_isCalibrating = 0;
-static volatile int32_t s_encTotalSum = 0;   /* Tổng xung encoder L+R tích lũy (cập nhật mỗi 5ms ở vTaskEncoder) */
+static volatile int32_t s_encTotalSum   = 0;   /* Tổng xung encoder L+R tích lũy (cập nhật mỗi 5ms ở vTaskEncoder) */
 static volatile uint8_t s_calibPending  = 0;
-static volatile float   s_testPwmL    = 0.0f;   /* PWM thử bánh trái (lệnh 0x0B) */
-static volatile float   s_testPwmR    = 0.0f;   /* PWM thử bánh phải (lệnh 0x0B) */
-static volatile TickType_t s_testStamp = 0;     /* Thời điểm nhận lệnh 0x0B gần nhất */
-static volatile uint8_t s_testActive  = 0;     /* 1: đang chạy chế độ thử PWM trực tiếp (chỉ khi STOP) */
 
 void Robot_RequestCalibrate(void) {
     s_calibPending = 1;
@@ -518,15 +504,6 @@ static void vTaskEncoder(void *pvParameters)
     MOTOR rightMotor = {0};
     int8_t beat = 0;
 
-    /* Tốc độ bánh chỉ cập nhật ở 50Hz (mỗi ENCODER_SPEED_DIV chu kỳ 5ms) từ tổng xung tích lũy:
-     * 1 xung = 2.27 RPM thay vì 9.09 RPM (200Hz) -> giảm nhiễu lượng tử hóa 4 lần.
-     * Bộ đếm xung, odometry yaw và s_encTotalSum vẫn cập nhật mỗi 5ms (không mất xung). */
-    #define ENCODER_SPEED_DIV  4u
-    #define ENCODER_SPEED_DT   (0.005f * (float)ENCODER_SPEED_DIV)
-    int32_t accPulseL = 0;
-    int32_t accPulseR = 0;
-    uint8_t speedCnt  = 0;
-
     while (1)
     {
         TickType_t xCurrentTime = xTaskGetTickCount();
@@ -537,7 +514,7 @@ static void vTaskEncoder(void *pvParameters)
 
         Encoder_ReadStruct(&leftMotor, &rightMotor);
 
-        /* Odometry yaw & tổng xung: cập nhật mỗi 5ms */
+        /* Odometry yaw & tổng xung: cập nhật mỗi 5ms (200Hz) */
         float dPulse_L       = -(float)leftMotor.delta_pulse;
         float dPulse_R       = -(float)rightMotor.delta_pulse;
         float deltaPulseDiff = dPulse_L - dPulse_R;
@@ -545,23 +522,15 @@ static void vTaskEncoder(void *pvParameters)
         g_encoderYawAngle += deltaPulseDiff * YAW_DEG_PER_DIFF_PULSE;
         s_encTotalSum += (int32_t)(leftMotor.delta_pulse + rightMotor.delta_pulse);
 
-        /* Tốc độ bánh & Kalman: cập nhật ở 50Hz từ tổng xung tích lũy trong 20ms */
-        accPulseL += leftMotor.delta_pulse;
-        accPulseR += rightMotor.delta_pulse;
-        if (++speedCnt >= ENCODER_SPEED_DIV) {
-            speedCnt = 0;
-            const float rpmPerPulse = 60.0f / (ENCODER_COUNTS_PER_REV * ENCODER_SPEED_DT);
-            g_motorSpeed_left  = (float)accPulseL * rpmPerPulse;
-            g_motorSpeed_right = (float)accPulseR * rpmPerPulse;
-            accPulseL = 0;
-            accPulseR = 0;
+        /* Tốc độ bánh & Kalman: cập nhật trực tiếp mỗi 5ms (200Hz) */
+        g_motorSpeed_left  = leftMotor.speed;
+        g_motorSpeed_right = rightMotor.speed;
 
-            g_motorSpeedfiltered_left  = KalmanSpeed_GetSpeed(&kalmanSpeed_L, g_motorSpeed_left,  ENCODER_SPEED_DT);
-            g_motorSpeedfiltered_right = KalmanSpeed_GetSpeed(&kalmanSpeed_R, g_motorSpeed_right, ENCODER_SPEED_DT);
+        g_motorSpeedfiltered_left  = KalmanSpeed_GetSpeed(&kalmanSpeed_L, g_motorSpeed_left,  ENCODER_SAMPLE_TIME);
+        g_motorSpeedfiltered_right = KalmanSpeed_GetSpeed(&kalmanSpeed_R, g_motorSpeed_right, ENCODER_SAMPLE_TIME);
 
-            float vDiff_cms  = (-g_motorSpeedfiltered_left - (-g_motorSpeedfiltered_right)) * WHEEL_RPM_TO_CMS;
-            g_encoderYawRate = vDiff_cms * YAW_DEG_PER_DIFF_CM;
-        }
+        float vDiff_cms  = (-g_motorSpeedfiltered_left - (-g_motorSpeedfiltered_right)) * WHEEL_RPM_TO_CMS;
+        g_encoderYawRate = vDiff_cms * YAW_DEG_PER_DIFF_CM;
 
         if (++beat >= 30) {
             beat = 0;
@@ -579,26 +548,13 @@ static void vTaskControl(void *pvParameters)
     const TickType_t xFrequency = pdMS_TO_TICKS(5);
     uint8_t beat = 0;
 
-    float vel = 0.0f, vel_cmd = 0.0f, dVel = 0.0f;
-    /* Vòng PI giữ vị trí: e = sai số vị trí (cm), de = sai số vận tốc (cm/s). Dấu theo firmware: tiến = âm. */
+    float vel = 0.0f, vel_cmd = 0.0f;
+    /* Vòng ngoài giữ vị trí: e = sai số vị trí (cm), de = sai số vận tốc (cm/s). Dấu theo firmware: tiến = âm. */
     int32_t posRefSum = 0;      /* tổng xung L+R tại gốc vị trí */
     float   xTarget   = 0.0f;   /* vị trí đích (cm), tự dịch chuyển theo vận tốc đặt */
     float tiltOffset = 0.0f, targetAngle = 0.0f;
     float pwm_fuzzy = 0.0f, pwm_yaw = 0.0f;
     float outpwm_L = 0.0f, outpwm_R = 0.0f;
-    uint8_t outerCnt = 0;
-
-    /* dVel tính trực tiếp từ tổng xung encoder (không qua Kalman): Kalman tốc độ bị lượng tử hóa
-     * 9.1 RPM/xung/5ms nên dVel từ Kalman nhiễu rất lớn (de_norm của FuzzyPD_Pos bão hòa liên tục).
-     * Với tổng xung S(k) lấy mỗi chu kỳ vòng ngoài 20ms:
-     *   dVel = [S(k) - 2*S(k-W) + S(k-2W)] / (44 * (W*0.02)^2)   (RPM/s, trung bình 2 bánh)
-     * rồi lọc thông thấp bậc 1. Độ phân giải ~3.6 RPM/s mỗi xung (W = 4), trễ khoảng 80ms. */
-    #define DVEL_WINDOW     4u
-    #define DVEL_RING       (2u * DVEL_WINDOW + 1u)
-    #define DVEL_LPF_ALPHA  0.5f
-    int32_t pulseHist[DVEL_RING] = {0};
-    uint8_t pulseHead = 0;
-    uint8_t pulseCnt  = 0;
 
     while (1)
     {
@@ -610,7 +566,6 @@ static void vTaskControl(void *pvParameters)
 
         if (g_systemEnable)
         {
-            s_testActive = 0;   /* thoát chế độ thử PWM khi robot chạy cân bằng */
             /* 1. Bảo vệ an toàn: Ngắt động cơ nếu góc nghiêng lệch quá +-15.0 độ */
             if (fabsf(g_filteredPitch - g_targetAngle) > ROBOT_BALANCE_ANGLE_LIMIT) {
                 Robot_Stop();
@@ -618,49 +573,33 @@ static void vTaskControl(void *pvParameters)
             }
             else
             {
-                /* 2. Vòng Ngoài Vận tốc (chu kỳ 20ms): Fuzzy PI hoặc PID -> Góc nghiêng bù trừ tiltOffset
+                /* 2. Vòng Ngoài Vị trí / Vận tốc (chu kỳ 5ms / 200Hz): FuzzyPD_Pos hoặc PID_Vel -> Góc nghiêng bù trừ tiltOffset
                  *    targetAngle = g_targetAngle - tiltOffset  (tiltOffset > 0: ngả về sau) */
-                if (++outerCnt >= OUTER_LOOP_DIV) {
-                    outerCnt = 0;
-                    vel     = (g_motorSpeedfiltered_left + g_motorSpeedfiltered_right) * 0.5f;
-                    vel_cmd = -Clamp_Float(g_targetSpeed, -ROBOT_MAX_SPEED_RPM, ROBOT_MAX_SPEED_RPM);
-                    pulseHist[pulseHead] = s_encTotalSum;
-                    if (pulseCnt < DVEL_RING) {
-                        pulseCnt++;
-                        dVel = 0.0f;   /* chưa đủ dữ liệu: coi như gia tốc = 0 */
-                    } else {
-                        int32_t s0 = pulseHist[pulseHead];
-                        int32_t s1 = pulseHist[(pulseHead + DVEL_RING - DVEL_WINDOW) % DVEL_RING];
-                        int32_t s2 = pulseHist[(pulseHead + DVEL_RING - 2u * DVEL_WINDOW) % DVEL_RING];
-                        float   tW = (float)DVEL_WINDOW * OUTER_LOOP_DT;
-                        float dRaw = (float)(s0 - 2 * s1 + s2) / (44.0f * tW * tW);
-                        dVel = dVel + DVEL_LPF_ALPHA * (dRaw - dVel);
-                    }
-                    pulseHead = (uint8_t)((pulseHead + 1u) % DVEL_RING);
-                    g_velCmd = vel_cmd;
-                    g_dVel   = dVel;
+                vel      = (g_motorSpeedfiltered_left + g_motorSpeedfiltered_right) * 0.5f;
+                vel_cmd  = -Clamp_Float(g_targetSpeed, -ROBOT_MAX_SPEED_RPM, ROBOT_MAX_SPEED_RPM);
+                g_velCmd = vel_cmd;
+                g_dVel   = (kalmanSpeed_L.accel + kalmanSpeed_R.accel) * 0.5f;
 
-                    if (g_controlMode == CTRL_MODE_FUZZY) {
-                        /* FuzzyPD_Pos giữ vị trí (đầu ra TRỰC TIẾP, không cộng dồn):
-                         *   e  = x - xTarget            (cm)
-                         *   de = v - vel_cmd            (cm/s)
-                         *   tilt = Fuzzy(e, de): thành phần theo de tạo giảm chấn, e kéo về điểm đích.
-                         * Dùng đầu ra cộng dồn (PI gia số) sẽ thiếu giảm chấn nên mất ổn định. */
-                        if (s_posResetReq) {
-                            s_posResetReq = 0;
-                            posRefSum = s_encTotalSum;
-                            xTarget   = 0.0f;
-                        }
-                        float x_fw     = (float)(s_encTotalSum - posRefSum) * 0.5f * WHEEL_CM_PER_PULSE;
-                        float v_cms    = vel * WHEEL_RPM_TO_CMS;
-                        float vcmd_cms = vel_cmd * WHEEL_RPM_TO_CMS;
-                        xTarget += vcmd_cms * OUTER_LOOP_DT;                         /* điểm đích trôi theo vận tốc đặt */
-                        xTarget  = Clamp_Float(xTarget, x_fw - POS_TARGET_LEAD_MAX_CM, x_fw + POS_TARGET_LEAD_MAX_CM);
-                        tiltOffset = -FuzzyPD_Compute(&FuzzyPD_Pos, xTarget, x_fw, v_cms - vcmd_cms);
-                    } else {
-                        tiltOffset = PID_Compute(&PID_Vel, vel_cmd, vel, OUTER_LOOP_DT);
+                if (g_controlMode == CTRL_MODE_FUZZY) {
+                    /* FuzzyPD_Pos giữ vị trí (đầu ra TRỰC TIẾP, không cộng dồn):
+                     *   e  = x - xTarget            (cm)
+                     *   de = v - vel_cmd            (cm/s)
+                     *   tilt = Fuzzy(e, de): thành phần theo de tạo giảm chấn, e kéo về điểm đích. */
+                    if (s_posResetReq) {
+                        s_posResetReq = 0;
+                        posRefSum = s_encTotalSum;
+                        xTarget   = 0.0f;
                     }
+                    float x_fw     = (float)(s_encTotalSum - posRefSum) * 0.5f * WHEEL_CM_PER_PULSE;
+                    float v_cms    = vel * WHEEL_RPM_TO_CMS;
+                    float vcmd_cms = vel_cmd * WHEEL_RPM_TO_CMS;
+                    xTarget += vcmd_cms * CONTROL_LOOP_DT;                       /* điểm đích trôi theo vận tốc đặt */
+                    xTarget  = Clamp_Float(xTarget, x_fw - POS_TARGET_LEAD_MAX_CM, x_fw + POS_TARGET_LEAD_MAX_CM);
+                    tiltOffset = -FuzzyPD_Compute(&FuzzyPD_Pos, xTarget, x_fw, v_cms - vcmd_cms);
+                } else {
+                    tiltOffset = PID_Compute(&PID_Vel, vel_cmd, vel, CONTROL_LOOP_DT);
                 }
+
                 targetAngle = g_targetAngle - tiltOffset;
 
                 /* 3. Vòng Trong Cân bằng Pitch (chu kỳ 5ms, 90% OutPWM = +-7560) */
@@ -730,22 +669,11 @@ static void vTaskControl(void *pvParameters)
         }
         else
         {
-            if (s_testActive && ((TickType_t)(xTaskGetTickCount() - s_testStamp) < pdMS_TO_TICKS(TEST_PWM_TIMEOUT_MS))) {
-                /* Chế độ dò vùng chết: đặt PWM trực tiếp từng bánh (không qua bù vùng chết/giới hạn tốc độ đổi) */
-                Motor_SetPWM_Left(s_testPwmL);
-                Motor_SetPWM_Right(s_testPwmR);
-            } else {
-                s_testActive = 0;
-                Motor_Stop();
-            }
+            Motor_Stop();
             PID_Reset(&PID_Vel);
             Fuzzy_Reset(&FuzzyPD_Pitch);
             Fuzzy_Reset(&FuzzyPD_Pos);
-            dVel                  = 0.0f;
-            pulseHead             = 0;
-            pulseCnt              = 0;
             tiltOffset            = 0.0f;
-            outerCnt              = 0;
             g_velCmd              = 0.0f;
             g_dVel                = 0.0f;
             s_prevBalancePWM_L    = 0.0f;
@@ -755,8 +683,8 @@ static void vTaskControl(void *pvParameters)
             g_outFuzzy            = 0.0f;
             g_outSpeed            = 0.0f;
             g_outYaw              = 0.0f;
-            g_motorPWM_left       = s_testActive ? s_testPwmL : 0.0f;
-            g_motorPWM_right      = s_testActive ? s_testPwmR : 0.0f;
+            g_motorPWM_left       = 0.0f;
+            g_motorPWM_right      = 0.0f;
         }
 
         if (++beat == 40) {
@@ -911,7 +839,7 @@ static void vTaskUART(void *pvParameters)
                         sendConfigReq = 1;
                         break;
                     case 0x0A:
-                        /* SET FUZZY: 6 float = [PD ke, PD kde, PD ku, PI ke, PI kde, PI ku]
+                        /* SET FUZZY: 6 float = [Pitch ke, Pitch kde, Pitch ku, Pos ke, Pos kde, Pos ku]
                          * Chỉ nhận giá trị dương hữu hạn; giá trị <= 0 sẽ được giữ nguyên */
                         if (rxLen >= 24) {
                             float fz[6];
@@ -921,22 +849,8 @@ static void vTaskUART(void *pvParameters)
                             if (fz[2] > 0.0f && fz[2] < 1.0e6f) FuzzyPD_Pitch.ku  = fz[2];
                             if (fz[3] > 0.0f && fz[3] < 1.0e6f) FuzzyPD_Pos.ke    = fz[3];
                             if (fz[4] > 0.0f && fz[4] < 1.0e6f) FuzzyPD_Pos.kde   = fz[4];
-                            if (fz[5] >= 0.0f && fz[5] < 1.0e6f) FuzzyPD_Pos.ku    = fz[5];  /* cho phép ku_PI = 0 để tắt vòng ngoài */
+                            if (fz[5] >= 0.0f && fz[5] < 1.0e6f) FuzzyPD_Pos.ku   = fz[5];  /* cho phép ku_Pos = 0 để tắt vòng ngoài */
                             sendConfigReq = 1;   /* gửi lại bộ số hiện tại để app xác nhận */
-                        }
-                        break;
-                    case 0x0B:
-                        /* TEST PWM: 2 float = [pwmL, pwmR] (đơn vị PWM timer, ±TEST_PWM_MAX).
-                         * Chỉ nhận khi robot đang STOP; tự tắt sau TEST_PWM_TIMEOUT_MS nếu không có lệnh mới. */
-                        if (rxLen >= 8 && !g_systemEnable && !s_isCalibrating) {
-                            float tp[2];
-                            memcpy(tp, rxDataBuf, sizeof(tp));
-                            if (tp[0] == tp[0] && tp[1] == tp[1]) {   /* loại NaN */
-                                s_testPwmL   = Clamp_Float(tp[0], -TEST_PWM_MAX, TEST_PWM_MAX);
-                                s_testPwmR   = Clamp_Float(tp[1], -TEST_PWM_MAX, TEST_PWM_MAX);
-                                s_testStamp  = xTaskGetTickCount();
-                                s_testActive = 1;
-                            }
                         }
                         break;
                     default:

@@ -2,7 +2,7 @@
 #include <math.h>
 
 /**
- * @brief Cấu hình PWM Timer 1 (20kHz, thang 8400 bước) và các chân GPIO điều khiển chiều
+ * @brief Cấu hình PWM Timer 1 (10kHz, thang 8400 bước) và các chân GPIO điều khiển chiều
  * - Bánh trái:
  *    + PWM:   PA8  (TIM1_CH1)
  *    + Chiều: PC8, PC6
@@ -43,7 +43,7 @@ void Motor_Config(void) {
 
     GPIO_ResetBits(GPIOC, GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9);
 
-    /* 4. Cấu hình TIM1 Time Base: 168MHz / (1 * 8400) = 20kHz */
+    /* 4. Cấu hình TIM1 Time Base: 168MHz / (2 * 8400) = 10kHz */
     TIM_TimeBaseStructure.TIM_Period            = MOTOR_PWM_PERIOD - 1;
     TIM_TimeBaseStructure.TIM_Prescaler         = MOTOR_PWM_PRESCALER - 1;
     TIM_TimeBaseStructure.TIM_ClockDivision     = TIM_CKD_DIV1;
@@ -122,11 +122,6 @@ void Motor_SetPWM_Right(float pwm) {
     }
 
     TIM1->CCR2 = pulse;
-}
-
-void Motor_SetPWM(float pwm) {
-    Motor_SetPWM_Left(pwm);
-    Motor_SetPWM_Right(pwm);
 }
 
 void Motor_Stop(void) {

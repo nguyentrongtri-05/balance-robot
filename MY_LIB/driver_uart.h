@@ -48,7 +48,7 @@ typedef struct __attribute__((packed)) {
     float targetAngle;              /* 13. Góc cân bằng đặt thực tế sau Vòng Lồng Cascade (độ) */
     float outFuzzy;                 /* 14. Ngõ ra Vòng Trong Cân bằng FuzzyPD_Pitch (tối đa 90% = +-7560 PWM) */
     float outYaw;                   /* 15. Ngõ ra Vòng Góc Yaw (tối đa 10% = +-840 PWM) */
-    float outSpeed;                 /* 16. Góc bù Vòng Ngoài Vị trí FuzzyPD_Pos x 420 (chia 420 ra độ, giới hạn +-3.5°) */
+    float outSpeed;                 /* 16. Góc bù Vòng Ngoài Vị trí FuzzyPD_Pos x 420 (chia 420 ra độ, giới hạn +-3.3°) */
 
     /* 4. Dữ liệu debug 2 khâu FuzzyPD nối tiếp (FuzzyPD_Pitch & FuzzyPD_Pos) */
     float velCmd;                   /* 17. Vận tốc đặt đưa vào vòng ngoài (RPM, dấu theo encoder) */
