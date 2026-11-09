@@ -21,7 +21,7 @@
 /* =====================================================================
  * ĐỊNH NGHĨA KHUNG GÓI TIN UART (PACKET PROTOCOL)
  * Cấu trúc: [0xAA] [ID] [len] [Data...] [Checksum] [0xFF]
- * Checksum: ID | len | Data (bitwise OR)
+ * Checksum: ID ^ len ^ Data (bitwise XOR)
  * ===================================================================== */
 #define UART_FRAME_HEADER       0xAA
 #define UART_FRAME_TAIL         0xFF

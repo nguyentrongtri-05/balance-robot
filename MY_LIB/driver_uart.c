@@ -121,10 +121,10 @@ uint8_t UART3_SendDMA(const void *data, uint16_t len)
 
 uint8_t UART_CalculateChecksum(uint8_t id, uint8_t len, const uint8_t *pData)
 {
-    uint8_t cs = (uint8_t)(id | len);
+    uint8_t cs = (uint8_t)(id ^ len);
     if (pData != NULL) {
         for (uint8_t i = 0; i < len; i++) {
-            cs = (uint8_t)(cs | pData[i]);
+            cs = (uint8_t)(cs ^ pData[i]);
         }
     }
     return cs;

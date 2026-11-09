@@ -11,7 +11,7 @@
 
 /* Tùy chọn đảo chiều nếu động cơ đấu dây ngược (0: Bình thường, 1: Đảo chiều) */
 #define MOTOR_LEFT_INVERT       0
-#define MOTOR_RIGHT_INVERT      0
+#define MOTOR_RIGHT_INVERT      1
 
 /**
  * @brief Khởi tạo PWM TIM1 (PA8 - Bánh trái, PE11 - Bánh phải) 

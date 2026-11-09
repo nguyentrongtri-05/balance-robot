@@ -53,8 +53,8 @@ extern FuzzyController_t FuzzyPD_Pitch;
 extern FuzzyController_t FuzzyPD_Pos;
 volatile uint8_t g_systemEnable = 0;
 
-volatile float g_targetAngle        = -0.73f;
-volatile float g_cascadeTargetAngle = -0.73f;
+volatile float g_targetAngle        = -2.95f;
+volatile float g_cascadeTargetAngle = -2.95f;
 volatile float g_targetYaw          = 0.0f;
 volatile float g_targetSpeed        = 0.0f;
 
@@ -65,11 +65,12 @@ volatile float g_outSpeed       = 0.0f;
 volatile float g_outYaw         = 0.0f;
 volatile float g_velCmd         = 0.0f;   /* debug: vận tốc đặt vòng ngoài (RPM) */
 volatile float g_dVel           = 0.0f;   /* debug: gia tốc góc bánh xe trung bình (RPM/s) */
+volatile float g_posError       = 0.0f;   /* debug: sai số vị trí vòng ngoài x_fw - xTarget (cm) */
 
 /* =====================================================================
  * CẤU HÌNH KIẾN TRÚC ĐIỀU KHIỂN VÒNG LỒNG (CASCADED CONTROL):
- *  - Vòng Ngoài (Vận tốc FuzzyPD_Pos / PID_Vel):
- *      Sinh ra Góc nghiêng đặt bù trừ tiltOffset (kẹp an toàn +-2.5°)
+ *  - Vòng Ngoài (Vị trí/Vận tốc FuzzyPD_Pos / PID_Vel):
+ *      Sinh ra Góc nghiêng đặt bù trừ tiltOffset (kẹp an toàn +-2.2°)
  *      -> Góc đặt Vòng Trong: g_cascadeTargetAngle = g_targetAngle - tiltOffset
  *  - Vòng Trong (FuzzyPD / Balance PD):
  *      Bám theo g_cascadeTargetAngle, xuất 90% tổng công suất (+-7560 PWM)
@@ -77,35 +78,48 @@ volatile float g_dVel           = 0.0f;   /* debug: gia tốc góc bánh xe trun
  *      Điều khiển hướng xoay với 10% tổng công suất (+-840 PWM)
  * ===================================================================== */
 volatile RobotControlMode_t g_controlMode = CTRL_MODE_FUZZY;
-volatile float g_Kp_balance  = 440.0f;
-volatile float g_Kd_balance  = 11.50f;
+volatile float g_Kp_balance  = 580.0f;
+volatile float g_Kd_balance  = 19.50f;
 volatile float g_Kp_speed    = 18.00f;
 volatile float g_Ki_speed    = 4.20f;
 volatile float g_Kd_yaw      = 6.30f;
 volatile float g_Kp_yaw      = 25.20f;
+volatile float g_Ki_yaw      = 4.20f;
 volatile float g_Kd_yaw_imu  = 3.78f;
 
 volatile float g_yawIntegral   = 0.0f;
 #define YAW_INTEGRAL_MAX       25.0f
 
 /* Chu kỳ điều khiển đồng bộ toàn hệ thống (Vòng ngoài + Vòng trong + Yaw): 5ms (200Hz) */
-#define CONTROL_LOOP_DT         0.005f
-#define POS_TARGET_LEAD_MAX_CM  15.0f   /* Giới hạn điểm đích lệch xa vị trí hiện tại tối đa (chống windup khi xe không theo kịp) */
+#define CONTROL_LOOP_DT                  0.005f
+#define POS_TARGET_LEAD_MAX_CM           15.0f   /* Giới hạn điểm đích lệch xa vị trí hiện tại tối đa (15 cm, không kẹp cứng ở ±6.5 cm như lan29) */
+#define COM_PITCH_RATE_COMP_RPM_PER_DPS  0.42f   /* Bù vận tốc góc thân xe (RPM / (°/s)) để tách vận tốc tịnh tiến trọng tâm (chống cộng hưởng 4.8 Hz) */
+#define COM_PITCH_POS_COMP_CM_PER_DEG    0.15f   /* Bù dịch chuyển bánh xe theo góc nghiêng thân xe (cm / °) */
+#define MOTOR_BEMF_ASSIST_GAIN           8.00f   /* Bù sức phản điện động Back-EMF (PWM / RPM) giúp giảm độ sụt góc vòng trong khi bánh quay */
+#define MOTOR_BEMF_ASSIST_MAX            750.0f  /* Giới hạn lượng bù Back-EMF tối đa (+-750 PWM) */
+#define POS_INTEGRAL_KI                  0.004f  /* Hệ số tích phân tự động cân tâm góc tĩnh cực chậm (°/(cm*s), không gây trễ pha) */
+#define POS_INTEGRAL_MAX_DEG             0.85f   /* Giới hạn lượng bù góc cân bằng tĩnh tối đa (+-0.85°) */
 
-/* Bù vùng chết động cơ (67/50 trên thang PWM 8400 bước) và giới hạn tốc độ thay đổi PWM (bảo vệ cơ khí) */
-/* Vùng chết bù từng bánh, từng chiều (POS = PWM dương/tiến, NEG = PWM âm/lùi), đặt bằng ~80% vùng chết ĐỘNG đo từ log chạy cân bằng
- * (PWM nhỏ nhất để bánh còn quay: trái +256/-319, phải +250/-292). Ma sát TĨNH của bánh phải lớn hơn nhiều (bắt đầu quay ở
- * 620-720 PWM so với 280-360 của bánh trái) nhưng khi đang quay hai bánh gần như bằng nhau -> không bù theo ma sát tĩnh. */
-#define MOTOR_DEADBAND_PWM_L_POS   220.0f
-#define MOTOR_DEADBAND_PWM_L_NEG   170.0f
-#define MOTOR_DEADBAND_PWM_R_POS   270.0f
-#define MOTOR_DEADBAND_PWM_R_NEG   270.0f
-#define BALANCE_MAX_PWM_DELTA  900.0f
+/* Bù vùng chết & độ lợi động học động cơ (giữ vùng đệm mềm 200 PWM & mức bù nhỏ để êm quanh 0,
+ * đồng thời cân đối lại L = 110/85 và R = 155/160 theo dữ liệu lan29): */
+#define MOTOR_DEADBAND_PWM_L_POS   110.0f
+#define MOTOR_DEADBAND_PWM_L_NEG    85.0f
+#define MOTOR_DEADBAND_PWM_R_POS   155.0f
+#define MOTOR_DEADBAND_PWM_R_NEG   160.0f
+#define MOTOR_DEADBAND_SOFT_RANGE  200.0f
+#define MOTOR_GAIN_SCALE_L         0.94f
+#define MOTOR_GAIN_SCALE_R         1.04f
+#define BALANCE_MAX_PWM_DELTA      900.0f
 
+static float s_prevBalancePWM_L   = 0.0f;
+static float s_prevBalancePWM_R   = 0.0f;
+static float s_posIntegralTilt    = 0.0f;   /* Dự phòng */
+static float s_tiltOffsetFiltered = 0.0f;   /* Bộ lọc thông thấp góc nghiêng đặt vòng ngoài */
+static float s_velCoMFiltered     = 0.0f;   /* Vận tốc tịnh tiến trọng tâm (RPM) đã lọc thông thấp, khử dao động lắc 4.8 Hz */
 
-
-static float s_prevBalancePWM_L = 0.0f;
-static float s_prevBalancePWM_R = 0.0f;
+static volatile float    s_testPwmL       = 0.0f;
+static volatile float    s_testPwmR       = 0.0f;
+static volatile uint16_t s_testPwmTimeout = 0;   /* Timeout an toàn cho lệnh dò vùng chết 0x0B (~450ms) */
 
 /* Task Prototypes */
 static void vTaskIMU(void *pvParameters);
@@ -123,16 +137,20 @@ static float Clamp_Float(float val, float minVal, float maxVal) {
 
 static volatile uint8_t s_posResetReq = 1;   /* 1: yêu cầu vòng vị trí lấy vị trí hiện tại làm gốc / điểm đích */
 static void Reset_OdometryAndStates(void) {
-    s_posResetReq         = 1;   /* vTaskControl sẽ đặt lại gốc vị trí & điểm đích tại vị trí hiện tại */
-    g_yawIntegral         = 0.0f;
-    g_encoderYawAngle     = 0.0f;
-    g_encoderYawRate      = 0.0f;
-    g_rawYawAngle         = 0.0f;
-    g_filteredYaw         = 0.0f;
-    g_targetYaw           = 0.0f;
-    g_cascadeTargetAngle  = g_targetAngle;
-    s_prevBalancePWM_L    = 0.0f;
-    s_prevBalancePWM_R    = 0.0f;
+    s_posResetReq          = 1;   /* vTaskControl sẽ đặt lại gốc vị trí & điểm đích tại vị trí hiện tại */
+    g_yawIntegral          = 0.0f;
+    g_encoderYawAngle      = 0.0f;
+    g_encoderYawRate       = 0.0f;
+    g_rawYawAngle          = 0.0f;
+    g_filteredYaw          = 0.0f;
+    g_targetYaw            = 0.0f;
+    g_posError             = 0.0f;
+    g_cascadeTargetAngle   = g_targetAngle;
+    s_prevBalancePWM_L     = 0.0f;
+    s_prevBalancePWM_R     = 0.0f;
+    s_posIntegralTilt      = 0.0f;
+    s_tiltOffsetFiltered   = 0.0f;
+    s_velCoMFiltered       = 0.0f;
     PID_Reset(&PID_Vel);
     Fuzzy_Reset(&FuzzyPD_Pitch);
     Fuzzy_Reset(&FuzzyPD_Pos);
@@ -208,7 +226,10 @@ uint8_t Robot_Start(void) {
         return 0;
     }
 
-    g_systemEnable = 1;
+    g_systemEnable   = 1;
+    s_testPwmTimeout = 0;
+    s_testPwmL       = 0.0f;
+    s_testPwmR       = 0.0f;
     Reset_OdometryAndStates();
     g_motorSpeedfiltered_left  = 0.0f;
     g_motorSpeedfiltered_right = 0.0f;
@@ -222,12 +243,18 @@ uint8_t Robot_Start(void) {
 }
 
 void Robot_Stop(void) {
-    g_systemEnable = 0;
+    g_systemEnable   = 0;
+    s_testPwmTimeout = 0;
+    s_testPwmL       = 0.0f;
+    s_testPwmR       = 0.0f;
     Motor_Stop();
 
-    g_yawIntegral         = 0.0f;
-    s_prevBalancePWM_L    = 0.0f;
-    s_prevBalancePWM_R    = 0.0f;
+    g_yawIntegral          = 0.0f;
+    s_prevBalancePWM_L     = 0.0f;
+    s_prevBalancePWM_R     = 0.0f;
+    s_posIntegralTilt      = 0.0f;
+    s_tiltOffsetFiltered   = 0.0f;
+    s_velCoMFiltered       = 0.0f;
     PID_Reset(&PID_Vel);
     Fuzzy_Reset(&FuzzyPD_Pitch);
     Fuzzy_Reset(&FuzzyPD_Pos);
@@ -580,33 +607,61 @@ static void vTaskControl(void *pvParameters)
                 g_velCmd = vel_cmd;
                 g_dVel   = (kalmanSpeed_L.accel + kalmanSpeed_R.accel) * 0.5f;
 
+                /* Tách vận tốc tịnh tiến của trọng tâm (CoM): khử thành phần bánh xe giật ngược pha khi thân xe lắc ở 4.8 Hz */
+                float pitchRateClamped = Clamp_Float(kalmanPitch.rate, -50.0f, 50.0f);
+                float vel_com = vel - (COM_PITCH_RATE_COMP_RPM_PER_DPS * pitchRateClamped);
+                s_velCoMFiltered += 0.16f * (vel_com - s_velCoMFiltered);
+
                 if (g_controlMode == CTRL_MODE_FUZZY) {
-                    /* FuzzyPD_Pos giữ vị trí (đầu ra TRỰC TIẾP, không cộng dồn):
-                     *   e  = x - xTarget            (cm)
-                     *   de = v - vel_cmd            (cm/s)
-                     *   tilt = Fuzzy(e, de): thành phần theo de tạo giảm chấn, e kéo về điểm đích. */
+                    /* FuzzyPD_Pos giữ vị trí theo tọa độ trọng tâm CoM:
+                     *   e  = x_com - xTarget          (cm)
+                     *   de = (e[k] - e[k-1]) / dt     (cm/s, có first_sample & lọc thông thấp) */
                     if (s_posResetReq) {
-                        s_posResetReq = 0;
-                        posRefSum = s_encTotalSum;
-                        xTarget   = 0.0f;
+                        s_posResetReq        = 0;
+                        posRefSum            = s_encTotalSum;
+                        xTarget              = 0.0f;
+                        s_posIntegralTilt    = 0.0f;
+                        s_tiltOffsetFiltered = 0.0f;
+                        s_velCoMFiltered     = 0.0f;
+                        Fuzzy_Reset(&FuzzyPD_Pos);
                     }
+                    float baseBalanceAngle = g_targetAngle - s_posIntegralTilt;
                     float x_fw     = (float)(s_encTotalSum - posRefSum) * 0.5f * WHEEL_CM_PER_PULSE;
-                    float v_cms    = vel * WHEEL_RPM_TO_CMS;
+                    float x_com    = x_fw - COM_PITCH_POS_COMP_CM_PER_DEG * (g_filteredPitch - baseBalanceAngle);
+                    float v_cms    = s_velCoMFiltered * WHEEL_RPM_TO_CMS;
                     float vcmd_cms = vel_cmd * WHEEL_RPM_TO_CMS;
                     xTarget += vcmd_cms * CONTROL_LOOP_DT;                       /* điểm đích trôi theo vận tốc đặt */
                     xTarget  = Clamp_Float(xTarget, x_fw - POS_TARGET_LEAD_MAX_CM, x_fw + POS_TARGET_LEAD_MAX_CM);
-                    tiltOffset = -FuzzyPD_Compute(&FuzzyPD_Pos, xTarget, x_fw, v_cms - vcmd_cms);
+
+                    float posErr = x_fw - xTarget;
+                    g_posError   = posErr;
+
+                    /* Tự động học độ lệch góc cân bằng tĩnh cực chậm khi xe đứng yên ổn định để đưa pos_err về 0 cm */
+                    if (fabsf(vel_cmd) < 0.1f && fabsf(g_filteredPitch - baseBalanceAngle) < 1.5f &&
+                        fabsf(kalmanPitch.rate) < 12.0f && fabsf(s_velCoMFiltered) < 10.0f) {
+                        if ((posErr * v_cms) >= -1.0f) {
+                            s_posIntegralTilt -= POS_INTEGRAL_KI * Clamp_Float(posErr, -6.0f, 6.0f) * CONTROL_LOOP_DT;
+                            s_posIntegralTilt  = Clamp_Float(s_posIntegralTilt, -POS_INTEGRAL_MAX_DEG, POS_INTEGRAL_MAX_DEG);
+                        }
+                    }
+
+                    /* Tính đạo hàm sai số (e[k] - e[k-1]) / dt kèm first_sample và lọc thông thấp trong FuzzyPD_Compute */
+                    float rawTilt   = -FuzzyPD_Compute(&FuzzyPD_Pos, xTarget, x_com, CONTROL_LOOP_DT);
+                    s_tiltOffsetFiltered += 0.25f * (rawTilt - s_tiltOffsetFiltered);
+                    tiltOffset = Clamp_Float(s_posIntegralTilt + s_tiltOffsetFiltered, -CASCADE_MAX_TOTAL_TILT_DEG, CASCADE_MAX_TOTAL_TILT_DEG);
                 } else {
-                    tiltOffset = PID_Compute(&PID_Vel, vel_cmd, vel, CONTROL_LOOP_DT);
+                    g_posError = 0.0f;
+                    tiltOffset = PID_Compute(&PID_Vel, vel_cmd, s_velCoMFiltered, CONTROL_LOOP_DT);
                 }
 
                 targetAngle = g_targetAngle - tiltOffset;
 
-                /* 3. Vòng Trong Cân bằng Pitch (chu kỳ 5ms, 90% OutPWM = +-7560) */
+                /* 3. Vòng Trong Cân bằng Pitch + Bù Back-EMF theo vận tốc trọng tâm đã lọc (không làm suy giảm Kd_pitch ở 4.8 Hz) */
+                float pwm_bemf = Clamp_Float(-MOTOR_BEMF_ASSIST_GAIN * (s_velCoMFiltered - vel_cmd), -MOTOR_BEMF_ASSIST_MAX, MOTOR_BEMF_ASSIST_MAX);
                 if (g_controlMode == CTRL_MODE_FUZZY) {
-                    pwm_fuzzy = FuzzyPD_Compute(&FuzzyPD_Pitch, targetAngle, g_filteredPitch, kalmanPitch.rate);
+                    pwm_fuzzy = FuzzyPD_Compute(&FuzzyPD_Pitch, targetAngle, g_filteredPitch, CONTROL_LOOP_DT) + pwm_bemf;
                 } else {
-                    pwm_fuzzy = g_Kp_balance * (g_filteredPitch - targetAngle) + g_Kd_balance * kalmanPitch.rate;
+                    pwm_fuzzy = g_Kp_balance * (g_filteredPitch - targetAngle) + g_Kd_balance * kalmanPitch.rate + pwm_bemf;
                 }
                 pwm_fuzzy = Clamp_Float(pwm_fuzzy, -PWM_LIMIT_BALANCE, PWM_LIMIT_BALANCE);
 
@@ -627,24 +682,24 @@ static void vTaskControl(void *pvParameters)
                 }
 
                 pwm_yaw = (g_Kp_yaw * yawError)
-                        + (4.20f * g_yawIntegral)
+                        + (g_Ki_yaw * g_yawIntegral)
                         + (g_Kd_yaw * diffSpeed)
                         + (g_Kd_yaw_imu * kalmanYaw.rate);
                 pwm_yaw = Clamp_Float(pwm_yaw, -PWM_LIMIT_YAW, PWM_LIMIT_YAW);
 
-                /* 5. Tổng hợp xung PWM 2 bánh (Trái / Phải) & Bù vùng chết + Giới hạn tốc độ thay đổi PWM */
-                outpwm_L = pwm_fuzzy - pwm_yaw;
-                outpwm_R = pwm_fuzzy + pwm_yaw;
+                /* 5. Tổng hợp xung PWM 2 bánh (Trái / Phải) & Bù độ lợi + Bù vùng chết + Giới hạn tốc độ thay đổi PWM */
+                outpwm_L = (pwm_fuzzy * MOTOR_GAIN_SCALE_L) - pwm_yaw;
+                outpwm_R = (pwm_fuzzy * MOTOR_GAIN_SCALE_R) + pwm_yaw;
 
-                if (outpwm_L > 252.0f) outpwm_L += MOTOR_DEADBAND_PWM_L_POS;
-                else if (outpwm_L < -252.0f) outpwm_L -= MOTOR_DEADBAND_PWM_L_NEG;
-                else if (outpwm_L >= 0.0f) outpwm_L += (outpwm_L / 252.0f) * MOTOR_DEADBAND_PWM_L_POS;
-                else outpwm_L += (outpwm_L / 252.0f) * MOTOR_DEADBAND_PWM_L_NEG;
+                if (outpwm_L > MOTOR_DEADBAND_SOFT_RANGE) outpwm_L += MOTOR_DEADBAND_PWM_L_POS;
+                else if (outpwm_L < -MOTOR_DEADBAND_SOFT_RANGE) outpwm_L -= MOTOR_DEADBAND_PWM_L_NEG;
+                else if (outpwm_L >= 0.0f) outpwm_L += (outpwm_L / MOTOR_DEADBAND_SOFT_RANGE) * MOTOR_DEADBAND_PWM_L_POS;
+                else outpwm_L += (outpwm_L / MOTOR_DEADBAND_SOFT_RANGE) * MOTOR_DEADBAND_PWM_L_NEG;
 
-                if (outpwm_R > 252.0f) outpwm_R += MOTOR_DEADBAND_PWM_R_POS;
-                else if (outpwm_R < -252.0f) outpwm_R -= MOTOR_DEADBAND_PWM_R_NEG;
-                else if (outpwm_R >= 0.0f) outpwm_R += (outpwm_R / 252.0f) * MOTOR_DEADBAND_PWM_R_POS;
-                else outpwm_R += (outpwm_R / 252.0f) * MOTOR_DEADBAND_PWM_R_NEG;
+                if (outpwm_R > MOTOR_DEADBAND_SOFT_RANGE) outpwm_R += MOTOR_DEADBAND_PWM_R_POS;
+                else if (outpwm_R < -MOTOR_DEADBAND_SOFT_RANGE) outpwm_R -= MOTOR_DEADBAND_PWM_R_NEG;
+                else if (outpwm_R >= 0.0f) outpwm_R += (outpwm_R / MOTOR_DEADBAND_SOFT_RANGE) * MOTOR_DEADBAND_PWM_R_POS;
+                else outpwm_R += (outpwm_R / MOTOR_DEADBAND_SOFT_RANGE) * MOTOR_DEADBAND_PWM_R_NEG;
 
                 outpwm_L = Clamp_Float(outpwm_L, s_prevBalancePWM_L - BALANCE_MAX_PWM_DELTA, s_prevBalancePWM_L + BALANCE_MAX_PWM_DELTA);
                 s_prevBalancePWM_L = outpwm_L;
@@ -658,10 +713,10 @@ static void vTaskControl(void *pvParameters)
                 Motor_SetPWM_Left(outpwm_L);
                 Motor_SetPWM_Right(outpwm_R);
 
-                /* Cập nhật các biến Telemetry gửi lên App GUI */
+                /* Cập nhật các biến Telemetry gửi lên App GUI (outSpeed truyền trực tiếp độ nghiêng bù trừ °) */
                 g_cascadeTargetAngle = targetAngle;
                 g_outFuzzy           = pwm_fuzzy;
-                g_outSpeed           = tiltOffset / CASCADE_CMD_TO_DEG;
+                g_outSpeed           = tiltOffset;
                 g_outYaw             = pwm_yaw;
                 g_motorPWM_left      = outpwm_L;
                 g_motorPWM_right     = outpwm_R;
@@ -669,13 +724,28 @@ static void vTaskControl(void *pvParameters)
         }
         else
         {
-            Motor_Stop();
+            if (s_testPwmTimeout > 0u) {
+                s_testPwmTimeout--;
+                Motor_SetPWM_Left(s_testPwmL);
+                Motor_SetPWM_Right(s_testPwmR);
+                g_motorPWM_left  = s_testPwmL;
+                g_motorPWM_right = s_testPwmR;
+            } else {
+                s_testPwmL       = 0.0f;
+                s_testPwmR       = 0.0f;
+                Motor_Stop();
+                g_motorPWM_left  = 0.0f;
+                g_motorPWM_right = 0.0f;
+            }
             PID_Reset(&PID_Vel);
             Fuzzy_Reset(&FuzzyPD_Pitch);
             Fuzzy_Reset(&FuzzyPD_Pos);
             tiltOffset            = 0.0f;
+            s_posIntegralTilt     = 0.0f;
+            s_tiltOffsetFiltered  = 0.0f;
             g_velCmd              = 0.0f;
             g_dVel                = 0.0f;
+            g_posError            = 0.0f;
             s_prevBalancePWM_L    = 0.0f;
             s_prevBalancePWM_R    = 0.0f;
             g_yawIntegral         = 0.0f;
@@ -683,8 +753,6 @@ static void vTaskControl(void *pvParameters)
             g_outFuzzy            = 0.0f;
             g_outSpeed            = 0.0f;
             g_outYaw              = 0.0f;
-            g_motorPWM_left       = 0.0f;
-            g_motorPWM_right      = 0.0f;
         }
 
         if (++beat == 40) {
@@ -778,7 +846,13 @@ static void vTaskUART(void *pvParameters)
                 break;
 
             case 5:
-                if (byte == UART_FRAME_TAIL && UART_CalculateChecksum(rxId, rxLen, rxDataBuf) == rxChecksum) {
+            {
+                uint8_t xorCs = UART_CalculateChecksum(rxId, rxLen, rxDataBuf);
+                uint8_t orCs  = rxId | rxLen;
+                for (uint8_t i = 0; i < rxLen; i++) {
+                    orCs |= rxDataBuf[i];
+                }
+                if (byte == UART_FRAME_TAIL && (rxChecksum == xorCs || rxChecksum == orCs)) {
                     switch (rxId)
                     {
                     case 0x01:
@@ -795,6 +869,7 @@ static void vTaskUART(void *pvParameters)
                         if (rxLen >= 4) {
                             memcpy((void *)&g_targetAngle, rxDataBuf, 4);
                             g_cascadeTargetAngle = g_targetAngle;
+                            s_posIntegralTilt    = 0.0f;
                         }
                         break;
                     case 0x05:
@@ -829,9 +904,18 @@ static void vTaskUART(void *pvParameters)
                             memcpy((void *)&g_Kd_yaw_imu, &rxDataBuf[16], 4);
                             memcpy((void *)&g_Kp_speed,   &rxDataBuf[20], 4);
                             memcpy((void *)&g_Ki_speed,   &rxDataBuf[24], 4);
+                            g_Ki_yaw   = g_Ki_speed;
                             PID_Vel.Kp = (g_Kp_speed > 1.0f) ? (g_Kp_speed * CASCADE_CMD_TO_DEG) : g_Kp_speed;
                             PID_Vel.Ki = (g_Ki_speed > 0.5f) ? (g_Ki_speed * CASCADE_CMD_TO_DEG) : g_Ki_speed;
                             PID_Reset(&PID_Vel);
+                            sendConfigReq = 1;
+                        } else if (rxLen >= 12) {
+                            /* Gói 3 float (12 byte) từ GUI App: [Kp_yaw, Ki_yaw, Kd_yaw] */
+                            memcpy((void *)&g_Kp_yaw,     &rxDataBuf[0], 4);
+                            memcpy((void *)&g_Ki_yaw,     &rxDataBuf[4], 4);
+                            memcpy((void *)&g_Kd_yaw_imu, &rxDataBuf[8], 4);
+                            g_Ki_speed    = g_Ki_yaw;
+                            g_yawIntegral = 0.0f;
                             sendConfigReq = 1;
                         }
                         break;
@@ -853,12 +937,31 @@ static void vTaskUART(void *pvParameters)
                             sendConfigReq = 1;   /* gửi lại bộ số hiện tại để app xác nhận */
                         }
                         break;
+                    case 0x0B:
+                        /* CMD_TEST_PWM: 2 float = [pwm_L, pwm_R] dùng cho công cụ dò vùng chết trên PC */
+                        if (rxLen >= 8 && !g_systemEnable) {
+                            float testL = 0.0f, testR = 0.0f;
+                            memcpy(&testL, &rxDataBuf[0], 4);
+                            memcpy(&testR, &rxDataBuf[4], 4);
+                            testL = Clamp_Float(testL, -(float)MOTOR_PWM_PERIOD, (float)MOTOR_PWM_PERIOD);
+                            testR = Clamp_Float(testR, -(float)MOTOR_PWM_PERIOD, (float)MOTOR_PWM_PERIOD);
+                            s_testPwmL = testL;
+                            s_testPwmR = testR;
+                            if (fabsf(testL) > 0.5f || fabsf(testR) > 0.5f) {
+                                s_testPwmTimeout = 90u; /* ~450ms giữ sống */
+                            } else {
+                                s_testPwmTimeout = 0u;
+                                Motor_Stop();
+                            }
+                        }
+                        break;
                     default:
                         break;
                     }
                 }
                 rxState = 0;
                 break;
+            }
 
             default:
                 rxState = 0;
@@ -884,7 +987,7 @@ static void vTaskUART(void *pvParameters)
             cfgSync.targetYaw   = g_targetYaw;
             cfgSync.controlMode = (float)g_controlMode;
             cfgSync.kp_speed    = g_Kp_speed;
-            cfgSync.ki_speed    = g_Ki_speed;
+            cfgSync.ki_speed    = g_Ki_yaw;
             cfgSync.pitch_ke    = FuzzyPD_Pitch.ke;
             cfgSync.pitch_kde   = FuzzyPD_Pitch.kde;
             cfgSync.pitch_ku    = FuzzyPD_Pitch.ku;
@@ -917,7 +1020,7 @@ static void vTaskUART(void *pvParameters)
             telem.outYaw                   = g_outYaw;
             telem.outSpeed                 = g_outSpeed;
             telem.velCmd                   = g_velCmd;
-            telem.dVel                     = g_dVel;
+            telem.dVel                     = g_posError;
             telem.pitchENorm               = FuzzyPD_Pitch.e_norm;
             telem.pitchDeNorm              = FuzzyPD_Pitch.de_norm;
             telem.posENorm                 = FuzzyPD_Pos.e_norm;
