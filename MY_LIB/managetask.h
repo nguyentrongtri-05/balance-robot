@@ -22,7 +22,7 @@
 #define PWM_LIMIT_YAW                    840.0f     /* 10% của 8400 PWM cho Vòng Hướng xoay Yaw */
 
 #define CASCADE_CMD_TO_DEG              (1.0f / 420.0f) /* Hệ số quy đổi hiển thị góc bù vòng ngoài */
-#define CASCADE_MAX_TOTAL_TILT_DEG      2.5f            /* Giới hạn tổng góc nghiêng đặt bù trừ của Vòng Ngoài (+-2.5°) */
+#define CASCADE_MAX_TOTAL_TILT_DEG      3.2f            /* Giới hạn tổng góc nghiêng đặt bù trừ của Vòng Ngoài (+-3.2°) */
 
 /* Trạng thái hoạt động của hệ thống (0: STOP, 1: RUN) */
 extern volatile uint8_t g_systemEnable;

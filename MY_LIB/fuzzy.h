@@ -70,13 +70,7 @@ typedef struct {
     float e_norm;
     float de_norm;
 
-    /* 5. Biến trạng thái tính đạo hàm sai số (e[k] - e[k-1]) / dt kèm bộ lọc thông thấp */
-    uint8_t first_sample;
-    float   prev_e;
-    float   de_filtered;
-    float   alpha_de;
-
-    /* 6. Mảng trạng thái mờ phục vụ tính toán các khâu */
+    /* 5. Mảng trạng thái mờ phục vụ tính toán các khâu */
     float mu_e[FUZZY_NUM_STATES];
     float mu_de[FUZZY_NUM_STATES];
     float rule_weights[FUZZY_NUM_STATES][FUZZY_NUM_STATES];
@@ -99,13 +93,13 @@ float Fuzzy_MF_TrapezoidRight(float x, float a, float b);
 float Fuzzy_MF_Trapezoid(float x, float a, float b, float c, float d);
 
 /* Các khâu xử lý tổng quát của bộ điều khiển Fuzzy PD */
-void  Fuzzy_PreProcess(FuzzyController_t *fc, float setpoint, float currentVal, float dt, float *out_eNorm, float *out_deNorm);
+void  Fuzzy_PreProcess(FuzzyController_t *fc, float setpoint, float currentVal, float dCurrentVal, float *out_eNorm, float *out_deNorm);
 void  Fuzzy_Fuzzify(FuzzyController_t *fc, float eNorm, float deNorm, float mu_e[FUZZY_NUM_STATES], float mu_de[FUZZY_NUM_STATES]);
 void  Fuzzy_Inference(const float mu_e[FUZZY_NUM_STATES], const float mu_de[FUZZY_NUM_STATES], float ruleWeights[FUZZY_NUM_STATES][FUZZY_NUM_STATES]);
 float Fuzzy_Defuzzify(FuzzyController_t *fc, float ruleWeights[FUZZY_NUM_STATES][FUZZY_NUM_STATES]);
 float Fuzzy_PostProcess(FuzzyController_t *fc, float defuzzOutput);
 
 /* Hàm thực thi bộ điều khiển Fuzzy PD (dùng chung cho cả vòng ngoài FuzzyPD_Pos và vòng trong FuzzyPD_Pitch) */
-float FuzzyPD_Compute(FuzzyController_t *fc, float setpoint, float currentVal, float dt);
+float FuzzyPD_Compute(FuzzyController_t *fc, float setpoint, float currentVal, float dCurrentVal);
 
 #endif /* __FUZZY_H */

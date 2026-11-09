@@ -30,11 +30,8 @@ static float Fuzzy_Clamp(float val, float minVal, float maxVal) {
 void Fuzzy_Reset(FuzzyController_t *fc) {
     if (!fc) return;
 
-    fc->e_norm       = 0.0f;
-    fc->de_norm      = 0.0f;
-    fc->first_sample = 1u;
-    fc->prev_e       = 0.0f;
-    fc->de_filtered  = 0.0f;
+    fc->e_norm  = 0.0f;
+    fc->de_norm = 0.0f;
 
     memset(fc->mu_e,         0, sizeof(fc->mu_e));
     memset(fc->mu_de,        0, sizeof(fc->mu_de));
@@ -55,7 +52,6 @@ void Fuzzy_Init(FuzzyController_t *fc,
     fc->e_max             =  1.0f;
     fc->de_min            = -1.0f;
     fc->de_max            =  1.0f;
-    fc->alpha_de          =  0.35f;
 
     /* 2. Cấu hình dải biến ngôn ngữ đầu vào e và de (chuẩn hóa đối xứng quanh 0) */
     float e_nb_val  = fabsf(e_nb);
@@ -135,32 +131,21 @@ float Fuzzy_MF_Trapezoid(float x, float a, float b, float c, float d) {
 /* ============================================================================
  * KHÂU 1: TIỀN XỬ LÝ TỔNG QUÁT (PRE-PROCESSING STAGE)
  *  - Tính sai số: rawError = currentVal - setpoint
- *  - Tính đạo hàm sai số bằng sai phân: rawDe = (rawError - prev_e) / dt
- *    (bỏ qua chu kỳ đầu bằng cờ first_sample và lọc thông thấp bậc 1 de_filtered)
- *  - Chuẩn hóa e_norm = rawError * ke, de_norm = de_filtered * kde
+ *  - Chuẩn hóa e_norm = rawError * ke, de_norm = dCurrentVal * kde
  *  (Khâu bão hòa [-1.0 .. +1.0] được thực hiện ngay sau bước Tiền xử lý)
  * ============================================================================ */
 void Fuzzy_PreProcess(FuzzyController_t *fc,
                       float setpoint,
                       float currentVal,
-                      float dt,
+                      float dCurrentVal,
                       float *out_eNorm,
                       float *out_deNorm) {
     if (!fc) return;
 
     float rawError = currentVal - setpoint;
 
-    if (fc->first_sample || dt <= 1e-6f) {
-        fc->first_sample = 0u;
-        fc->de_filtered  = 0.0f;
-    } else {
-        float rawDe = (rawError - fc->prev_e) / dt;
-        fc->de_filtered += fc->alpha_de * (rawDe - fc->de_filtered);
-    }
-    fc->prev_e = rawError;
-
-    float e_scaled  = rawError        * fc->ke;
-    float de_scaled = fc->de_filtered * fc->kde;
+    float e_scaled  = rawError    * fc->ke;
+    float de_scaled = dCurrentVal * fc->kde;
 
     if (out_eNorm)  *out_eNorm  = e_scaled;
     if (out_deNorm) *out_deNorm = de_scaled;
@@ -269,14 +254,14 @@ float Fuzzy_PostProcess(FuzzyController_t *fc, float defuzzOutput) {
  *  - Bão hòa trước Hậu xử lý: Kẹp u_defuzz vào đoạn [-1.0 .. +1.0] trước khi nhân Ku
  *  - Khâu 5: Hậu xử lý (Post-processing: nhân hệ số khuếch đại Ku)
  * ============================================================================ */
-float FuzzyPD_Compute(FuzzyController_t *fc, float setpoint, float currentVal, float dt) {
+float FuzzyPD_Compute(FuzzyController_t *fc, float setpoint, float currentVal, float dCurrentVal) {
     if (!fc) return 0.0f;
 
     float eNorm  = 0.0f;
     float deNorm = 0.0f;
 
-    /* 1. Khâu Tiền xử lý: tính e, de = (e[k] - e[k-1]) / dt có lọc và chuẩn hóa */
-    Fuzzy_PreProcess(fc, setpoint, currentVal, dt, &eNorm, &deNorm);
+    /* 1. Khâu Tiền xử lý: chuẩn hóa e_norm và de_norm */
+    Fuzzy_PreProcess(fc, setpoint, currentVal, dCurrentVal, &eNorm, &deNorm);
 
     /* Bão hòa [-1.0 .. +1.0] ngay sau khâu Tiền xử lý */
     eNorm       = Fuzzy_Clamp(eNorm,  fc->e_min,  fc->e_max);
