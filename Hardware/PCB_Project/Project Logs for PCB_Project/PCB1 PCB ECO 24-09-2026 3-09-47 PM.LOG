@@ -1,0 +1,10 @@
+Removed Pin From Net: NetName=PC6 Pin=P_DriverA-8
+Added Pin To Net: NetName=5V Pin=P_DriverA-5
+Added Pin To Net: NetName=PC6 Pin=P_DriverA-6
+Change Net Name : Old Net Name=PA13 New Net Name=PA9
+Added Pin To Net: NetName=PA8 Pin=P1_B-8
+Added Pin To Net: NetName=PA8 Pin=P_DriverA-8
+Added Net: Name=PA8
+Added Member To Class: ClassName=Sheet1 Member=Component SW? SW
+Added Member To Class: ClassName=Sheet1 Member=Component SW? SW
+Added Member To Class: ClassName=Sheet1 Member=Component SW? SW

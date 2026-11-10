@@ -1,0 +1,4 @@
+Removed Pin From Net: NetName=PA13 Pin=P_DriverA-3
+Removed Pin From Net: NetName=PC9 Pin=P_DriverA-4
+Added Pin To Net: NetName=PC9 Pin=P_DriverA-3
+Added Pin To Net: NetName=PA13 Pin=P_DriverA-4

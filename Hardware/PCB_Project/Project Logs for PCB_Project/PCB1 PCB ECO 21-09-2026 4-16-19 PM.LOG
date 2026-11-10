@@ -1,0 +1,4 @@
+Removed Pin From Net: NetName=VDD Pin=H_BanhPhai-4
+Removed Pin From Net: NetName=VDD Pin=H_BanhTrai-4
+Added Pin To Net: NetName=VCC Pin=H_BanhPhai-4
+Added Pin To Net: NetName=VCC Pin=H_BanhTrai-4

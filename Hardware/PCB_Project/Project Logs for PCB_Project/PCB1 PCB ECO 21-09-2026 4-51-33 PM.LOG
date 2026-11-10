@@ -1,0 +1,4 @@
+Removed Pin From Net: NetName=PB6 Pin=H_BanhPhai-2
+Removed Pin From Net: NetName=PB7 Pin=H_BanhPhai-3
+Added Pin To Net: NetName=PB7 Pin=H_BanhPhai-2
+Added Pin To Net: NetName=PB6 Pin=H_BanhPhai-3

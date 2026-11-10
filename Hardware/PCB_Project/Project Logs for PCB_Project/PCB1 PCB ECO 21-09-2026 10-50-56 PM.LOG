@@ -1,0 +1,55 @@
+Added Pin To Net: NetName=GND Pin=P1_A-49
+Added Pin To Net: NetName=GND Pin=P1_A-50
+Added Pin To Net: NetName=GND Pin=P1_B-2
+Change Net Name : Old Net Name=BIN1 New Net Name=PC9
+Change Net Name : Old Net Name=BIN2 New Net Name=PA13
+Change Net Name : Old Net Name=PWMB New Net Name=PC7
+Change Net Name : Old Net Name=SDA New Net Name=PB9
+Added Pin To Net: NetName=PA10 Pin=P1_B-8
+Added Pin To Net: NetName=PA10 Pin=P_DriverA-6
+Added Net: Name=PA10
+Added Pin To Net: NetName=PA14 Pin=P1_B-10
+Added Net: Name=PA14
+Added Pin To Net: NetName=PB4 Pin=H_BanhTrai-2
+Added Pin To Net: NetName=PB4 Pin=P1_B-26
+Added Net: Name=PB4
+Added Pin To Net: NetName=PB5 Pin=H_BanhTrai-3
+Added Pin To Net: NetName=PB5 Pin=P1_B-25
+Added Net: Name=PB5
+Added Pin To Net: NetName=PB6 Pin=H_BanhPhai-2
+Added Pin To Net: NetName=PB6 Pin=P1_B-28
+Added Net: Name=PB6
+Added Pin To Net: NetName=PB7 Pin=H_BanhPhai-3
+Added Pin To Net: NetName=PB7 Pin=P1_B-27
+Added Net: Name=PB7
+Added Pin To Net: NetName=PB8 Pin=P1_B-32
+Added Pin To Net: NetName=PB8 Pin=P_IMU-6
+Added Net: Name=PB8
+Added Pin To Net: NetName=PC6 Pin=P1_B-4
+Added Pin To Net: NetName=PC6 Pin=P_DriverA-8
+Added Net: Name=PC6
+Added Pin To Net: NetName=PC8 Pin=P1_B-6
+Added Pin To Net: NetName=PC8 Pin=P_DriverA-7
+Added Net: Name=PC8
+Added Pin To Net: NetName=PC10 Pin=P1_B-12
+Added Net: Name=PC10
+Added Pin To Net: NetName=PC12 Pin=P1_B-14
+Added Net: Name=PC12
+Added Pin To Net: NetName=PD8 Pin=P1_A-42
+Added Pin To Net: NetName=PD8 Pin=P_UART-3
+Added Net: Name=PD8
+Added Pin To Net: NetName=PD9 Pin=P1_A-41
+Added Pin To Net: NetName=PD9 Pin=P_UART-4
+Added Net: Name=PD9
+Added Pin To Net: NetName=PD10 Pin=P1_A-44
+Added Net: Name=PD10
+Added Pin To Net: NetName=PD11 Pin=P1_A-43
+Added Net: Name=PD11
+Added Pin To Net: NetName=PD12 Pin=P1_A-46
+Added Net: Name=PD12
+Added Pin To Net: NetName=PD13 Pin=P1_A-45
+Added Net: Name=PD13
+Added Pin To Net: NetName=PD14 Pin=P1_A-48
+Added Net: Name=PD14
+Added Pin To Net: NetName=PD15 Pin=P1_A-47
+Added Net: Name=PD15

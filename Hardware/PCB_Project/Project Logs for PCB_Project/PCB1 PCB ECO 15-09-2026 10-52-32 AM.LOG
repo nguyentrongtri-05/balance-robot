@@ -1,0 +1,5 @@
+Added Component: Designator=HD_Source(HED2)
+Add component (AddParameter): Name = "Value"; Value = "Header 2"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=VIN Pin=HD_Source-1
+Added Pin To Net: NetName=GND Pin=HD_Source-2
+Added Member To Class: ClassName=Sheet1 Member=Component HD_Source Header 2

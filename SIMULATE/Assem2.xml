@@ -1,0 +1,1264 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<SimscapeMultibodyImportXML version="2.0" xmlns="urn:mathworks:SimscapeMultibody:import" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<Created by="" on="10/03/26||14:56:48" using="Simscape Multibody Link Version 7.4" from="SolidWorks 32.5.0"/>
+<ModelUnits mass="kilogram" length="millimeter"/>
+<DataUnits mass="kilogram" length="meter"/>
+<RootAssembly name="Assem2" uid="Assem2" version="865">
+<AssemblyFile name="Assem2.SLDASM" type="SolidWorks Assembly"/>
+<InstanceTree>
+<Instance name="TATTU 1800mah 4s-1" uid="TATTU 1800mah 4s-1" entityUid="TATTU 1800mah 4s" rigid="true">
+<Transform>
+<Rotation>1 0 0 0 0 -1.0000000000000002 0 1.0000000000000002 0</Rotation>
+<Translation>0.0083147933492560815 0.066684677582300775 0.059461486050098177</Translation>
+</Transform>
+<Instance name="FUNDA-1" uid="FUNDA-1" entityUid="FUNDA*:*Predeterminado">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>0 0.00019999999999999879 0</Translation>
+</Transform>
+</Instance>
+<Instance name="NUCLEO-1" uid="NUCLEO-1" entityUid="NUCLEO*:*Predeterminado">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>0 0 0</Translation>
+</Transform>
+</Instance>
+<Instance name="JST XHP-4-1" uid="JST XHP-4-1" entityUid="JST XHP-4*:*Predeterminado">
+<Transform>
+<Rotation>0.15281544660317842 0.986958474995413 -0.050600473458257481 -0.93733444947483102 0.16097492275635433 0.30901651100111394 0.31313187175244062 0.00020707079577035777 0.94970963352726867</Rotation>
+<Translation>-0.057484754231943519 0.0092521184455799585 -0.013800251946227124</Translation>
+</Transform>
+</Instance>
+<Instance name="XT60 Buchse-2" uid="XT60 Buchse-2" entityUid="XT60 Buchse*:*Predeterminado">
+<Transform>
+<Rotation>-2.9411130674854593e-15 0 1 1.0000000000000002 -4.5102810375396994e-16 2.9411130674854601e-15 4.5102810375396994e-16 1.0000000000000002 0</Rotation>
+<Translation>0.017532973376140848 0.011883261256148171 -0.021693172526161583</Translation>
+</Transform>
+</Instance>
+</Instance>
+<Instance name="JGB37-520-3" uid="JGB37-520-3" entityUid="JGB37-520" rigid="true">
+<Transform>
+<Rotation>0 0 -1 -1 3.4365548299346311e-09 0 3.4365548299346311e-09 1 0</Rotation>
+<Translation>-0.048685206650743884 0.066577850108462386 0.029461486050098303</Translation>
+</Transform>
+<Instance name="CONNECTION, DC MOTOR, JGB37-520-2" uid="CONNECTION, DC MOTOR, JGB37-520-2" entityUid="CONNECTION, DC MOTOR, JGB37-520*:*Default">
+<Transform>
+<Rotation>1.0000000000000002 6.9829626777191591e-15 0 6.9829626777191591e-15 -1 0 0 0 -1.0000000000000002</Rotation>
+<Translation>0 -0.012800000000000002 -0.050249999999999989</Translation>
+</Transform>
+</Instance>
+<Instance name="pan cross head_am-5" uid="pan cross head_am-5" entityUid="pan cross head_am*:*B18.6.7M - M2 x 0.4 x 25 Type I Cross Recessed PHMS --25N">
+<Transform>
+<Rotation>0 -0.80185760513815452 0.59751517226100959 0 0.59751517226100959 0.80185760513815452 -1 0 0</Rotation>
+<Translation>0.01342339375865876 0.0077500000000000624 0</Translation>
+</Transform>
+</Instance>
+<Instance name="pan cross head_am-4" uid="pan cross head_am-4" entityUid="pan cross head_am*:*B18.6.7M - M2 x 0.4 x 25 Type I Cross Recessed PHMS --25N">
+<Transform>
+<Rotation>0 0.91839212089374822 0.39567147013688408 0 0.39567147013688408 -0.91839212089374822 -1 0 0</Rotation>
+<Translation>0 -0.015499999999999998 0</Translation>
+</Transform>
+</Instance>
+<Instance name="DC MOTOR, JGB37-520-1" uid="DC MOTOR, JGB37-520-1" entityUid="DC MOTOR, JGB37-520*:*Default">
+<Transform>
+<Rotation>-1 -1.1102230246251565e-16 0 1.1102230246251565e-16 -1 0 0 0 0.99999999999999989</Rotation>
+<Translation>0 0 -0.028999999999999998</Translation>
+</Transform>
+</Instance>
+<Instance name="GEARED BODY, MOTOR, JGB37-520-1" uid="GEARED BODY, MOTOR, JGB37-520-1" entityUid="GEARED BODY, MOTOR, JGB37-520*:*Default">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>0 0 0</Translation>
+</Transform>
+</Instance>
+<Instance name="SHAFT COUPLER, JGB37-520-1" uid="SHAFT COUPLER, JGB37-520-1" entityUid="SHAFT COUPLER, JGB37-520*:*Default">
+<Transform>
+<Rotation>0.63178652509498834 -0.77514242994974802 0 0.77514242994974802 0.63178652509498834 0 0 0 1</Rotation>
+<Translation>0 0.0069999999999999993 0</Translation>
+</Transform>
+</Instance>
+<Instance name="MM-JGB37 v4-1" uid="MM-JGB37 v4-1" entityUid="MM-JGB37 v4*:*Default">
+<Transform>
+<Rotation>1 0 -3.4365547074699512e-09 -3.4365547074699512e-09 0 -1 0 1 0</Rotation>
+<Translation>-0.019999999907213017 0.027000000068730989 -0.0395</Translation>
+</Transform>
+</Instance>
+<Instance name="MOTOR SHAFT, JGB37-520-1" uid="MOTOR SHAFT, JGB37-520-1" entityUid="MOTOR SHAFT, JGB37-520*:*Default">
+<Transform>
+<Rotation>-0.94250554661510455 -0.33419050644768905 0 0.33419050644768905 -0.94250554661510455 0 0 0 0.99999999999999989</Rotation>
+<Translation>0 0.0069999999999999993 0</Translation>
+</Transform>
+</Instance>
+<Instance name="khop_noi_6mm-2" uid="khop_noi_6mm-2" entityUid="khop_noi_6mm*:*Default">
+<Transform>
+<Rotation>-0.9669091685472907 0 -0.25512087288026264 -0.25512087288026264 0 0.96690916854729059 0 0.99999999999999989 0</Rotation>
+<Translation>0 0.0069999999999999923 0.0315</Translation>
+</Transform>
+</Instance>
+<Instance name="pan cross head_am-3" uid="pan cross head_am-3" entityUid="pan cross head_am*:*B18.6.7M - M2 x 0.4 x 25 Type I Cross Recessed PHMS --25N">
+<Transform>
+<Rotation>0 -0.11653451575560123 -0.99318664239789689 0 -0.99318664239789689 0.11653451575560123 -1 0 0</Rotation>
+<Translation>-0.013423393758658753 0.0077500000000000624 0</Translation>
+</Transform>
+</Instance>
+<Instance name="PLASTIC COVER, DC MOTOR, JGB37-520-1" uid="PLASTIC COVER, DC MOTOR, JGB37-520-1" entityUid="PLASTIC COVER, DC MOTOR, JGB37-520*:*Default">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>0 0 -0.048499999999999995</Translation>
+</Transform>
+</Instance>
+<Instance name="COUPLING BRACKET, GEARED BODY TO DC MOTOR, JGB37-520-1" uid="COUPLING BRACKET, GEARED BODY TO DC MOTOR, JGB37-520-1" entityUid="COUPLING BRACKET, GEARED BODY TO DC MOTOR, JGB37-520*:*Default">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>0 0 -0.024999999999999998</Translation>
+</Transform>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="0.25"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="0.25"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="0.25"/>
+<Emissive r="0" g="0" b="0" a="0.25"/>
+<Shininess>0.40000000596046448</Shininess>
+</VisualProperties>
+</Instance>
+<Instance name="CONNECTION, DC MOTOR, JGB37-520-1" uid="CONNECTION, DC MOTOR, JGB37-520-1" entityUid="CONNECTION, DC MOTOR, JGB37-520*:*Default">
+<Transform>
+<Rotation>-1.0000000000000002 0 0 0 1 0 0 0 -1.0000000000000002</Rotation>
+<Translation>0 0.012799999999999999 -0.050249999999999989</Translation>
+</Transform>
+</Instance>
+</Instance>
+<Instance name="JGB37-520-4" uid="JGB37-520-4" entityUid="JGB37-520" rigid="true">
+<Transform>
+<Rotation>0 0 1 1 -3.4365547074699624e-09 0 3.4365547074699628e-09 1 0</Rotation>
+<Translation>0.075314793349256087 0.066577850108462372 0.029461486050098303</Translation>
+</Transform>
+<Instance name="CONNECTION, DC MOTOR, JGB37-520-2" uid="CONNECTION, DC MOTOR, JGB37-520-2" entityUid="CONNECTION, DC MOTOR, JGB37-520*:*Default">
+<Transform>
+<Rotation>1.0000000000000002 6.9829626773055687e-15 0 6.9829626781327494e-15 -1 0 0 0 -1.0000000000000002</Rotation>
+<Translation>0 -0.012800000000000002 -0.050249999999999989</Translation>
+</Transform>
+</Instance>
+<Instance name="pan cross head_am-5" uid="pan cross head_am-5" entityUid="pan cross head_am*:*B18.6.7M - M2 x 0.4 x 25 Type I Cross Recessed PHMS --25N">
+<Transform>
+<Rotation>0 -0.80185760513815452 0.59751517226100959 0 0.59751517226100959 0.80185760513815452 -1 0 0</Rotation>
+<Translation>0.013423393758658753 0.0077500000000000624 0</Translation>
+</Transform>
+</Instance>
+<Instance name="pan cross head_am-4" uid="pan cross head_am-4" entityUid="pan cross head_am*:*B18.6.7M - M2 x 0.4 x 25 Type I Cross Recessed PHMS --25N">
+<Transform>
+<Rotation>0 0.91839212089374811 0.39567147013688408 0 0.39567147013688408 -0.91839212089374811 -1 0 0</Rotation>
+<Translation>0 -0.015499999999999998 0</Translation>
+</Transform>
+</Instance>
+<Instance name="DC MOTOR, JGB37-520-1" uid="DC MOTOR, JGB37-520-1" entityUid="DC MOTOR, JGB37-520*:*Default">
+<Transform>
+<Rotation>-1 -1.1102230287610596e-16 0 1.1102230204892535e-16 -1 0 0 0 0.99999999999999989</Rotation>
+<Translation>0 0 -0.028999999999999998</Translation>
+</Transform>
+</Instance>
+<Instance name="GEARED BODY, MOTOR, JGB37-520-1" uid="GEARED BODY, MOTOR, JGB37-520-1" entityUid="GEARED BODY, MOTOR, JGB37-520*:*Default">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>0 0 0</Translation>
+</Transform>
+</Instance>
+<Instance name="SHAFT COUPLER, JGB37-520-1" uid="SHAFT COUPLER, JGB37-520-1" entityUid="SHAFT COUPLER, JGB37-520*:*Default">
+<Transform>
+<Rotation>0.63178652509498834 -0.77514242994974802 0 0.77514242994974802 0.63178652509498834 0 0 0 1</Rotation>
+<Translation>0 0.0069999999999999993 0</Translation>
+</Transform>
+</Instance>
+<Instance name="MM-JGB37 v4-1" uid="MM-JGB37 v4-1" entityUid="MM-JGB37 v4*:*Default">
+<Transform>
+<Rotation>1 0 -3.4365547074699516e-09 -3.4365547074699508e-09 0 -1 0 1 0</Rotation>
+<Translation>-0.019999999907213017 0.027000000068730996 -0.0395</Translation>
+</Transform>
+</Instance>
+<Instance name="MOTOR SHAFT, JGB37-520-1" uid="MOTOR SHAFT, JGB37-520-1" entityUid="MOTOR SHAFT, JGB37-520*:*Default">
+<Transform>
+<Rotation>-0.94250554661510455 -0.33419050644768905 0 0.33419050644768905 -0.94250554661510455 0 0 0 0.99999999999999989</Rotation>
+<Translation>0 0.0069999999999999993 0</Translation>
+</Transform>
+</Instance>
+<Instance name="khop_noi_6mm-2" uid="khop_noi_6mm-2" entityUid="khop_noi_6mm*:*Default">
+<Transform>
+<Rotation>-0.9669091685472907 0 -0.25512087288026264 -0.25512087288026264 0 0.96690916854729059 0 0.99999999999999989 0</Rotation>
+<Translation>0 0.0069999999999999923 0.0315</Translation>
+</Transform>
+</Instance>
+<Instance name="pan cross head_am-3" uid="pan cross head_am-3" entityUid="pan cross head_am*:*B18.6.7M - M2 x 0.4 x 25 Type I Cross Recessed PHMS --25N">
+<Transform>
+<Rotation>0 -0.11653451575560123 -0.99318664239789689 0 -0.99318664239789689 0.11653451575560123 -1 0 0</Rotation>
+<Translation>-0.013423393758658766 0.0077500000000000624 0</Translation>
+</Transform>
+</Instance>
+<Instance name="PLASTIC COVER, DC MOTOR, JGB37-520-1" uid="PLASTIC COVER, DC MOTOR, JGB37-520-1" entityUid="PLASTIC COVER, DC MOTOR, JGB37-520*:*Default">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>0 0 -0.048499999999999995</Translation>
+</Transform>
+</Instance>
+<Instance name="COUPLING BRACKET, GEARED BODY TO DC MOTOR, JGB37-520-1" uid="COUPLING BRACKET, GEARED BODY TO DC MOTOR, JGB37-520-1" entityUid="COUPLING BRACKET, GEARED BODY TO DC MOTOR, JGB37-520*:*Default">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>0 0 -0.024999999999999994</Translation>
+</Transform>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="0.25"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="0.25"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="0.25"/>
+<Emissive r="0" g="0" b="0" a="0.25"/>
+<Shininess>0.40000000596046448</Shininess>
+</VisualProperties>
+</Instance>
+<Instance name="CONNECTION, DC MOTOR, JGB37-520-1" uid="CONNECTION, DC MOTOR, JGB37-520-1" entityUid="CONNECTION, DC MOTOR, JGB37-520*:*Default">
+<Transform>
+<Rotation>-1.0000000000000002 0 0 0 1 0 0 0 -1.0000000000000002</Rotation>
+<Translation>0 0.012799999999999999 -0.050249999999999989</Translation>
+</Transform>
+</Instance>
+</Instance>
+<Instance name="Blue_KIT_STM32F407VG-1" uid="Blue_KIT_STM32F407VG-1" entityUid="Blue_KIT_STM32F407VG*:*Default">
+<Transform>
+<Rotation>1 0 0 0 0 -1 0 1 0</Rotation>
+<Translation>0.017314793349256077 0.011577850108462392 0.11872148605009819</Translation>
+</Transform>
+</Instance>
+<Instance name="Chassis-2" uid="Chassis-2" grounded="true" entityUid="Chassis*:*Default">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>0.013314793349256102 0.0665778501084624 0.056461486050098202</Translation>
+</Transform>
+</Instance>
+<Instance name="2_Vias-2" uid="2_Vias-2" entityUid="2_Vias*:*Default">
+<Transform>
+<Rotation>-1 -8.8817841970012523e-16 1.999995435464426e-10 1.999995435464426e-10 6.564968861301944e-16 1 -7.7715611723760958e-16 1 -6.5649688597611369e-16</Rotation>
+<Translation>-0.013344234049336811 0.11658338736793054 0.12097420081545207</Translation>
+</Transform>
+</Instance>
+<Instance name="2_Vias-3" uid="2_Vias-3" entityUid="2_Vias*:*Default">
+<Transform>
+<Rotation>-1 3.8857805861880479e-16 1.9999985754501563e-10 1.9999985754501565e-10 -3.9821498725440591e-16 1 4.4408920985006262e-16 1 3.9821498715929108e-16</Rotation>
+<Translation>-0.056628946220399212 0.072016587809470289 0.1209742008154522</Translation>
+</Transform>
+</Instance>
+<Instance name="2_Vias-4" uid="2_Vias-4" entityUid="2_Vias*:*Default">
+<Transform>
+<Rotation>-1 -8.8817841970012523e-16 1.9999996496558032e-10 1.9999996496558032e-10 -7.5903747028104281e-16 1 -7.7715611723760958e-16 1 7.5903747043388559e-16</Rotation>
+<Translation>0.005600464188850963 0.11658338736793038 0.12097420081545225</Translation>
+</Transform>
+</Instance>
+<Instance name="4 PIN PCB CONNECTOR2MM-1" uid="4 PIN PCB CONNECTOR2MM-1" entityUid="4 PIN PCB CONNECTOR2MM*:*Default">
+<Transform>
+<Rotation>-1 0 0 0 0 1 0 1 0</Rotation>
+<Translation>0.03838479334925609 0.1156778501084624 0.1117964860500982</Translation>
+</Transform>
+</Instance>
+<Instance name="4 PIN PCB CONNECTOR2MM-5" uid="4 PIN PCB CONNECTOR2MM-5" entityUid="4 PIN PCB CONNECTOR2MM*:*Default">
+<Transform>
+<Rotation>-1 0 0 0 0 1 0 1 0</Rotation>
+<Translation>-0.011755206650743904 0.11568785010846239 0.1117964860500982</Translation>
+</Transform>
+</Instance>
+<Instance name="Banh xe va khop noi-2" uid="Banh xe va khop noi-2" entityUid="Banh xe va khop noi*:*Default">
+<Transform>
+<Rotation>0 0 1 0.65666702516423059 0.75418062694686061 0 -0.75418062694686061 0.65666702516423059 0</Rotation>
+<Translation>0.07555344001705365 0.014964024602070553 0.01548840867447708</Translation>
+</Transform>
+</Instance>
+<Instance name="TB6612FNG_Lower Pins-1" uid="TB6612FNG_Lower Pins-1" grounded="true" entityUid="TB6612FNG_Lower Pins*:*?? ?????????">
+<Transform>
+<Rotation>0 0 1 1 0 0 0 1 0</Rotation>
+<Translation>0.0041139812685751275 0.083119863807739669 0.11746148605009821</Translation>
+</Transform>
+</Instance>
+<Instance name="MPU6050 Accelerometer-1" uid="MPU6050 Accelerometer-1" entityUid="MPU6050 Accelerometer*:*Default">
+<Transform>
+<Rotation>-1 0 0 0 -1 0 0 0 1</Rotation>
+<Translation>0.0038147933492561174 0.044577850108462387 0.1110614860500982</Translation>
+</Transform>
+</Instance>
+<Instance name="Banh xe va khop noi-1" uid="Banh xe va khop noi-1" entityUid="Banh xe va khop noi*:*Default">
+<Transform>
+<Rotation>0 0 -1 -0.99714577088958622 0.075500407926134758 0 0.075500407926134758 0.99714577088958622 0</Rotation>
+<Translation>-0.04892385331854146 0.080623110421584043 -0.017451291877807237</Translation>
+</Transform>
+</Instance>
+</InstanceTree>
+<Constraints>
+<Parallel name="Parallel1">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>-0.074999999999999997 0.044999999999999998 0</Position>
+<Axis>0 0 -1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>JGB37-520-3</Uid>
+<Uid>MM-JGB37 v4-1</Uid>
+</InstancePath>
+<Position>0.020000000000000004 0.01975 0</Position>
+<Axis>0 0 -1</Axis>
+</ConstraintGeometry>
+</Parallel>
+<Distance name="Distance1">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>JGB37-520-3</Uid>
+<Uid>MM-JGB37 v4-1</Uid>
+</InstancePath>
+<Position>0.040000000000000008 0.042500000000000003 0</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>-0.084999999999999992 0.044999999999999929 0.0030000000000000027</Position>
+<Axis>-1 0 0</Axis>
+</ConstraintGeometry>
+</Distance>
+<Coincident name="Coincident5">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>-0.074999999999999997 0.044999999999999998 0</Position>
+<Axis>0 0 -1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>JGB37-520-3</Uid>
+<Uid>MM-JGB37 v4-1</Uid>
+</InstancePath>
+<Position>0.020000000000000004 0.01975 0</Position>
+<Axis>0 0 -1</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Coincident name="Coincident11">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>JGB37-520-3</Uid>
+<Uid>MM-JGB37 v4-1</Uid>
+</InstancePath>
+<Position>0.040000000000000008 0 0</Position>
+<Axis>1 0 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>JGB37-520-4</Uid>
+<Uid>MM-JGB37 v4-1</Uid>
+</InstancePath>
+<Position>0 0.0395 0</Position>
+<Axis>-1 0 0</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Distance name="Distance2">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>JGB37-520-3</Uid>
+<Uid>MM-JGB37 v4-1</Uid>
+</InstancePath>
+<Position>0 0.0395 0</Position>
+<Axis>-1 0 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>-0.074999999999999928 0.054999999999999993 0.0030000000000000027</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+</Distance>
+<Distance name="Distance3">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>JGB37-520-4</Uid>
+<Uid>MM-JGB37 v4-1</Uid>
+</InstancePath>
+<Position>0.040000000000000008 0.042500000000000003 0</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="line">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>0.084999999999999992 0.044999999999999929 0</Position>
+<Axis>0 -1 0</Axis>
+</ConstraintGeometry>
+</Distance>
+<Coincident name="Coincident12">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>0.079902698085383139 0.050575907713174301 0.052999999999999999</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Blue_KIT_STM32F407VG-1</Uid>
+</InstancePath>
+<Position>0.063460000000000003 -0.0092600000000000043 0.010160000000000001</Position>
+<Axis>0 -1 0</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Coincident name="Coincident13">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>-0.074999999999999928 -0.055000000000000014 0.049999999999999996</Position>
+<Axis>0 -1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Blue_KIT_STM32F407VG-1</Uid>
+</InstancePath>
+<Position>0 0.0020000000000000018 0</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Distance name="Distance4">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Blue_KIT_STM32F407VG-1</Uid>
+</InstancePath>
+<Position>0.066000000000000003 0.0020000000000000018 0</Position>
+<Axis>1 0 -2.86139954800298e-16</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>0.084999999999999992 -0.044999999999999943 0.049999999999999996</Position>
+<Axis>1 0 0</Axis>
+</ConstraintGeometry>
+</Distance>
+<Coincident name="Coincident15">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>-0.074999999999999997 0.044999999999999998 0</Position>
+<Axis>0 0 -1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>JGB37-520-4</Uid>
+<Uid>MM-JGB37 v4-1</Uid>
+</InstancePath>
+<Position>0.020000000000000004 0.019749999999999997 0</Position>
+<Axis>0 0 -1</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Coincident name="Coincident18">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>0.079902698085383139 0.050575907713174301 0.052999999999999999</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>4 PIN PCB CONNECTOR2MM-1</Uid>
+</InstancePath>
+<Position>-0.0049299999999999969 -0.0023350000000000037 0.0058900000000000063</Position>
+<Axis>0 -1 0</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Distance name="Distance5">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>4 PIN PCB CONNECTOR2MM-1</Uid>
+</InstancePath>
+<Position>-0.0049299999999999969 -0.0023350000000000037 0.0058900000000000063</Position>
+<Axis>-1 0 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>0.084999999999999992 -0.044999999999999943 0.049999999999999996</Position>
+<Axis>1 0 0</Axis>
+</ConstraintGeometry>
+</Distance>
+<Distance name="Distance6">
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>4 PIN PCB CONNECTOR2MM-1</Uid>
+</InstancePath>
+<Position>0 0.00038499999999999646 -0.00010000000000000286</Position>
+<Axis>1 0 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Blue_KIT_STM32F407VG-1</Uid>
+</InstancePath>
+<Position>0 0.0020000000000000018 -0.097000000000000003</Position>
+<Axis>0 0 -1</Axis>
+</ConstraintGeometry>
+</Distance>
+<Coincident name="Coincident38">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>0.079902698085383139 0.050575907713174301 0.052999999999999999</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>4 PIN PCB CONNECTOR2MM-5</Uid>
+</InstancePath>
+<Position>-0.0049300000000000004 -0.0023350000000000037 0.0058900000000000063</Position>
+<Axis>0 -1 0</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Parallel name="Parallel11">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Blue_KIT_STM32F407VG-1</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>0 -1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>4 PIN PCB CONNECTOR2MM-5</Uid>
+</InstancePath>
+<Position>-0.0049300000000000004 0.0023350000000000037 0.0058900000000000063</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+</Parallel>
+<Parallel name="Parallel12">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>-0.074999999999999928 -0.055000000000000014 0.049999999999999996</Position>
+<Axis>0 -1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>4 PIN PCB CONNECTOR2MM-5</Uid>
+</InstancePath>
+<Position>0 0 -0.00060000000000000331</Position>
+<Axis>0 0 -1</Axis>
+</ConstraintGeometry>
+</Parallel>
+<Distance name="Distance9">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>4 PIN PCB CONNECTOR2MM-5</Uid>
+</InstancePath>
+<Position>0.0049300000000000004 -0.0023350000000000037 0.0058900000000000063</Position>
+<Axis>1 0 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>-0.084999999999999992 0.044999999999999929 0.049999999999999996</Position>
+<Axis>-1 0 0</Axis>
+</ConstraintGeometry>
+</Distance>
+<Coincident name="Coincident42">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>0.074999999999999928 0.054999999999999993 0.049999999999999996</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>4 PIN PCB CONNECTOR2MM-5</Uid>
+</InstancePath>
+<Position>0 0 0.0058900000000000063</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Tangent name="Tangent9">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>0.074999999999999928 0.054999999999999993 0.049999999999999996</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="circle">
+<InstancePath>
+<Uid>2_Vias-2</Uid>
+</InstancePath>
+<Position>-0.013354273406274209 -0.0095127147640206439 0.0049944627432027822</Position>
+<Axis>-1 -8.8817841970012523e-16 1.999995435464426e-10</Axis>
+</ConstraintGeometry>
+</Tangent>
+<Tangent name="Tangent10">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>0.079902698085383139 0.050575907713174301 0.052999999999999999</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="circle">
+<InstancePath>
+<Uid>2_Vias-2</Uid>
+</InstancePath>
+<Position>-0.012354273406514207 -0.01151271476535394 0.0037944627430027827</Position>
+<Axis>-1 -8.8817841970012523e-16 1.999995435464426e-10</Axis>
+</ConstraintGeometry>
+</Tangent>
+<UnknownConstraint name="Lock5">
+<ConstraintGeometry geomType="Unknown">
+<InstancePath>
+<Uid>4 PIN PCB CONNECTOR2MM-5</Uid>
+</InstancePath>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="Unknown">
+<InstancePath>
+<Uid>2_Vias-2</Uid>
+</InstancePath>
+</ConstraintGeometry>
+</UnknownConstraint>
+<Tangent name="Tangent14">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>0.079902698085383139 0.050575907713174301 0.052999999999999999</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="circle">
+<InstancePath>
+<Uid>2_Vias-3</Uid>
+</InstancePath>
+<Position>-0.012354273406514203 -0.01151271476535394 0.0037944627430027827</Position>
+<Axis>-1 3.8857805861880479e-16 1.9999985754501563e-10</Axis>
+</ConstraintGeometry>
+</Tangent>
+<Distance name="Distance11">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>TATTU 1800mah 4s-1</Uid>
+<Uid>NUCLEO-1</Uid>
+</InstancePath>
+<Position>0.055000000000000007 0.025000000000000001 -0.017000000000000001</Position>
+<Axis>1 0 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>0.084999999999999992 0.044999999999999929 0.0030000000000000027</Position>
+<Axis>1 0 0</Axis>
+</ConstraintGeometry>
+</Distance>
+<Distance name="Distance12">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>TATTU 1800mah 4s-1</Uid>
+<Uid>XT60 Buchse-2</Uid>
+</InstancePath>
+<Position>-0.0045015733389981993 -0.0032000000000000084 0.0077999999999999979</Position>
+<Axis>0 -1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="line">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>-0.074999999999999928 0.054999999999999993 0.0030000000000000027</Position>
+<Axis>1 0 0</Axis>
+</ConstraintGeometry>
+</Distance>
+<Distance name="Distance13">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>-0.074999999999999997 0.044999999999999998 0.049999999999999996</Position>
+<Axis>0 0 -1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>TATTU 1800mah 4s-1</Uid>
+<Uid>NUCLEO-1</Uid>
+</InstancePath>
+<Position>0 0.025000000000000001 0</Position>
+<Axis>0 1.0000000000000002 0</Axis>
+</ConstraintGeometry>
+</Distance>
+<Tangent name="Tangent16">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>0.074999999999999928 0.054999999999999993 0.049999999999999996</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="circle">
+<InstancePath>
+<Uid>2_Vias-4</Uid>
+</InstancePath>
+<Position>-0.013354273406274205 -0.0095127147640206577 0.0049944627432027822</Position>
+<Axis>-1 -8.8817841970012523e-16 1.9999996496558032e-10</Axis>
+</ConstraintGeometry>
+</Tangent>
+<Tangent name="Tangent17">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>0.079902698085383139 0.050575907713174301 0.052999999999999999</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="circle">
+<InstancePath>
+<Uid>2_Vias-4</Uid>
+</InstancePath>
+<Position>-0.01235427340651421 -0.011512714765353954 0.0037944627430027689</Position>
+<Axis>-1 -8.8817841970012523e-16 1.9999996496558032e-10</Axis>
+</ConstraintGeometry>
+</Tangent>
+<Coincident name="Coincident47">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>0.079902698085383139 0.050575907713174301 0.052999999999999999</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>MPU6050 Accelerometer-1</Uid>
+</InstancePath>
+<Position>0 -0.00056493699768000311 -0.0016000000000000042</Position>
+<Axis>0 0 -1</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Distance name="Distance15">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>MPU6050 Accelerometer-1</Uid>
+</InstancePath>
+<Position>0.010500000000000001 0.0080000000000000002 0</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>-0.074999999999999928 -0.055000000000000014 0.049999999999999996</Position>
+<Axis>0 -1 0</Axis>
+</ConstraintGeometry>
+</Distance>
+<Distance name="Distance16">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>MPU6050 Accelerometer-1</Uid>
+</InstancePath>
+<Position>0.010500000000000001 -0.0080000000000000002 0</Position>
+<Axis>1 0 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>-0.084999999999999992 0.044999999999999929 0.049999999999999996</Position>
+<Axis>-1 0 0</Axis>
+</ConstraintGeometry>
+</Distance>
+<Distance name="Distance17">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>TB6612FNG_Lower Pins-1</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>0 -1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>0.079902698085383139 0.050575907713174301 0.052999999999999999</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+</Distance>
+<Parallel name="Parallel13">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Chassis-2</Uid>
+</InstancePath>
+<Position>0.074999999999999928 0.054999999999999993 0.049999999999999996</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>TB6612FNG_Lower Pins-1</Uid>
+</InstancePath>
+<Position>-0.010499999999999995 0.0015499999999999958 -0.0091249999999999994</Position>
+<Axis>-1 0 0</Axis>
+</ConstraintGeometry>
+</Parallel>
+<Parallel name="Parallel18">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>JGB37-520-3</Uid>
+<Uid>khop_noi_6mm-2</Uid>
+</InstancePath>
+<Position>0 0.009999999999999995 0</Position>
+<Axis>0 0.99999999999999989 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Banh xe va khop noi-1</Uid>
+</InstancePath>
+<Position>0.018075608624273376 0.05269847562646722 0.04126135333220244</Position>
+<Axis>0 0 -1</Axis>
+</ConstraintGeometry>
+</Parallel>
+<Concentric name="Concentric2">
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>JGB37-520-3</Uid>
+<Uid>khop_noi_6mm-2</Uid>
+</InstancePath>
+<Position>0 -0.021999999999999985 0</Position>
+<Axis>0 0.99999999999999989 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>Banh xe va khop noi-1</Uid>
+</InstancePath>
+<Position>0.018075608624273376 0.05269847562646722 0.046761353332202431</Position>
+<Axis>0 0 -1</Axis>
+</ConstraintGeometry>
+</Concentric>
+<Coincident name="Coincident57">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>JGB37-520-3</Uid>
+<Uid>khop_noi_6mm-2</Uid>
+</InstancePath>
+<Position>0 0.009999999999999995 0</Position>
+<Axis>0 0.99999999999999989 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Banh xe va khop noi-1</Uid>
+</InstancePath>
+<Position>0.018075608624273376 0.05269847562646722 0.04126135333220244</Position>
+<Axis>0 0 -1</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Concentric name="Concentric3">
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>JGB37-520-4</Uid>
+<Uid>khop_noi_6mm-2</Uid>
+</InstancePath>
+<Position>0 -0.021999999999999992 0</Position>
+<Axis>0 0.99999999999999989 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>Banh xe va khop noi-2</Uid>
+</InstancePath>
+<Position>0.018075608624273369 0.05269847562646722 0.046761353332202424</Position>
+<Axis>0 0 -1</Axis>
+</ConstraintGeometry>
+</Concentric>
+<Coincident name="Coincident58">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>JGB37-520-4</Uid>
+<Uid>khop_noi_6mm-2</Uid>
+</InstancePath>
+<Position>0 0.009999999999999995 0</Position>
+<Axis>0 0.99999999999999989 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Banh xe va khop noi-2</Uid>
+</InstancePath>
+<Position>0.018075608624273369 0.05269847562646722 0.041261353332202419</Position>
+<Axis>0 0 -1</Axis>
+</ConstraintGeometry>
+</Coincident>
+</Constraints>
+</RootAssembly>
+<Assemblies>
+<Assembly name="TATTU 1800mah 4s" uid="TATTU 1800mah 4s" version="246">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<AssemblyFile name="TATTU 1800mah 4s.SLDASM" type="SolidWorks Assembly"/>
+</Assembly>
+<Assembly name="JGB37-520" uid="JGB37-520" version="276">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<AssemblyFile name="JGB37-520.SLDASM" type="SolidWorks Assembly"/>
+</Assembly>
+</Assemblies>
+<Parts>
+<Part name="2_Vias" uid="2_Vias*:*Default" version="111">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="2_Vias.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.00084459786784073536</Mass>
+<CenterOfMass>-0.017407365420527746 -0.0048662235169431613 -6.6285830810112052e-05</CenterOfMass>
+<Inertia>1.909991821157583e-08 1.3531354461823564e-08 2.0553987831784696e-08 -4.8914920786708926e-11 1.529584369586125e-11 -1.4071659761610159e-10</Inertia>
+</MassProperties>
+<GeometryFile name="2_Vias_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="4 PIN PCB CONNECTOR2MM" uid="4 PIN PCB CONNECTOR2MM*:*Default" version="114">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="4 PIN PCB CONNECTOR2MM.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.00012187628358227466</Mass>
+<CenterOfMass>0 -0.00016767074798857356 0.0019802663127999882</CenterOfMass>
+<Inertia>6.0279582810362616e-10 1.508795246520487e-09 1.4793136908454276e-09 2.5173912737655487e-11 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="4 PIN PCB CONNECTOR2MM_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="Banh xe va khop noi" uid="Banh xe va khop noi*:*Default" version="110">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="Banh xe va khop noi.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.079031525180068146</Mass>
+<CenterOfMass>0.018104725007583616 0.052249046711382106 0.038552403057921611</CenterOfMass>
+<Inertia>2.8634864590970877e-05 2.8634057091629852e-05 4.611476150566604e-05 1.7071080967592881e-09 -8.9597589006896467e-10 2.6062883810382162e-09</Inertia>
+</MassProperties>
+<GeometryFile name="Banh xe va khop noi_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="Blue_KIT_STM32F407VG" uid="Blue_KIT_STM32F407VG*:*Default" version="114">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="Blue_KIT_STM32F407VG.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.017877435984526374</Mass>
+<CenterOfMass>0.034559324695971151 0.0015088458082801004 -0.053660315144659659</CenterOfMass>
+<Inertia>1.4858500460161579e-05 2.1441376691745982e-05 7.0195719711811767e-06 4.0804219146908616e-07 6.1052600754310664e-07 -1.9745562869690937e-07</Inertia>
+</MassProperties>
+<GeometryFile name="Blue_KIT_STM32F407VG_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="CONNECTION, DC MOTOR, JGB37-520" uid="CONNECTION, DC MOTOR, JGB37-520*:*Default" version="125">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="CONNECTION, DC MOTOR, JGB37-520.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.00013787847107407354</Mass>
+<CenterOfMass>4.9064812128670991e-08 -0.00041016891167320419 0.001223320070906427</CenterOfMass>
+<Inertia>1.5202905945994744e-09 1.5244235596777978e-09 2.216854487993221e-10 2.6221770237193373e-10 -1.3721823873601816e-14 -1.3011056533419157e-15</Inertia>
+</MassProperties>
+<GeometryFile name="CONNECTION- DC MOTOR- JGB37-520_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.6470588235294118" g="0.51764705882352935" b="0" a="1"/>
+<Diffuse r="0.6470588235294118" g="0.51764705882352935" b="0" a="1"/>
+<Specular r="0.45294117647058824" g="0.36235294117647054" b="0" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="COUPLING BRACKET, GEARED BODY TO DC MOTOR, JGB37-520" uid="COUPLING BRACKET, GEARED BODY TO DC MOTOR, JGB37-520*:*Default" version="119">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="COUPLING BRACKET, GEARED BODY TO DC MOTOR, JGB37-520.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.0034940388522297682</Mass>
+<CenterOfMass>0 0 -0.0020002302022970649</CenterOfMass>
+<Inertia>2.6383973467890707e-07 2.6383973467890707e-07 5.1836402107099356e-07 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="COUPLING BRACKET- GEARED BODY TO DC MOTOR- JGB37-520_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="Chassis" uid="Chassis*:*Default" version="315">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="Chassis.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.11979219718801697</Mass>
+<CenterOfMass>5.075290671427747e-05 3.7320839444939011e-05 0.026505829654502773</CenterOfMass>
+<Inertia>0.00020393028578365716 0.00037315563840224032 0.00043430271935871676 2.9752405767114387e-09 1.9207064399354242e-08 -4.3578312056174149e-07</Inertia>
+</MassProperties>
+<GeometryFile name="Chassis_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="DC MOTOR, JGB37-520" uid="DC MOTOR, JGB37-520*:*Default" version="114">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="DC MOTOR, JGB37-520.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.0013779544327041696</Mass>
+<CenterOfMass>0 0 -0.0071137523745297623</CenterOfMass>
+<Inertia>2.1290817469916957e-07 2.1290817469916951e-07 3.1285872648553553e-07 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="DC MOTOR- JGB37-520_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="FUNDA" uid="FUNDA*:*Predeterminado" version="455">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="FUNDA.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.0027552174822133282</Mass>
+<CenterOfMass>0.0045537139611454714 0.012538045654572798 -1.578170869322521e-06</CenterOfMass>
+<Inertia>7.537280659844501e-07 3.5965103964750942e-06 3.4219732710938654e-06 1.5490115607161391e-10 -2.5799838939423362e-10 6.1878194303919434e-09</Inertia>
+</MassProperties>
+<GeometryFile name="FUNDA_Predeterminado_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.85882352941176465" g="0.85882352941176465" b="0.85882352941176465" a="0"/>
+<Diffuse r="0.2576470588235294" g="0.2576470588235294" b="0.2576470588235294" a="0"/>
+<Specular r="0.34352941176470586" g="0.34352941176470586" b="0.34352941176470586" a="0"/>
+<Emissive r="0" g="0" b="0" a="0"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="GEARED BODY, MOTOR, JGB37-520" uid="GEARED BODY, MOTOR, JGB37-520*:*Default" version="244">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="GEARED BODY, MOTOR, JGB37-520.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.0056164340387609866</Mass>
+<CenterOfMass>4.9007909838825766e-14 -0.00043638886435906914 -0.007947141564493141</CenterOfMass>
+<Inertia>1.0777881286385661e-06 1.0996108915233169e-06 1.3729562190652833e-06 1.3092869293516854e-08 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="GEARED BODY- MOTOR- JGB37-520_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="JST XHP-4" uid="JST XHP-4*:*Predeterminado" version="149">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="JST XHP-4.sldprt" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.00028807042967635653</Mass>
+<CenterOfMass>-0.0011406075984151207 0.0010995392424490008 0.0038557751925635351</CenterOfMass>
+<Inertia>2.2192933650513709e-09 6.3059036725929688e-09 5.2722807142339967e-09 -4.6161942625958205e-12 -8.1903195158893333e-12 1.3337349261689391e-12</Inertia>
+</MassProperties>
+<GeometryFile name="JST XHP-4_Predeterminado_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="1" g="1" b="1" a="1"/>
+<Diffuse r="1" g="1" b="1" a="1"/>
+<Specular r="0.30000001192092896" g="0.30000001192092896" b="0.30000001192092896" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.5</Shininess>
+</VisualProperties>
+</Part>
+<Part name="MM-JGB37 v4" uid="MM-JGB37 v4*:*Default" version="114">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="MM-JGB37 v4.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.0086240773290207351</Mass>
+<CenterOfMass>0.020000000000626576 0.029620699107904679 0.010151847431662949</CenterOfMass>
+<Inertia>3.0185236535627417e-06 2.6466996458751662e-06 2.7529344951491051e-06 -8.4887769045386789e-07 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="MM-JGB37 v4_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.17254901960784313" g="0.17254901960784313" b="0.17254901960784313" a="1"/>
+<Diffuse r="0.17254901960784313" g="0.17254901960784313" b="0.17254901960784313" a="1"/>
+<Specular r="0.086274509803921567" g="0.086274509803921567" b="0.086274509803921567" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="MOTOR SHAFT, JGB37-520" uid="MOTOR SHAFT, JGB37-520*:*Default" version="123">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="MOTOR SHAFT, JGB37-520.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.0045623250893772954</Mass>
+<CenterOfMass>-5.999494175195361e-05 2.7686297393543968e-10 0.010608090976571477</CenterOfMass>
+<Inertia>1.8540444408381426e-07 1.8470372614628756e-07 2.0111439954026825e-08 -1.127760117557006e-14 1.2970870653842537e-09 -2.6915175465622235e-15</Inertia>
+</MassProperties>
+<GeometryFile name="MOTOR SHAFT- JGB37-520_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.77647058823529413" g="0.75686274509803919" b="0.73725490196078436" a="1"/>
+<Diffuse r="0.77647058823529413" g="0.75686274509803919" b="0.73725490196078436" a="1"/>
+<Specular r="0.38823529411764707" g="0.3784313725490196" b="0.36862745098039218" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="MPU6050 Accelerometer" uid="MPU6050 Accelerometer*:*Default" version="164">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="MPU6050 Accelerometer.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.00055554359745149673</Mass>
+<CenterOfMass>-5.0733401115000634e-05 -9.3292604268007621e-05 -0.0006856636552832106</CenterOfMass>
+<Inertia>1.1184289056952236e-08 1.9417994392488152e-08 3.0188802225158579e-08 -8.6579254977906539e-11 5.5428055232690583e-11 -7.5372026417500015e-11</Inertia>
+</MassProperties>
+<GeometryFile name="MPU6050 Accelerometer_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="NUCLEO" uid="NUCLEO*:*Predeterminado" version="1860">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="NUCLEO.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.091164464057495884</Mass>
+<CenterOfMass>0.00027046308451834054 0.012493655069816992 -0.00023791457022111261</CenterOfMass>
+<Inertia>1.3369432884153455e-05 9.8148970050855299e-05 9.3945200662446778e-05 -2.2725394257945365e-08 -4.1164898093057709e-07 5.4769254505443248e-09</Inertia>
+</MassProperties>
+<GeometryFile name="NUCLEO_Predeterminado_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="PLASTIC COVER, DC MOTOR, JGB37-520" uid="PLASTIC COVER, DC MOTOR, JGB37-520*:*Default" version="178">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="PLASTIC COVER, DC MOTOR, JGB37-520.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.004475687418270053</Mass>
+<CenterOfMass>1.3722065411643883e-05 1.3722065411641488e-05 -0.0003715804212310348</CenterOfMass>
+<Inertia>2.9932893059693917e-07 3.0401536332247434e-07 5.7665195662840603e-07 1.4607224508953927e-10 1.4607224508955229e-10 6.1971834363464066e-10</Inertia>
+</MassProperties>
+<GeometryFile name="PLASTIC COVER- DC MOTOR- JGB37-520_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.50196078431372548" g="0.50196078431372548" b="0.50196078431372548" a="1"/>
+<Diffuse r="0.50196078431372548" g="0.50196078431372548" b="0.50196078431372548" a="1"/>
+<Specular r="0.50196078431372548" g="0.50196078431372548" b="0.50196078431372548" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="SHAFT COUPLER, JGB37-520" uid="SHAFT COUPLER, JGB37-520*:*Default" version="107">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="SHAFT COUPLER, JGB37-520.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.00050435652059506149</Mass>
+<CenterOfMass>0 0 0.0029742732935375037</CenterOfMass>
+<Inertia>7.1371765255116874e-09 7.1371765255116866e-09 1.1295017154836602e-08 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="SHAFT COUPLER- JGB37-520_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="TB6612FNG_Lower Pins" uid="TB6612FNG_Lower Pins*:*?? ?????????" version="180">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="TB6612FNG_Lower Pins.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.0081550274847827734</Mass>
+<CenterOfMass>3.8963439632627008e-05 0.00018645518961703554 0</CenterOfMass>
+<Inertia>3.2694573727988255e-07 5.8972691721698058e-07 3.0847563134285474e-07 0 0 -1.1031529518271121e-09</Inertia>
+</MassProperties>
+<GeometryFile name="TB6612FNG_Lower Pins_?? ?????????_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="XT60 Buchse" uid="XT60 Buchse*:*Predeterminado" version="111">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="XT60 Buchse.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.001127654022678008</Mass>
+<CenterOfMass>0.00053200568907524586 4.439175231157476e-05 0.0074145904755875377</CenterOfMass>
+<Inertia>2.9444065369389824e-08 4.3886925884536728e-08 2.4996112482074836e-08 -2.1957969775075756e-10 6.4150708648690579e-12 2.8215173554030122e-11</Inertia>
+</MassProperties>
+<GeometryFile name="XT60 Buchse_Predeterminado_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="1" g="0.77254901960784317" b="0" a="1"/>
+<Diffuse r="0.69999999999999996" g="0.54078431372549018" b="0" a="1"/>
+<Specular r="0.29999999999999999" g="0.23176470588235293" b="0" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.5</Shininess>
+</VisualProperties>
+</Part>
+<Part name="khop_noi_6mm" uid="khop_noi_6mm*:*Default" version="138">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="khop_noi_6mm.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.0037352179630927114</Mass>
+<CenterOfMass>0 -0.0056580827409941819 0</CenterOfMass>
+<Inertia>3.5827450505210484e-07 6.9728076498568078e-08 3.5827450505210484e-07 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="khop_noi_6mm_Default_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="pan cross head_am" uid="pan cross head_am*:*B18.6.7M - M2 x 0.4 x 25 Type I Cross Recessed PHMS --25N" version="1379">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="pan cross head_am.sldprt" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>9.3662247879169202e-05</Mass>
+<CenterOfMass>0.011981447032695925 0 0</CenterOfMass>
+<Inertia>6.786874384790367e-11 6.3099888500332772e-09 6.3099888500332772e-09 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="pan cross head_am_B18.6.7M - M2 x 0.4 x 25 Type I Cross Recessed PHMS --25N_sldprt.STEP" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.77647058823529413" g="0.75686274509803919" b="0.73725490196078436" a="1"/>
+<Diffuse r="0.77647058823529413" g="0.75686274509803919" b="0.73725490196078436" a="1"/>
+<Specular r="0.38823529411764707" g="0.3784313725490196" b="0.36862745098039218" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+</Parts>
+</SimscapeMultibodyImportXML>

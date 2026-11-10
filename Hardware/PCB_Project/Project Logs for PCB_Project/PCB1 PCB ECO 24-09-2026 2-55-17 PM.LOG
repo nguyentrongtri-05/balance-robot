@@ -1,0 +1,12 @@
+Change Component Footprint: Designator=C2 Old Footprint=tu hoa 5mm New Footprint=tu hoa 13mm
+Change Component Comment : Designator=C2 Old Comment=100uF New Comment=1000uF
+Change component parameters: Designator = "C2" ("C2"); Footprint = "tu hoa 5mm"; UniqueID = "\YLCMXURV" ("\YLCMXURV")
+Change component parameters (AddParameter): Name = "Chung_Loai"; Value = "C?m"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Don_Vi"; Value = "Con"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Kieu_Chan"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Ma_Hang"; Value = "MH002315"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "So_Chan"; Value = "2"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Ten_Linh_Kien"; Value = "T? Hóa 1000uF 25V 13x21MM"; VariantName = "[No Variations]"
+Added Member To Class: ClassName=Sheet1 Member=Component SW? SW
+Added Member To Class: ClassName=Sheet1 Member=Component SW? SW
+Added Member To Class: ClassName=Sheet1 Member=Component SW? SW

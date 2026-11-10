@@ -1,0 +1,45 @@
+Added Component: Designator=HD_Wheelleft(HED2)
+Add component (AddParameter): Name = "Value"; Value = "Header 2"; VariantName = "[No Variations]"
+Added Component: Designator=HD_Wheelright(HED2)
+Add component (AddParameter): Name = "Value"; Value = "Header 2"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=GND Pin=H_BanhPhai-1
+Added Pin To Net: NetName=VDD Pin=H_BanhPhai-4
+Added Pin To Net: NetName=GND Pin=H_BanhTrai-1
+Added Pin To Net: NetName=VDD Pin=H_BanhTrai-4
+Added Pin To Net: NetName=VCC Pin=P_DriverB-2
+Added Pin To Net: NetName=GND Pin=P_DriverB-3
+Added Pin To Net: NetName=GND Pin=P_DriverB-8
+Added Pin To Net: NetName=GND Pin=P_IMU-7
+Added Pin To Net: NetName=GND Pin=P_UART-2
+Added Pin To Net: NetName=A_left Pin=H_BanhTrai-3
+Added Net: Name=A_left
+Added Pin To Net: NetName=A_Right Pin=H_BanhPhai-3
+Added Net: Name=A_Right
+Added Pin To Net: NetName=AO1 Pin=HD_Wheelright-2
+Added Pin To Net: NetName=AO1 Pin=P_DriverB-4
+Added Net: Name=AO1
+Added Pin To Net: NetName=AO2 Pin=HD_Wheelright-1
+Added Pin To Net: NetName=AO2 Pin=P_DriverB-5
+Added Net: Name=AO2
+Added Pin To Net: NetName=B_left Pin=H_BanhTrai-2
+Added Net: Name=B_left
+Added Pin To Net: NetName=B_Right Pin=H_BanhPhai-2
+Added Net: Name=B_Right
+Added Pin To Net: NetName=BO1 Pin=HD_Wheelleft-1
+Added Pin To Net: NetName=BO1 Pin=P_DriverB-7
+Added Net: Name=BO1
+Added Pin To Net: NetName=BO2 Pin=HD_Wheelleft-2
+Added Pin To Net: NetName=BO2 Pin=P_DriverB-6
+Added Net: Name=BO2
+Added Pin To Net: NetName=RX Pin=P_UART-3
+Added Net: Name=RX
+Added Pin To Net: NetName=SCL Pin=P_IMU-6
+Added Net: Name=SCL
+Added Pin To Net: NetName=SDA Pin=P_IMU-5
+Added Net: Name=SDA
+Added Pin To Net: NetName=TX Pin=P_UART-4
+Added Net: Name=TX
+Added Pin To Net: NetName=VIN Pin=P_DriverB-1
+Added Net: Name=VIN
+Added Member To Class: ClassName=Sheet1 Member=Component HD_Wheelleft Header 2
+Added Member To Class: ClassName=Sheet1 Member=Component HD_Wheelright Header 2

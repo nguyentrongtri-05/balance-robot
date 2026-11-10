@@ -1,0 +1,10 @@
+Added Pin To Net: NetName=GND Pin=P1_B-1
+Added Pin To Net: NetName=PC7 Pin=P1_B-3
+Added Pin To Net: NetName=PC9 Pin=P1_B-5
+Added Pin To Net: NetName=PA13 Pin=P1_B-7
+Added Pin To Net: NetName=PA15 Pin=P1_B-9
+Added Net: Name=PA15
+Added Pin To Net: NetName=PC11 Pin=P1_B-11
+Added Net: Name=PC11
+Added Pin To Net: NetName=PD0 Pin=P1_B-13
+Added Net: Name=PD0

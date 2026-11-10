@@ -1,0 +1,28 @@
+Added Component: Designator=SW?(SW2)
+Add component (AddParameter): Name = "Value"; Value = "SW chip 2 pin"; VariantName = "[No Variations]"
+Added Component: Designator=SW?(SW2)
+Add component (AddParameter): Name = "Value"; Value = "SW chip 2 pin"; VariantName = "[No Variations]"
+Added Component: Designator=SW?(SW2)
+Add component (AddParameter): Name = "Value"; Value = "SW chip 2 pin"; VariantName = "[No Variations]"
+Added Component: Designator=SW?(SW2)
+Add component (AddParameter): Name = "Value"; Value = "SW chip 2 pin"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=GND Pin=SW?-1
+Added Pin To Net: NetName=GND Pin=SW?-1
+Added Pin To Net: NetName=GND Pin=SW?-1
+Added Pin To Net: NetName=GND Pin=SW?-1
+Added Pin To Net: NetName=PC0 Pin=P1_A-8
+Added Pin To Net: NetName=PC0 Pin=SW?-2
+Added Net: Name=PC0
+Added Pin To Net: NetName=PC1 Pin=P1_A-7
+Added Pin To Net: NetName=PC1 Pin=SW?-2
+Added Net: Name=PC1
+Added Pin To Net: NetName=PC2 Pin=P1_A-10
+Added Pin To Net: NetName=PC2 Pin=SW?-2
+Added Net: Name=PC2
+Added Pin To Net: NetName=PC3 Pin=P1_A-9
+Added Pin To Net: NetName=PC3 Pin=SW?-2
+Added Net: Name=PC3
+Added Member To Class: ClassName=Sheet1 Member=Component SW? SW
+Added Member To Class: ClassName=Sheet1 Member=Component SW? SW
+Added Member To Class: ClassName=Sheet1 Member=Component SW? SW
+Added Member To Class: ClassName=Sheet1 Member=Component SW? SW

@@ -1,0 +1,27 @@
+Added Component: Designator=P_DriverA(HDR1X8)
+Add component (AddParameter): Name = "LatestRevisionDate"; Value = "17-Jul-2002"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "LatestRevisionNote"; Value = "Re-released for DXP Platform."; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Publisher"; Value = "Altium Limited"; VariantName = "[No Variations]"
+Added Component: Designator=P_DriverB(HDR1X8)
+Add component (AddParameter): Name = "LatestRevisionDate"; Value = "17-Jul-2002"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "LatestRevisionNote"; Value = "Re-released for DXP Platform."; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Publisher"; Value = "Altium Limited"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=GND Pin=P_DriverA-1
+Added Pin To Net: NetName=AIN1 Pin=P_DriverA-6
+Added Net: Name=AIN1
+Added Pin To Net: NetName=AIN2 Pin=P_DriverA-7
+Added Net: Name=AIN2
+Added Pin To Net: NetName=BIN1 Pin=P_DriverA-4
+Added Net: Name=BIN1
+Added Pin To Net: NetName=BIN2 Pin=P_DriverA-3
+Added Net: Name=BIN2
+Added Pin To Net: NetName=PWMA Pin=P_DriverA-8
+Added Net: Name=PWMA
+Added Pin To Net: NetName=PWMB Pin=P_DriverA-2
+Added Net: Name=PWMB
+Added Pin To Net: NetName=STBY Pin=P_DriverA-5
+Added Net: Name=STBY
+Added Pin To Net: NetName=VCC Pin=P_IMU-8
+Added Net: Name=VCC
+Added Member To Class: ClassName=Sheet1 Member=Component P_DriverA Header 8
+Added Member To Class: ClassName=Sheet1 Member=Component P_DriverB Header 8

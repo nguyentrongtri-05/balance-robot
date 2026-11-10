@@ -1,0 +1,5 @@
+Change Component Designator: OldDesignator=H1 NewDesignator=H_Driver
+Change Component Designator: OldDesignator=H2 NewDesignator=H_Bánh Ph?i
+Change Component Designator: OldDesignator=H3 NewDesignator=H_Bánh Trái
+Change Component Designator: OldDesignator=P2 NewDesignator=P_IMU
+Change Component Designator: OldDesignator=UART NewDesignator=P_UART
