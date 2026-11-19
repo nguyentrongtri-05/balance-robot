@@ -35,6 +35,7 @@
 .\objects\managetask.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dac.h
 .\objects\managetask.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dcmi.h
 .\objects\managetask.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_fsmc.h
+.\objects\managetask.o: ..\MY_LIB\motor.h
 .\objects\managetask.o: ..\FreeRTOS\include\FreeRTOS.h
 .\objects\managetask.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
 .\objects\managetask.o: ..\FreeRTOS\FreeRTOSConfig.h
@@ -46,7 +47,6 @@
 .\objects\managetask.o: ..\FreeRTOS\include\task.h
 .\objects\managetask.o: ..\FreeRTOS\include\list.h
 .\objects\managetask.o: ..\MY_LIB\gpio.h
-.\objects\managetask.o: ..\MY_LIB\motor.h
 .\objects\managetask.o: ..\MY_LIB\encoder.h
 .\objects\managetask.o: ..\MY_LIB\driver_i2c.h
 .\objects\managetask.o: ..\MY_LIB\driver_uart.h

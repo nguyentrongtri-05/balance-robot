@@ -15,10 +15,6 @@
 #define ROBOT_MAX_SPEED_CMS     10.0f       /* Ràng buộc vận tốc dài tối đa của xe: < 10 cm/s */
 #define ROBOT_MAX_SPEED_RPM     (ROBOT_MAX_SPEED_CMS / WHEEL_RPM_TO_CMS)
 
-#define ROBOT_WHEELBASE_CM      19.21f      /* Khoảng cách hiệu dụng 2 bánh Trái - Phải (cm) */
-#define YAW_DEG_PER_DIFF_CM     (57.2957795f / ROBOT_WHEELBASE_CM)
-#define YAW_DEG_PER_DIFF_PULSE  (WHEEL_CM_PER_PULSE * YAW_DEG_PER_DIFF_CM)
-
 typedef struct
 {
     int32_t pulse;

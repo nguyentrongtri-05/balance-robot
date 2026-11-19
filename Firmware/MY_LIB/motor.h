@@ -9,6 +9,10 @@
 #define MOTOR_PWM_PERIOD        8400
 #define MOTOR_PWM_PRESCALER     2
 
+/* Điện áp nguồn cấp động cơ danh định (V) và hệ số quy đổi Điện áp -> PWM (700 PWM/V với nguồn 12V) */
+#define MOTOR_SUPPLY_VOLTAGE    12.0f
+#define MOTOR_VOLT_TO_PWM       ((float)MOTOR_PWM_PERIOD / MOTOR_SUPPLY_VOLTAGE)
+
 /* Tùy chọn đảo chiều nếu động cơ đấu dây ngược (0: Bình thường, 1: Đảo chiều) */
 #define MOTOR_LEFT_INVERT       0
 #define MOTOR_RIGHT_INVERT      1
@@ -30,6 +34,11 @@ void Motor_SetPWM_Left(float pwm);
  * @param pwm: Giá trị từ -8400.0f đến 8400.0f
  */
 void Motor_SetPWM_Right(float pwm);
+
+/**
+ * @brief Quy đổi điện áp điều khiển phần ứng (V) sang giá trị xung PWM [-8400 .. +8400]
+ */
+float Motor_VoltageToPWM(float voltage);
 
 /**
  * @brief Dừng cả 2 bánh xe (PWM = 0)

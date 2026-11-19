@@ -47,4 +47,5 @@
 .\objects\main.o: ..\MY_LIB\gpio.h
 .\objects\main.o: ..\MY_LIB\motor.h
 .\objects\main.o: ..\MY_LIB\fuzzy.h
+.\objects\main.o: ..\MY_LIB\pid.h
 .\objects\main.o: ..\MY_LIB\managetask.h

@@ -32,9 +32,9 @@ typedef struct __attribute__((packed)) {
     float rawPitch;                 /* 1. Góc Pitch thô từ Accelerometer (độ) */
     float filteredPitch;            /* 2. Góc Pitch sau lọc kalmanPitch (độ) */
     float gyroRate;                 /* 3. Vận tốc góc Pitch thực tế (độ/s) */
-    float rawYaw;                   /* 4. Góc Yaw thô từ vi sai Encoder (độ) */
-    float filteredYaw;              /* 5. Góc Yaw sau lọc kalmanYaw (độ) */
-    float yawRate;                  /* 6. Vận tốc góc Yaw thực tế (độ/s) */
+    float rawYaw;                   /* 4. Góc Yaw tích phân trực tiếp từ Gyro Z IMU (độ) */
+    float filteredYaw;              /* 5. Góc Yaw sau lọc kalmanYaw thuần IMU (độ) */
+    float yawRate;                  /* 6. Vận tốc góc Yaw thực tế từ IMU (độ/s) */
 
     /* 2. Dữ liệu từ vTaskEncoder (Raw Wheel & Kalman Wheel) */
     float motorSpeed_left;          /* 7. Vận tốc Raw Bánh Trái (RPM) */
@@ -46,9 +46,9 @@ typedef struct __attribute__((packed)) {
     float motorPWM_left;            /* 11. PWM xuất Bánh Trái (-8400 đến +8400) */
     float motorPWM_right;           /* 12. PWM xuất Bánh Phải (-8400 đến +8400) */
     float targetAngle;              /* 13. Góc cân bằng đặt thực tế sau Vòng Lồng Cascade (độ) */
-    float outFuzzy;                 /* 14. Ngõ ra Vòng Trong Cân bằng FuzzyPD_Pitch (tối đa 90% = +-7560 PWM) */
+    float outFuzzy;                 /* 14. Ngõ ra điện áp Vòng Trong Cân bằng FuzzyPD_Pitch (tối đa 90% = +-10.8V) */
     float outYaw;                   /* 15. Ngõ ra Vòng Góc Yaw (tối đa 10% = +-840 PWM) */
-    float outSpeed;                 /* 16. Góc bù Vòng Ngoài Vị trí FuzzyPD_Pos x 420 (chia 420 ra độ, giới hạn +-3.3°) */
+    float outSpeed;                 /* 16. Góc bù Vòng Ngoài Vị trí FuzzyPD_Pos (độ, giới hạn +-3.2°) */
 
     /* 4. Dữ liệu debug 2 khâu FuzzyPD nối tiếp (FuzzyPD_Pitch & FuzzyPD_Pos) */
     float velCmd;                   /* 17. Vận tốc đặt đưa vào vòng ngoài (RPM, dấu theo encoder) */
@@ -59,24 +59,20 @@ typedef struct __attribute__((packed)) {
     float posDeNorm;                /* 22. FuzzyPD_Pos (Vòng ngoài): de đã chuẩn hóa & bão hòa [-1..+1] */
 } RobotTelemetry_t;
 
-/* Cấu trúc gói đồng bộ Bộ Số Cấu Hình Gốc từ STM32 gửi lên máy tính khi khởi động / Reset (ID = 0x02, len = 64 byte = 16 float) */
+/* Cấu trúc gói đồng bộ Bộ Số Cấu Hình Gốc từ STM32 gửi lên máy tính khi khởi động / Reset (ID = 0x02, len = 48 byte = 12 float) */
 typedef struct __attribute__((packed)) {
-    float kp_balance;               /* 1. Hệ số Kp vòng trong cân bằng Pitch (90% PWM) */
-    float kd_balance;               /* 2. Hệ số Kd vòng trong cân bằng Pitch (90% PWM) */
-    float kd_yaw;                   /* 3. Hệ số Kd ghìm lệch vận tốc 2 bánh Encoder (10% PWM) */
-    float kp_yaw;                   /* 4. Hệ số Kp khóa cứng góc Yaw (10% PWM) */
-    float kd_yaw_imu;               /* 5. Hệ số Kd phanh vận tốc xoay ngang Gyro Z IMU (10% PWM) */
-    float targetAngle;              /* 6. Góc cân bằng tĩnh gốc (từ Code / Flash) */
-    float targetYaw;                /* 7. Góc hướng đích Yaw (độ) */
-    float controlMode;              /* 8. Chế độ điều khiển (0.0f = Dual PID Cascade, 1.0f = Dual FuzzyPD Cascade) */
-    float kp_speed;                 /* 9. Hệ số Kp vòng ngoài vận tốc đặt */
-    float ki_speed;                 /* 10. Hệ số Ki vòng ngoài vận tốc đặt */
-    float pitch_ke;                 /* 11. FuzzyPD_Pitch ke  */
-    float pitch_kde;                /* 12. FuzzyPD_Pitch kde */
-    float pitch_ku;                 /* 13. FuzzyPD_Pitch ku  */
-    float pos_ke;                   /* 14. FuzzyPD_Pos ke    */
-    float pos_kde;                  /* 15. FuzzyPD_Pos kde   */
-    float pos_ku;                   /* 16. FuzzyPD_Pos ku    */
+    float kp_yaw;                   /* 1. Hệ số Kp khóa hướng xoay PID_Yaw (10% PWM)     */
+    float ki_yaw;                   /* 2. Hệ số Ki tích phân hướng xoay PID_Yaw          */
+    float kd_yaw;                   /* 3. Hệ số Kd giảm chấn hướng xoay PID_Yaw          */
+    float targetAngle;              /* 4. Góc cân bằng tĩnh gốc (từ Code / Flash)        */
+    float targetYaw;                /* 5. Góc hướng đích Yaw (độ)                        */
+    float controlMode;              /* 6. Kiến trúc điều khiển (1.0f = Dual FuzzyPD)     */
+    float pitch_ke;                 /* 7. FuzzyPD_Pitch ke  (1/deg)                      */
+    float pitch_kde;                /* 8. FuzzyPD_Pitch kde (1/(deg/s))                  */
+    float pitch_ku;                 /* 9. FuzzyPD_Pitch ku  (Volt)                       */
+    float pos_ke;                   /* 10. FuzzyPD_Pos ke   (1/cm)                       */
+    float pos_kde;                  /* 11. FuzzyPD_Pos kde  (1/(cm/s))                   */
+    float pos_ku;                   /* 12. FuzzyPD_Pos ku   (deg)                        */
 } RobotConfigSync_t;
 
 void UART3_Init(uint32_t baudrate);

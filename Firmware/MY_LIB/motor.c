@@ -124,6 +124,13 @@ void Motor_SetPWM_Right(float pwm) {
     TIM1->CCR2 = pulse;
 }
 
+float Motor_VoltageToPWM(float voltage) {
+    float pwm = voltage * MOTOR_VOLT_TO_PWM;
+    if (pwm > (float)MOTOR_PWM_PERIOD)  pwm = (float)MOTOR_PWM_PERIOD;
+    if (pwm < -(float)MOTOR_PWM_PERIOD) pwm = -(float)MOTOR_PWM_PERIOD;
+    return pwm;
+}
+
 void Motor_Stop(void) {
     Motor_SetPWM_Left(0.0f);
     Motor_SetPWM_Right(0.0f);

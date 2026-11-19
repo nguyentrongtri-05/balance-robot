@@ -84,6 +84,9 @@ ROBOT_WHEELBASE_CM      = 19.21
 ROBOT_MAX_SPEED_CMS     = 10.0
 ROBOT_MAX_SPEED_RPM     = ROBOT_MAX_SPEED_CMS / WHEEL_RPM_TO_CMS
 PWM_MAX                 = 8400.0
+MOTOR_SUPPLY_VOLTAGE    = 12.0
+VOLTAGE_LIMIT_BALANCE   = 0.90 * MOTOR_SUPPLY_VOLTAGE          # 10.8 V (90% công suất cho FuzzyPD_Pitch)
+MOTOR_VOLT_TO_PWM       = PWM_MAX / MOTOR_SUPPLY_VOLTAGE       # 700 PWM/V
 DEFAULT_PITCH_TARGET    = -3.56
 
 TELEM_FIELDS = (
@@ -475,10 +478,10 @@ class RobotControlGUI:
     C_ACCENT, C_GREEN, C_RED, C_YELLOW = "#89b4fa", "#a6e3a1", "#f38ba8", "#f9e2af"
     C_ORANGE, C_PURPLE, C_CYAN = "#fab387", "#cba6f7", "#89dceb"
 
-    # Độ dốc quanh 0 = out_small / ns của từng kênh (khớp Fuzzy_Init trong main.c sau khi tuning)
-    FZ_SLOPE_PITCH_E, FZ_SLOPE_PITCH_DE = 0.28 / 0.20, 0.28 / 0.20
-    FZ_SLOPE_POS_E, FZ_SLOPE_POS_DE     = 0.28 / 0.16, 0.28 / 0.20
-    TILT_MAX_DEG = 2.20           # ku của FuzzyPD_Pos (giới hạn góc bù động, cascade)
+    # Độ dốc quanh 0 = out_small / ns của từng kênh (khớp Fuzzy_Init trong main.c)
+    FZ_SLOPE_PITCH_E, FZ_SLOPE_PITCH_DE = 0.25 / 0.20, 0.25 / 0.20
+    FZ_SLOPE_POS_E, FZ_SLOPE_POS_DE     = 0.26 / 0.16, 0.26 / 0.18
+    TILT_MAX_DEG = 3.20           # CASCADE_MAX_TOTAL_TILT_DEG của vòng ngoài (°)
     POS_PWM_MAX  = 2520.0         # dự phòng
     MODE_NAMES   = ("Dual PID (Cascade)", "Dual FuzzyPD (Cascade)")
 
@@ -734,7 +737,7 @@ class RobotControlGUI:
         self.t_wheel_raw = self._tile(g, 1, 0, "BÁNH RAW L | R (RPM)", "0.0 | 0.0", self.C_RED)
         self.t_wheel_kal = self._tile(g, 1, 1, "BÁNH KALMAN L | R (RPM)", "0.0 | 0.0", self.C_CYAN)
         self.t_speed = self._tile(g, 2, 0, "VẬN TỐC XE (cm/s)", "0.00", self.C_GREEN)
-        self.t_pwm_parts = self._tile(g, 2, 1, "OUT: BALANCE | YAW", "0 | 0", self.C_PURPLE)
+        self.t_pwm_parts = self._tile(g, 2, 1, "OUT: PITCH (V) | YAW (PWM)", "+0.00V | +0", self.C_PURPLE)
 
         c = self._card(left, "📍 VỊ TRÍ HIỆN TẠI (odometry từ encoder)")
         g = tk.Frame(c, bg=self.C_CARD)
@@ -967,14 +970,8 @@ class RobotControlGUI:
         self._btn(row, "🔧 DÒ VÙNG CHẾT", self._open_deadzone_dialog, "#6a1b9a")
         row = tk.Frame(c, bg=self.C_CARD)
         row.pack(fill=tk.X, pady=(4, 0))
-        self._label(row, "Bộ điều khiển:")
-        self.cb_mode = ttk.Combobox(row, state="readonly", width=38,
-                                    values=["0: Dual PID Cascade (PID_Vel → PD_Pitch)",
-                                            "1: Dual FuzzyPD Cascade (FuzzyPD_Pos → FuzzyPD_Pitch)"])
-        self.cb_mode.current(1)
-        self.cb_mode.pack(side=tk.LEFT, padx=3, expand=True, fill=tk.X)
-        self.cb_mode.bind("<<ComboboxSelected>>", lambda e: self._send_mode())
-        self._btn(row, "Nạp", self._send_mode, "#1565c0", width=4)
+        tk.Label(row, text="Kiến trúc: Dual FuzzyPD (Pos ° → Pitch V) + PID Yaw",
+                 fg=self.C_CYAN, bg=self.C_CARD, font=("Segoe UI", 8, "bold")).pack(side=tk.LEFT)
 
         # Góc cân bằng
         c = self._card(left, "🎯 GÓC CÂN BẰNG (PITCH ĐẶT)")
@@ -995,9 +992,9 @@ class RobotControlGUI:
         c = self._card(left, "🎛️ PID GIỮ HƯỚNG YAW (lệnh 0x08)", self.C_CYAN)
         self.pid_entries = {}
         spec = [
-            ("kp_yaw", "Kp Yaw (PWM/°)", "25.2", self.C_PURPLE, 1.0),
-            ("ki_yaw", "Ki Yaw", "4.20", self.C_CYAN, 0.2),
-            ("kd_yaw", "Kd Yaw (gyro, PWM/(°/s))", "3.78", self.C_GREEN, 0.2),
+            ("kp_yaw", "Kp Yaw (PWM/°)", "18.0", self.C_PURPLE, 1.0),
+            ("ki_yaw", "Ki Yaw", "8.00", self.C_CYAN, 0.5),
+            ("kd_yaw", "Kd Yaw (PID_Yaw, PWM/(°/s))", "0.35", self.C_GREEN, 0.05),
         ]
         for key, text, default, col, step in spec:
             row = tk.Frame(c, bg=self.C_CARD)
@@ -1022,7 +1019,7 @@ class RobotControlGUI:
             tk.Label(g, text=t, fg=self.C_DIM, bg=self.C_CARD, font=("Segoe UI", 8, "bold")).grid(row=0, column=i)
         self.fz = []
         self.lbl_fz = []
-        for r_, (name, defs, col) in enumerate((("FuzzyPD_Pitch (ku: PWM)", ("0.086957", "0.003125", "7560.0"), self.C_CYAN),
+        for r_, (name, defs, col) in enumerate((("FuzzyPD_Pitch (ku: V)", ("0.086957", "0.003125", "10.80"), self.C_CYAN),
                                                 ("FuzzyPD_Pos (ku: °)", ("0.025", "0.060", "2.40"), self.C_YELLOW)), 1):
             lb = tk.Label(g, text=name, fg=col, bg=self.C_CARD, font=("Segoe UI", 8, "bold"))
             lb.grid(row=r_, column=0, sticky="w")
@@ -1055,7 +1052,7 @@ class RobotControlGUI:
         self.f_pd = self._tile(g, 1, 0, "PITCH: e | de (norm)", "0.00 | 0.00", self.C_CYAN)
         self.f_pi = self._tile(g, 1, 1, "POS: e | de (norm)", "0.00 | 0.00", self.C_YELLOW)
         self.f_sat = self._tile(g, 2, 0, "% BÃO HÒA (3s)", "Pitch 0% | Pos 0%", self.C_GREEN)
-        self.f_out = self._tile(g, 2, 1, "OUT CÂN BẰNG (PWM)", "0", self.C_CYAN)
+        self.f_out = self._tile(g, 2, 1, "OUT CÂN BẰNG (V)", "+0.00 V", self.C_CYAN)
 
         # Đồ thị
         self._plot_bar(right)
@@ -1303,14 +1300,15 @@ class RobotControlGUI:
             rR = round(kR / 2.27) * 2.27 + (random.uniform(-2, 2) if run else 0.0)
             v_meas = 0.5 * (kL + kR)
             prev_v = v_meas
-            out_f = max(-7560, min(7560, (pitch - self.tgt_pitch) * 440 + 11.5 * 5 * math.cos(t * 3))) if run else 0.0
+            pwm_f = max(-7560, min(7560, (pitch - self.tgt_pitch) * 440 + 11.5 * 5 * math.cos(t * 3))) if run else 0.0
+            out_f = pwm_f / MOTOR_VOLT_TO_PWM
             out_y = max(-840, min(840, err * 25.2)) if run else 0.0
             tilt = -0.25 * spd / ROBOT_MAX_SPEED_RPM * 2.5 if run else 0.0
             sat = lambda x: max(-1.0, min(1.0, x))
             f = (pitch + random.uniform(-1.2, 1.2), pitch, 0.0,
                  yaw + random.uniform(-0.4, 0.4), yaw, yaw_rate,
                  rL, rR, kL, kR,
-                 out_f - out_y, out_f + out_y, self.tgt_pitch - tilt,
+                 pwm_f - out_y, pwm_f + out_y, self.tgt_pitch - tilt,
                  out_f, out_y, tilt,
                  -v_cmd, 0.0, sat((pitch - self.tgt_pitch) / 11.3) if run else 0.0, 0.0,
                  0.0, sat(-(v_meas + v_cmd) * WHEEL_RPM_TO_CMS / 25.1) if run else 0.0)
@@ -1341,8 +1339,8 @@ class RobotControlGUI:
         if self.is_connected or self.is_simulating:
             self._send(build_packet(CMD_REQ_CONFIG), "REQUEST CONFIG (0x09)")
             if self.is_simulating:
-                self.config_queue.put((25.2, 4.2, 3.78, self.tgt_pitch, self.tgt_yaw, float(self.ctrl_mode),
-                                       1.0 / 11.5, 1.0 / 320.0, 7560.0, 0.022, 0.042, 2.20))
+                self.config_queue.put((18.0, 8.00, 0.35, self.tgt_pitch, self.tgt_yaw, 1.0,
+                                       1.0 / 11.5, 1.0 / 320.0, VOLTAGE_LIMIT_BALANCE, 0.025, 0.060, 2.40))
 
     def _send_speed_rpm(self, rpm: float, silent=False):
         rpm = max(-ROBOT_MAX_SPEED_RPM, min(ROBOT_MAX_SPEED_RPM, rpm))
@@ -1486,11 +1484,18 @@ class RobotControlGUI:
         except ValueError:
             self.lbl_equiv.config(text="(giá trị nhập chưa hợp lệ)", fg=self.C_RED)
             return
+        kp_p = a * c * self.FZ_SLOPE_PITCH_E
+        kd_p = b * c * self.FZ_SLOPE_PITCH_DE
+        if c <= 100.0:
+            pitch_line = (f"  Pitch: Kp ≈ {kp_p:5.2f} V/° ({kp_p * MOTOR_VOLT_TO_PWM:6.0f} PWM/°)   "
+                          f"Kd ≈ {kd_p:5.3f} V/(°/s)\n")
+        else:
+            pitch_line = f"  Pitch: Kp ≈ {kp_p:7.1f} PWM/°   Kd ≈ {kd_p:6.2f} PWM/(°/s)\n"
         pos_line = (f"  Pos (cascade): Kp ≈ {d * f * self.FZ_SLOPE_POS_E:6.3f} °/cm   "
                     f"Kd ≈ {e * f * self.FZ_SLOPE_POS_DE:6.3f} °/(cm/s)\n")
         self.lbl_equiv.config(fg=self.C_DIM, text=(
-            "Tương đương gần đúng (|e|,|de| < 0.25):\n"
-            f"  Pitch: Kp ≈ {a * c * self.FZ_SLOPE_PITCH_E:7.1f} PWM/°   Kd ≈ {b * c * self.FZ_SLOPE_PITCH_DE:6.2f} PWM/(°/s)\n"
+            "Tương đương gần đúng quanh 0:\n"
+            + pitch_line
             + pos_line +
             f"  Bão hòa khi |e_pitch| ≥ {1 / a if a else 0:.1f}°, |rate| ≥ {1 / b if b else 0:.0f}°/s, "
             f"|x_err| ≥ {1 / d if d else 0:.1f} cm, |v_err| ≥ {1 / e if e else 0:.1f} cm/s"))
@@ -1605,11 +1610,8 @@ class RobotControlGUI:
 
     # ============================================================ DATA PIPELINE
     def _apply_config(self, f):
-        (kp_yaw, ki_yaw, kd_yaw, tang, tyaw, mode,
+        (kp_yaw, ki_yaw, kd_yaw, tang, tyaw, _mode,
          pdke, pdkde, pdku, pike, pikde, piku) = f
-        mode_i = 1 if int(round(mode)) == 1 else 0
-        self.cb_mode.current(mode_i)
-        self._set_mode_ui(mode_i)
         vals = {"kp_yaw": (kp_yaw, ".2f"), "ki_yaw": (ki_yaw, ".2f"), "kd_yaw": (kd_yaw, ".2f")}
         for k, (v, fmt) in vals.items():
             self._set_entry(self.pid_entries[k], format(v, fmt))
@@ -1621,8 +1623,8 @@ class RobotControlGUI:
         self._set_entry(self.ent_pitch, f"{tang:.2f}")
         self.tgt_yaw = tyaw
         self._set_entry(self.ent_yaw, f"{tyaw:.1f}")
-        self._log(f"[STM32→PC] Cấu hình: mode={self.MODE_NAMES[mode_i]} Yaw(Kp={kp_yaw:.1f},Ki={ki_yaw:.2f},Kd={kd_yaw:.2f}) "
-                  f"Pitch({pdke:.4g},{pdkde:.4g},{pdku:.5g}) Pos({pike:.4g},{pikde:.4g},{piku:.5g}) Pitch đặt={tang:.2f}°\n")
+        self._log(f"[STM32→PC] Cấu hình: Yaw(Kp={kp_yaw:.1f},Ki={ki_yaw:.2f},Kd={kd_yaw:.2f}) "
+                  f"Pitch({pdke:.4g},{pdkde:.4g},{pdku:.5g}V) Pos({pike:.4g},{pikde:.4g},{piku:.5g}°) Pitch đặt={tang:.2f}°\n")
 
     def _process_incoming(self):
         if not self.is_running:
@@ -1710,7 +1712,8 @@ class RobotControlGUI:
             self._set_lbl(self.t_wheel_raw, f"{c['raw_L']:+.1f} | {c['raw_R']:+.1f}")
             self._set_lbl(self.t_wheel_kal, f"{c['kal_L']:+.1f} | {c['kal_R']:+.1f}")
             self._set_lbl(self.t_speed, f"{c['speed_cms']:+.2f}")
-            self._set_lbl(self.t_pwm_parts, f"{c['out_fuzzy']:+.0f} | {c['out_yaw']:+.0f}")
+            out_f_str = f"{c['out_fuzzy']:+.2f}V" if abs(c["out_fuzzy"]) <= 50.0 else f"{c['out_fuzzy']:+.0f}"
+            self._set_lbl(self.t_pwm_parts, f"{out_f_str} | {c['out_yaw']:+.0f}")
             self._set_lbl(self.t_pos, f"{self.pos_x:+.1f} | {self.pos_y:+.1f}")
             self._set_lbl(self.t_dist, f"{math.hypot(self.pos_x, self.pos_y):.1f}")
         elif tab == 1:
@@ -1730,8 +1733,12 @@ class RobotControlGUI:
                           self.C_RED if sat(c["pitch_e"]) or sat(c["pitch_de"]) else self.C_CYAN)
             self._set_lbl(self.f_pi, f"{c['pos_e']:+.2f} | {c['pos_de']:+.2f}  ({c['pos_err']:+.1f} cm)",
                           self.C_RED if sat(c["pos_e"]) or sat(c["pos_de"]) else self.C_YELLOW)
-            self._set_lbl(self.f_out, f"{c['out_fuzzy']:+.0f}",
-                          self.C_RED if abs(c["out_fuzzy"]) >= 7559 else self.C_CYAN)
+            if abs(c["out_fuzzy"]) <= 50.0:
+                self._set_lbl(self.f_out, f"{c['out_fuzzy']:+.2f} V",
+                              self.C_RED if abs(c["out_fuzzy"]) >= VOLTAGE_LIMIT_BALANCE - 0.02 else self.C_CYAN)
+            else:
+                self._set_lbl(self.f_out, f"{c['out_fuzzy']:+.0f}",
+                              self.C_RED if abs(c["out_fuzzy"]) >= 7559 else self.C_CYAN)
             k = min(150, len(self.hist["pitch_e"]))
             if k:
                 pd_s = sum(1 for a, b in zip(self.hist["pitch_e"][-k:], self.hist["pitch_de"][-k:]) if sat(a) or sat(b)) * 100 / k
