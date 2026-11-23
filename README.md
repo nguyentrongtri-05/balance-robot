@@ -9,7 +9,7 @@ Repository lưu trữ **toàn bộ dự án Robot hai bánh tự cân bằng (Tw
 
 📄 **Tài liệu:**
 - Tài liệu chi tiết phần Firmware (mô tả đúng mã nguồn hiện tại): [`Firmware/README.md`](./Firmware/README.md)
-- Lưu đồ & tổng hợp giải thuật — bản PDF: [`Firmware/luu_do_dieu_khien_fuzzy.pdf`](./Firmware/luu_do_dieu_khien_fuzzy.pdf), mã nguồn LaTeX: [`Firmware/luu_do_dieu_khien_fuzzy.tex`](./Firmware/luu_do_dieu_khien_fuzzy.tex) *(viết cho phiên bản firmware trước, còn CoM Decoupling, Rate-Domain Yaw Fusion và Sliding-Mode Auto-Trim)*
+- Lưu đồ & tổng hợp giải thuật — bản PDF: [`Firmware/luu_do_dieu_khien_fuzzy.pdf`](./Firmware/luu_do_dieu_khien_fuzzy.pdf) (nguồn HTML: [`Firmware/luu_do_dieu_khien_fuzzy.html`](./Firmware/luu_do_dieu_khien_fuzzy.html), bản LaTeX: [`Firmware/luu_do_dieu_khien_fuzzy.tex`](./Firmware/luu_do_dieu_khien_fuzzy.tex))
 
 ---
 
@@ -22,7 +22,7 @@ balance-robot/
 │   ├── MY_LIB/                       # Thư viện giải thuật: fuzzy, kalman, pid, managetask, encoder, motor, i2c, uart, gpio
 │   ├── FreeRTOS/ & Libraries/        # Nhân FreeRTOS v11.1 & thư viện ngoại vi chuẩn STM32F4xx
 │   ├── lan1.csv                      # Log Telemetry 50 Hz dùng để đo ngưỡng vùng chết động cơ
-│   └── luu_do_dieu_khien_fuzzy.pdf   # Lưu đồ kiến trúc & phương trình giải thuật (phiên bản firmware trước)
+│   └── luu_do_dieu_khien_fuzzy.pdf   # Lưu đồ kiến trúc & phương trình giải thuật (nguồn .html, bản LaTeX .tex)
 ├── app/                              # Phần mềm máy tính (Python GUI) giám sát đồ thị 50 Hz, điều khiển & Live Tuning
 │   ├── gui_app.py                    # Giao diện điều khiển, nạp nóng Fuzzy/PID, dò vùng chết tự động & xuất CSV
 │   ├── requirements.txt              # Các thư viện Python cần thiết

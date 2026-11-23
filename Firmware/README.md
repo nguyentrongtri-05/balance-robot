@@ -9,8 +9,7 @@ Dự án thiết kế và triển khai hệ thống điều khiển **Robot hai 
 
 Hệ thống gồm **4 bộ lọc Kalman 2 trạng thái** (góc Pitch, góc Yaw thuần IMU và vận tốc 2 bánh xe có tắt dần gia tốc $\gamma = 0.80$), khối **kẹp điểm đích chống bắn ngược (Anti-Slingshot)**, cùng **kiến trúc điều khiển mờ vòng lồng kép (Cascaded Dual-FuzzyPD)**: vòng ngoài giữ vị trí – vận tốc (`FuzzyPD_Pos`) sinh góc nghiêng đặt cho vòng trong cân bằng góc chúc ngóc (`FuzzyPD_Pitch`, đầu ra điện áp, 90% PWM), phối hợp với bộ **PID gia số giữ hướng xoay** (`PID_Yaw`, 10% PWM). Cả 3 vòng chạy ở 200 Hz.
 
-📄 **Tài liệu lưu đồ & tổng hợp giải thuật:** [`luu_do_dieu_khien_fuzzy.pdf`](./luu_do_dieu_khien_fuzzy.pdf) (mã nguồn LaTeX: [`luu_do_dieu_khien_fuzzy.tex`](./luu_do_dieu_khien_fuzzy.tex)).
-> ⚠️ Tài liệu PDF/LaTeX được viết cho **phiên bản firmware trước** (còn CoM Decoupling, Rate-Domain Yaw Fusion, Sliding-Mode Auto-Trim và Yaw PID vi phân kép). README này mô tả đúng mã nguồn hiện tại.
+📄 **Tài liệu lưu đồ & tổng hợp giải thuật:** [`luu_do_dieu_khien_fuzzy.pdf`](./luu_do_dieu_khien_fuzzy.pdf), xuất từ nguồn [`luu_do_dieu_khien_fuzzy.html`](./luu_do_dieu_khien_fuzzy.html) bằng Edge/Chrome (lệnh in ở đầu file HTML). Bản LaTeX cùng nội dung: [`luu_do_dieu_khien_fuzzy.tex`](./luu_do_dieu_khien_fuzzy.tex).
 
 ---
 
@@ -69,7 +68,8 @@ Firmware/
 ├── FreeRTOS/                         # Nhân hệ điều hành thời gian thực FreeRTOS v11.1 (ARM Cortex-M4F port)
 ├── Libraries/                        # Thư viện CMSIS & STM32F4xx Standard Peripheral Driver
 ├── lan1.csv                          # Log Telemetry 50 Hz dùng để đo ngưỡng vùng chết động cơ (lệnh 0x0B)
-├── luu_do_dieu_khien_fuzzy.tex/.pdf  # Tài liệu lưu đồ & giải thuật (viết cho phiên bản firmware trước)
+├── luu_do_dieu_khien_fuzzy.html/.pdf # Lưu đồ & tổng hợp giải thuật (nguồn HTML → PDF)
+├── luu_do_dieu_khien_fuzzy.tex       # Bản LaTeX cùng nội dung
 └── README.md                         # Tài liệu này
 ```
 

@@ -1,141 +1,165 @@
-\documentclass[10pt,a4paper,twocolumn]{article}
+\documentclass[10pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T5]{fontenc}
 \usepackage[vietnamese]{babel}
 \usepackage{geometry}
-\geometry{left=1.4cm,right=1.4cm,top=1.6cm,bottom=1.6cm,columnsep=0.6cm}
+\geometry{left=1.8cm,right=1.8cm,top=1.7cm,bottom=1.7cm}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{xcolor}
 \usepackage{graphicx}
-\usepackage{tikz}
-\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds, calc}
 
 \definecolor{primaryBlue}{RGB}{21, 101, 192}
-\definecolor{accentTeal}{RGB}{0, 121, 107}
-\definecolor{accentOrange}{RGB}{230, 81, 0}
-\definecolor{accentPurple}{RGB}{106, 27, 154}
-\definecolor{softBlue}{RGB}{227, 242, 253}
-\definecolor{softGreen}{RGB}{232, 245, 233}
-\definecolor{softOrange}{RGB}{255, 243, 224}
-\definecolor{softPurple}{RGB}{243, 229, 245}
+\newcommand{\sat}{\operatorname{sat}}
+\newcommand{\clamp}{\operatorname{clamp}}
 
-\title{\Large\textbf{Tổng Hợp Giải Thuật Điều Khiển Mờ Vòng Lồng Kép (Cascaded Dual-FuzzyPD)\\và Hệ Thống Bộ Lọc Xử Lý Tín Hiệu cho Robot Hai Bánh Tự Cân Bằng STM32F407}}
-\author{\textbf{Nhóm Phát Triển Hệ Thống Điều Khiển Tự Động \& Robot Tự Hành}\\
-\small Vi điều khiển trung tâm: STM32F407VGT6 (ARM Cortex-M4F @ 168\,MHz, Hardware FPU) --- Hệ điều hành thời gian thực: FreeRTOS ($200\,\text{Hz} / 5\,\text{ms}$)}
-\date{\small Tháng 11 năm 2026}
+\title{\Large\textbf{Lưu Đồ Điều Khiển \& Tổng Hợp Các Giải Thuật --- Bộ Lọc Xử Lý Tín Hiệu\\Robot Hai Bánh Tự Cân Bằng STM32F407 (Cascaded Dual-FuzzyPD \& Kalman)}}
+\author{\small Vi điều khiển STM32F407VGT6 (ARM Cortex-M4F @ 168\,MHz, FPU) --- FreeRTOS ($200\,\text{Hz} / 5\,\text{ms}$)}
+\date{\small Cập nhật 23/11/2026, đồng bộ với mã nguồn \texttt{MY\_LIB/} và \texttt{MDK\_ARM/main.c}}
 
 \begin{document}
-
-\twocolumn[
-\begin{@twocolumnfalse}
 \maketitle
+
 \begin{abstract}
-\noindent\textbf{\textit{Tóm tắt---}} Tài liệu này tổng hợp toàn bộ hệ thống giải thuật điều khiển, hợp nhất cảm biến và các bộ lọc xử lý tín hiệu đã triển khai trên Robot hai bánh tự cân bằng (\textit{Two-Wheeled Inverted Pendulum --- TWIP}) sử dụng vi điều khiển \textbf{STM32F407VGT6} và \textbf{FreeRTOS} ở tần số đồng bộ $200\,\text{Hz}$ ($T_s = 5\,\text{ms}$). Hệ thống bao gồm: (1) \textbf{Khối tiền xử lý phần cứng \& 4 bộ lọc Kalman không gian trạng thái} (\texttt{kalmanPitch}, \texttt{kalmanYaw}, \texttt{kalmanSpeed\_L/R} có hệ số tắt dần gia tốc $\gamma = 0.80$); (2) \textbf{Giải thuật hợp nhất vận tốc góc Yaw ba chế độ trên miền đạo hàm (Rate-Domain Yaw Fusion)} kết hợp khóa tĩnh ZUPT (\textit{Zero Angular Velocity Update}); (3) \textbf{Chuỗi 5 bộ lọc tách chuyển động Trọng tâm (CoM Decoupling)}, bộ kẹp chống bắn ngược vị trí (\textit{Anti-Slingshot Clamping} $\pm 4.0\,\text{cm}$) và bộ tích phân mặt trượt tự học góc cân bằng tĩnh (\textit{Sliding-Mode Auto-Trim}); (4) \textbf{Kiến trúc điều khiển mờ vòng lồng kép (\texttt{FuzzyPD\_Pos} $\rightarrow$ \texttt{FuzzyPD\_Pitch})} chiếm 90\% công suất PWM ($\pm 7560/8400$) quanh điểm cân bằng chuẩn $\theta_0 = -3.56^\circ$; và (5) \textbf{Bộ điều khiển \texttt{Yaw PID} vi phân kép} (10\% công suất PWM, $\pm 840/8400$), bù vùng chết bất đối xứng 4 góc phần tư có độ dốc chuyển tiếp mượt (\textit{Soft-Knee Deadband}) cùng bộ giới hạn tốc độ biến thiên xung (\textit{Slew-Rate Limiter}). Kết quả thực nghiệm (\texttt{lan39.csv}, $8.063$ mẫu liên tục trong $403\,\text{s}$) chứng minh robot giữ cân bằng tĩnh với độ lệch chuẩn góc $\sigma_\theta = 0.11^\circ$, khóa vị trí trong $\pm 2\,\text{mm}$ và phục hồi hoàn toàn sau các xung lực đẩy mạnh đạt vận tốc đỉnh $78.9\,\text{cm/s}$.\\[4pt]
-\noindent\textbf{\textit{Từ khóa---}} Robot hai bánh tự cân bằng (TWIP), Cascaded Dual-FuzzyPD, Bộ lọc Kalman, Hợp nhất cảm biến miền vận tốc góc (Rate-Domain Yaw Fusion), Tách trọng tâm (CoM Decoupling), Chống bắn ngược vị trí (Anti-Slingshot), STM32F407, FreeRTOS.
+\noindent Tài liệu tổng hợp các giải thuật điều khiển và lọc tín hiệu đang chạy trên robot hai bánh tự cân bằng (\textit{Two-Wheeled Inverted Pendulum --- TWIP}) dùng STM32F407VGT6 và FreeRTOS ở $200\,\text{Hz}$ ($T_s = 5\,\text{ms}$), gồm: (1) tiền xử lý phần cứng và 4 bộ lọc Kalman 2 trạng thái (\texttt{kalmanPitch}, \texttt{kalmanYaw}, \texttt{kalmanSpeed\_L/R} có hệ số tắt dần gia tốc $\gamma = 0.80$); (2) góc Yaw thuần con quay trục Z với tự bù trôi điểm 0 khi xe dừng; (3) vòng ngoài giữ vị trí -- vận tốc với bộ kẹp điểm đích chống bắn ngược (\textit{Anti-Slingshot}); (4) kiến trúc điều khiển mờ vòng lồng kép \texttt{FuzzyPD\_Pos} $\rightarrow$ \texttt{FuzzyPD\_Pitch} (Sugeno bậc 0, đầu ra vòng trong là điện áp $\pm 10.8\,\text{V}$, chiếm 90\% công suất PWM); và (5) bộ \texttt{PID\_Yaw} dạng gia số (10\% công suất PWM), bù vùng chết bất đối xứng có đoạn dốc mềm và giới hạn tốc độ biến thiên xung.\\[3pt]
+\noindent\textbf{Từ khóa:} TWIP, Cascaded Dual-FuzzyPD, Sugeno, bộ lọc Kalman, Anti-Slingshot, STM32F407, FreeRTOS.
 \end{abstract}
-\vspace{6pt}
-\hrule
-\vspace{8pt}
-\end{@twocolumnfalse}
-]
 
-\section{Kiến Trúc Đa Nhiệm Thời Gian Thực (FreeRTOS 200 Hz)}
-Trên vi điều khiển \textbf{STM32F407VGT6} ($168\,\text{MHz}$, FPU phần cứng), phần mềm nhúng được chia thành 4 tác vụ thời gian thực lập lịch ưu tiên cố định thông qua \texttt{vTaskDelayUntil}:
-\begin{itemize}
-    \item \texttt{vTaskControl} (Ưu tiên 4 --- cao nhất, $T_s = 5\,\text{ms} / 200\,\text{Hz}$, Stack $1024\,\text{W}$): Thực thi tách chuyển động trọng tâm (CoM), vòng ngoài \texttt{FuzzyPD\_Pos}, tự học góc tĩnh, vòng trong \texttt{FuzzyPD\_Pitch} (90\% PWM), vòng hướng \texttt{Yaw PID} (10\% PWM), bù vùng chết 4 góc phần tư và giới hạn Slew-Rate trước khi nạp vào \texttt{TIM1} ($10\,\text{kHz}$, $\pm 8400\,\text{PWM}$).
-    \item \texttt{vTaskIMU} (Ưu tiên 3, $T_s = 5\,\text{ms} / 200\,\text{Hz}$, Stack $512\,\text{W}$): Đọc cảm biến MPU6050 qua \texttt{I2C1} ($400\,\text{kHz}$), tự động hiệu chuẩn điểm 0 tĩnh Gyro Z (ZUPT), hợp nhất vận tốc góc Yaw và cập nhật 2 bộ lọc \texttt{kalmanPitch}, \texttt{kalmanYaw}.
-    \item \texttt{vTaskEncoder} (Ưu tiên 3, $T_s = 5\,\text{ms} / 200\,\text{Hz}$, Stack $512\,\text{W}$): Đọc bộ đếm vuông pha $\times 4$ \texttt{TIM3}/\texttt{TIM4} ($1320\,\text{xung/vòng}$), lọc cắt gai xung phần cứng, chạy 2 bộ lọc \texttt{kalmanSpeed\_L/R} và cập nhật Odometry.
-    \item \texttt{vTaskUART} (Ưu tiên 2, $T_s = 10\,\text{ms} / 100\,\text{Hz}$, Stack $512\,\text{W}$): Giải mã gói lệnh điều khiển trực tuyến (\texttt{0x01}--\texttt{0x0B}) và truyền khung Telemetry DMA ở tần số $50\,\text{Hz}$.
-\end{itemize}
-
-\section{Tiền Xử Lý Phần Cứng \& Các Bộ Lọc Kalman}
-\subsection{Bộ lọc phần cứng MPU6050 \& Cắt gai Encoder}
-\begin{enumerate}
-    \item \textbf{Bộ lọc thông thấp số nội MPU6050 (Hardware DLPF):} Thanh ghi \texttt{CONFIG (0x1A) = 0x03} kích hoạt bộ lọc thông thấp phần cứng với tần số cắt $44\,\text{Hz}$ (Accelerometer $\pm 2g$, $16384\,\text{LSB}/g$) và $42\,\text{Hz}$ (Gyroscope $\pm 500^\circ/\text{s}$, $65.5\,\text{LSB}/(^\circ/\text{s})$), loại bỏ rung cơ khí tần số cao trước khi lấy mẫu. Góc nghiêng tĩnh và vận tốc góc có bảo vệ dấu $\text{sign}(a_z)$:
-    \begin{align}
-        \theta_{\text{acc}} &= \operatorname{atan2}\!\left(-a_x,\; \sqrt{a_y^2 + a_z^2}\right) \cdot \frac{180^\circ}{\pi} \\
-        \dot{\theta}_{\text{gyro}} &= \operatorname{sign}(a_z) \cdot \frac{g_{y,\text{raw}} - g_{y,\text{offset}}}{65.5}
-    \end{align}
-    \item \textbf{Lọc số đầu vào Timer \& Bộ lọc cắt gai Encoder (Spike Rejection):} Các kênh \texttt{TIM3}/\texttt{TIM4} bật bộ lọc số phần cứng $\texttt{IC1F} = \texttt{IC2F} = \texttt{0x0F}$ trên thanh ghi \texttt{CCMR1}. Sau khi khử tràn 16-bit, mọi xung nhiễu bất thường vượt quá ngưỡng vật lý $|\Delta N(k)| > 45\,\text{xung}/5\,\text{ms}$ đều bị loại bỏ và thay bằng $\Delta N(k-1)$ hợp lệ liền trước:
-    \begin{equation}
-        v_{\text{raw}}(k) = \frac{60 \cdot \Delta N(k)}{1320 \cdot 0.005} = 9.0909 \cdot \Delta N(k) \quad (\text{RPM})
-    \end{equation}
-\end{enumerate}
-
-\subsection{Bộ lọc Kalman góc nghiêng 2 trạng thái (\texttt{kalmanPitch}, \texttt{kalmanYaw})}
-Vector trạng thái $\hat{\mathbf{x}}_k = [\hat{\theta}_k,\; \hat{b}_k]^T$ ước lượng đồng thời góc thực và độ trôi điểm 0 của Gyroscope với thông số $Q_{\text{angle}} = 0.001$, $Q_{\text{bias}} = 0.003$, $R_{\text{measure}} = 0.03$ và $dt = 0.005\,\text{s}$:
-\begin{align}
-    \dot{\hat{\theta}}_k &= \omega_{\text{gyro},k} - \hat{b}_{k-1}, \qquad \hat{\theta}_k^- = \hat{\theta}_{k-1} + dt \cdot \dot{\hat{\theta}}_k \\
-    \mathbf{K}_k &= \mathbf{P}_k^- \mathbf{H}^T \big(\mathbf{H}\mathbf{P}_k^- \mathbf{H}^T + R_{\text{measure}}\big)^{-1} \\
-    \hat{\mathbf{x}}_k &= \hat{\mathbf{x}}_k^- + \mathbf{K}_k \big(\theta_{\text{meas},k} - \hat{\theta}_k^-\big)
-\end{align}
-
-\subsection{Bộ lọc Kalman động học vận tốc bánh xe có tắt dần gia tốc (\texttt{kalmanSpeed\_L/R})}
-Ở tần số $200\,\text{Hz}$, $1\,\text{xung}$ Encoder tạo ra bước nhảy lượng tử hóa lớn ($9.09\,\text{RPM} \approx 3.09\,\text{cm/s}$). Bộ lọc \texttt{KalmanSpeed\_t} ước lượng vector trạng thái $\hat{\mathbf{x}}_{v,k} = [\hat{v}_k,\; \hat{a}_k]^T$ với \textbf{hệ số tắt dần gia tốc $\gamma = 0.80$} giúp làm phẳng hoàn toàn bậc thang lượng tử hóa với độ trễ pha $< 20\,\text{ms}$ mà không gây vọt lố khi bánh xe đảo chiều ($Q_{\text{speed}} = 0.40$, $Q_{\text{accel}} = 50.0$, $R_{\text{measure}} = 5.0$):
-\begin{align}
-    \hat{a}_k^- &= 0.80 \cdot \hat{a}_{k-1}, \qquad \hat{v}_k^- = \hat{v}_{k-1} + \hat{a}_k^- \cdot dt \\
-    \hat{v}_k &= \hat{v}_k^- + K_{v,0}\big(v_{\text{raw},k} - \hat{v}_k^-\big), \quad \hat{a}_k = \hat{a}_k^- + K_{v,1}\big(v_{\text{raw},k} - \hat{v}_k^-\big)
-\end{align}
-
-\section{Hợp Nhất Cảm Biến Hướng Xoay Yaw Trên Miền Đạo Hàm (Rate-Domain Fusion \& ZUPT)}
-Nếu trộn trực tiếp góc $\psi_{\text{enc}}$ vào $\psi_{\text{gyro}}$, khi thân xe bị ngoại lực xoay sang hướng mới rồi dừng lại, hai bánh xe đứng yên sẽ giữ $\psi_{\text{enc}}$ ở giá trị cũ và kéo ngược góc Yaw gây sai lệch điều khiển. Do đó, hệ thống thực hiện hợp nhất trên \textbf{miền vận tốc góc (Rate-Domain)} kết hợp \textbf{Cập nhật vận tốc góc bằng 0 (ZUPT)}:
-\begin{enumerate}
-    \item \textbf{Tự động học điểm 0 tĩnh Gyro Z (Online ZUPT Bias):} Khi bánh xe và thân xe đứng yên ($|\dot{\psi}_{\text{enc}}| < 1.0^\circ/\text{s}$ và $|g_{z,\text{raw}} - g_{z,\text{offset}}| < 80\,\text{LSB}$), điểm 0 được cập nhật qua bộ lọc thông thấp IIR cực chậm:
-    \begin{equation}
-        g_{z,\text{offset}}(k) = 0.995 \cdot g_{z,\text{offset}}(k-1) + 0.005 \cdot g_{z,\text{raw}}(k)
-    \end{equation}
-    \item \textbf{Luật hợp nhất vận tốc góc 3 chế độ:}
-    \begin{equation}
-        \dot{\psi}_{\text{fused}} = \begin{cases}
-            0, & |\dot{\psi}_{\text{gyro}}| < 0.7^\circ/\text{s} \land |\dot{\psi}_{\text{enc}}| < 1.2^\circ/\text{s} \\
-            0.80\dot{\psi}_{\text{gyro}} + 0.20\dot{\psi}_{\text{enc}}, & \text{khi 2 bánh lăn đồng pha với Gyro Z} \\
-            \dot{\psi}_{\text{gyro}}, & \text{khi bị ngoại lực xoay / trượt bánh}
-        \end{cases}
-    \end{equation}
-    Góc $\psi_{\text{raw}}(k) = \psi_{\text{raw}}(k-1) + \dot{\psi}_{\text{fused}} \cdot dt$ sau đó được đưa qua bộ lọc \texttt{kalmanYaw} cùng vận tốc góc $\dot{\psi}_{\text{gyro}}$.
-\end{enumerate}
-
-\section{Khử Nhiễu Giao Thoa Trọng Tâm (CoM Decoupling) \& Các Bộ Lọc Vòng Ngoài}
-Để triệt tiêu hiện tượng giao thoa không pha cực tiểu (\textit{non-minimum phase coupling}) khi thân xe lắc quanh trục bánh xe, 5 bộ lọc xử lý vòng ngoài được thiết kế nối tiếp:
-\begin{enumerate}
-    \item \textbf{Tách vận tốc tịnh tiến Trọng tâm (CoM Velocity Decoupling) \& Lọc thông thấp IIR ($\alpha_v = 0.22$):}
-    \begin{align}
-        v_{\text{CoM,raw}} &= v_{\text{wheel}} - 0.42 \cdot \operatorname{clamp}\big(\dot{\hat{\theta}},\; -60^\circ/\text{s},\; +60^\circ/\text{s}\big) \\
-        \hat{v}_{\text{CoM}}(k) &= \hat{v}_{\text{CoM}}(k-1) + 0.22 \cdot \big(v_{\text{CoM,raw}}(k) - \hat{v}_{\text{CoM}}(k-1)\big)
-    \end{align}
-    \item \textbf{Tách vị trí Trọng tâm (CoM Position Decoupling):}
-    \begin{equation}
-        x_{\text{CoM}} = x_{\text{fw}} - 0.15 \cdot \big(\hat{\theta} - \theta_{\text{base}}\big) \quad (\text{cm})
-    \end{equation}
-    \item \textbf{Bộ kẹp chống bắn ngược vị trí (Anti-Slingshot Position Clamping):} Khi đang lái, điểm đích dẫn trước tối đa $\pm 12.0\,\text{cm}$ (\texttt{POS\_TARGET\_LEAD\_MAX\_CM}); ngay khi nhả tay lái, điểm đích chốt tức thời $x_{\text{target}} = x_{\text{CoM}}$ để phanh tại chỗ. Khi đứng yên bị ngoại lực đẩy trượt đi xa, $x_{\text{target}}$ được kẹp trượt theo chân xe trong phạm vi $\pm 4.0\,\text{cm}$ (\texttt{POS\_HOLD\_MAX\_ERR\_CM = 4.0}):
-    \begin{equation}
-        x_{\text{target}}(k) = \operatorname{clamp}\!\big(x_{\text{target}}(k),\; x_{\text{fw}} - 4.0,\; x_{\text{fw}} + 4.0\big)
-    \end{equation}
-    Cơ chế này ngăn chặn sai số vị trí tích lũy quá lớn làm nghiêng xe $2^\circ$ bắn ngược về sau (\textit{slingshot}) gây ngã, giúp vòng ngoài ưu tiên tuyệt đối việc hãm vận tốc $v_{\text{CoM}}$ về $0$ tại chỗ.
-    \item \textbf{Tự động học góc cân bằng tĩnh theo mặt trượt (Sliding-Mode Static Balance Auto-Trim):} Định nghĩa biến mặt trượt $s_{\text{pos}} = e_{\text{pos}} + 1.2 \cdot v_{\text{CoM,cms}}$ (với $e_{\text{pos}} = x_{\text{fw}} - x_{\text{target}}$). Khâu tích phân chỉ tích lũy khi xe chưa tự hội tụ về điểm cân bằng ($e_{\text{pos}} \cdot s_{\text{pos}} > 0$):
-    \begin{equation}
-        \theta_{I,\text{pos}}(k) = \operatorname{clamp}\!\big(\theta_{I,\text{pos}}(k-1) - 0.004 \cdot \operatorname{clamp}(s_{\text{pos}}, -4, 4) \cdot dt,\; \pm 1.20^\circ\big)
-    \end{equation}
-    \item \textbf{Bộ lọc thông thấp IIR góc nghiêng đặt vòng ngoài ($\alpha_{\text{tilt}} = 0.25$):}
-    \begin{align}
-        \Delta\theta_{\text{filt}}(k) &= \Delta\theta_{\text{filt}}(k-1) + 0.25 \cdot \big(\Delta\theta_{\text{fuzzy}}(k) - \Delta\theta_{\text{filt}}(k-1)\big) \\
-        \Delta\theta_{\text{total}}(k) &= \operatorname{clamp}\!\big(\theta_{I,\text{pos}}(k) + \Delta\theta_{\text{filt}}(k),\; -3.20^\circ,\; +3.20^\circ\big)
-    \end{align}
-\end{enumerate}
-
-\section{Bộ Điều Khiển Mờ Kép Nối Tiếp (Cascaded Dual-FuzzyPD)}
-Cả \texttt{FuzzyPD\_Pos} và \texttt{FuzzyPD\_Pitch} đều thực thi qua 5 khâu chuẩn hóa trên $[-1.0, +1.0]$: (1) Tiền xử lý \& kẹp bão hòa $e_{\text{norm}} = \operatorname{sat}(k_e e)$, $de_{\text{norm}} = \operatorname{sat}(k_{de}\dot{e})$; (2) Mờ hóa 5 tập $\{\text{NB}, \text{NS}, \text{ZE}, \text{PS}, \text{PB}\}$ với tập $\text{ZE}$ hình thang cân có vùng phẳng trung tâm $\pm z_e$; (3) Suy diễn tích đại số Larsen $w_{i,j} = \mu_{e,i} \cdot \mu_{de,j}$ trên bảng 25 luật (Bảng~\ref{tab:rules}); (4) Giải mờ trung bình trọng số 7 vạch Singleton $\{-1, -u_m, -u_s, 0, u_s, u_m, 1\}$ và kẹp $[-1, +1]$; (5) Hậu xử lý nhân hệ số khuếch đại $k_u$. Thông số tinh chỉnh tối ưu được tổng hợp tại Bảng~\ref{tab:params}.
+%=====================================================================
+\section{Kiến trúc điều khiển \& đa nhiệm thời gian thực}
+Toàn bộ thuật toán chạy đồng bộ ở $200\,\text{Hz}$ ($dt = 0.005\,\text{s}$). Công suất cầu H (\texttt{MOTOR\_PWM\_PERIOD} $= 8400$ ở $10\,\text{kHz}$) được phân bổ: 90\% cho vòng cân bằng Pitch ($\pm 10.8\,\text{V} \approx \pm 7560\,\text{PWM}$) và 10\% cho vòng giữ hướng Yaw ($\pm 840\,\text{PWM}$). Quy ước dấu thống nhất: xe chạy tiến là dương. Chuỗi điều khiển trong \texttt{vTaskControl}:
+\begin{gather*}
+\underbrace{x_{\text{fw}},\, v}_{\text{encoder}} \xrightarrow{\texttt{FuzzyPD\_Pos}} \Delta\theta \;\rightarrow\; \theta_{\text{ref}} = \theta_0 - \Delta\theta \xrightarrow{\texttt{FuzzyPD\_Pitch}} u_{\text{pitch}}\,[\text{V}] \rightarrow u_p\,[\text{PWM}] \\
+\hat{\psi} \xrightarrow{\texttt{PID\_Yaw}} u_y\,[\text{PWM}], \qquad u_L = u_p + u_y, \quad u_R = u_p - u_y
+\end{gather*}
 
 \begin{table}[htbp]
 \centering
-\caption{Ma Trận 25 Luật Mờ $5 \times 5$ Ánh Xạ Ra 7 Mức Đầu Ra Singleton}
+\caption{Các task FreeRTOS (\texttt{MY\_LIB/managetask.c})}
+\footnotesize
+\begin{tabular}{l c c c p{8.6cm}}
+\toprule
+\textbf{Task} & \textbf{Chu kỳ} & \textbf{Ưu tiên} & \textbf{Stack} & \textbf{Nhiệm vụ chính} \\
+\midrule
+\texttt{vTaskControl} & $5\,\text{ms}$ & 4 & 1024\,W & Bảo vệ $\pm 15^\circ$, \texttt{FuzzyPD\_Pos}, \texttt{FuzzyPD\_Pitch}, \texttt{PID\_Yaw}, trộn PWM, bù vùng chết, Slew-Rate; khi STOP chạy lệnh thử PWM (\texttt{0x0B}). \\
+\texttt{vTaskIMU} & $5\,\text{ms}$ & 3 & 512\,W & Đọc MPU6050, góc Pitch từ gia tốc kế, \texttt{kalmanPitch}; Yaw thuần Gyro Z, \texttt{kalmanYaw}; tự bù trôi offset Gyro Z khi xe dừng. \\
+\texttt{vTaskEncoder} & $5\,\text{ms}$ & 3 & 512\,W & Đọc \texttt{TIM3}/\texttt{TIM4} $\times 4$, khử tràn 16-bit, lọc cắt gai, tích lũy tổng xung, \texttt{kalmanSpeed\_L/R}. \\
+\texttt{vTaskUART} & $10\,\text{ms}$ & 2 & 512\,W & \texttt{Robot\_AutoCalibrate()} khi có yêu cầu, giải mã lệnh từ GUI, phát Telemetry 88 byte bằng DMA ở $50\,\text{Hz}$. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%=====================================================================
+\section{Xử lý cảm biến thô \& tiền xử lý phần cứng}
+\subsection{Cảm biến quán tính MPU6050}
+Thanh ghi \texttt{CONFIG (0x1A) = 0x03} bật bộ lọc thông thấp số nội với băng thông $44\,\text{Hz}$ (gia tốc kế) và $42\,\text{Hz}$ (con quay). Thang đo: $\pm 2g$ ($16384\,\text{LSB}/g$) và $\pm 500^\circ/\text{s}$ ($65.5\,\text{LSB}/(^\circ/\text{s})$). Offset con quay lấy trung bình 50 mẫu lúc khởi động hoặc qua \texttt{Robot\_AutoCalibrate()}.
+\begin{align}
+\theta_{\text{acc}} &= \operatorname{atan2}\!\left(-a_x,\; \sqrt{a_y^2 + a_z^2}\right) \cdot \frac{180^\circ}{\pi} \\
+\dot{\theta}_{\text{gyro}} &= \operatorname{sign}(a_z) \cdot \frac{g_y - g_{y,\text{off}}}{65.5}
+\end{align}
+
+\subsection{Encoder vuông pha $\times 4$ \& lọc cắt gai}
+\texttt{TIM\_EncoderMode\_TI12} ($330 \times 4 = 1320$ xung/vòng), bộ lọc số \texttt{IC1F = IC2F = 0x0F}. Sau khi khử tràn 16-bit, cả hai kênh được đảo chiều đếm (\texttt{ENCODER\_LEFT/RIGHT\_INVERT = 1}) để tiến là dương. Gai nhiễu vượt ngưỡng vật lý được thay bằng mẫu hợp lệ liền trước:
+\begin{align}
+|\Delta N_k| > 45 &\;\Rightarrow\; \Delta N_k = \Delta N_{k-1} \\
+v_{\text{raw}} &= \frac{60 \cdot \Delta N_k}{1320 \cdot 0.005} = 9.0909 \cdot \Delta N_k \quad (\text{RPM})
+\end{align}
+Một xung tương ứng $9.09\,\text{RPM} \approx 3.09\,\text{cm/s}$ (bánh xe $D = 6.5\,\text{cm}$, $0.01547\,\text{cm/xung}$).
+
+%=====================================================================
+\section{Các bộ lọc Kalman 2 trạng thái}
+\subsection{Bộ lọc góc \& độ trôi con quay (\texttt{kalmanPitch}, \texttt{kalmanYaw})}
+Trạng thái $\mathbf{x} = [\theta,\; b]^T$, $Q_{\text{angle}} = 0.001$, $Q_{\text{bias}} = 0.003$, $R = 0.03$, $dt = 0.005\,\text{s}$. Với Pitch: $\theta_{\text{meas}} = \theta_{\text{acc}}$, $\omega = \dot{\theta}_{\text{gyro}}$; với Yaw: $\theta_{\text{meas}} = \psi_{\text{raw}}$, $\omega = \dot{\psi}_{\text{clean}}$ (mục~\ref{sec:yaw}).
+\begin{align}
+\dot{\theta}_k &= \omega_k - \hat{b}_{k-1}, \qquad \hat{\theta}_k^- = \hat{\theta}_{k-1} + dt \cdot \dot{\theta}_k \\
+\mathbf{P}^- &= \mathbf{P} + dt \begin{bmatrix} dt\,P_{11} - P_{01} - P_{10} + Q_{\text{angle}} & -P_{11} \\ -P_{11} & Q_{\text{bias}} \end{bmatrix} \\
+\mathbf{K} &= \frac{1}{P^-_{00} + R}\begin{bmatrix} P^-_{00} \\ P^-_{10} \end{bmatrix}, \qquad y = \theta_{\text{meas}} - \hat{\theta}_k^- \\
+\hat{\mathbf{x}}_k &= \hat{\mathbf{x}}_k^- + \mathbf{K}\, y, \qquad \mathbf{P} = (\mathbf{I} - \mathbf{K}\mathbf{H})\,\mathbf{P}^-, \qquad \mathbf{H} = [1 \;\; 0]
+\end{align}
+Vận tốc góc đã trừ độ trôi $\dot{\theta} = \omega - \hat{b}$ (\texttt{kalmanPitch.rate}) được dùng trực tiếp làm đầu vào $de$ của \texttt{FuzzyPD\_Pitch}.
+
+\subsection{Bộ lọc vận tốc bánh xe có tắt dần gia tốc (\texttt{kalmanSpeed\_L/R})}
+Trạng thái $[v,\; a]^T$, hệ số tắt dần $\gamma = 0.80$, $Q_v = 0.40$, $Q_a = 50.0$, $R = 5.0$:
+\begin{align}
+\hat{a}^- &= \gamma\, \hat{a}_{k-1}, \qquad \hat{v}^- = \hat{v}_{k-1} + dt \cdot \hat{a}^- \\
+p_{00} &= P_{00} + dt\,(2P_{01} + dt\,P_{11}) + Q_v, \quad p_{01} = P_{01} + dt\,P_{11}, \quad p_{11} = P_{11} + Q_a\,dt \\
+\hat{v}_k &= \hat{v}^- + \frac{p_{00}}{p_{00} + R}\,(v_{\text{raw}} - \hat{v}^-), \qquad \hat{a}_k = \hat{a}^- + \frac{p_{01}}{p_{00} + R}\,(v_{\text{raw}} - \hat{v}^-)
+\end{align}
+
+%=====================================================================
+\section{Góc Yaw thuần IMU \& tự bù trôi Gyro Z}\label{sec:yaw}
+Góc Yaw được tính thuần từ con quay trục Z (không trộn encoder). Offset được cập nhật chỉ khi xe STOP và hai bánh đứng yên, tránh học nhầm tốc độ xoay khi đang chạy:
+\begin{multline}
+\text{STOP} \;\wedge\; |v_L|, |v_R| < 0.5\,\text{RPM} \;\wedge\; |\dot{\theta}_{\text{gyro}}| < 1.5^\circ/\text{s} \;\wedge\; |g_z - g_{z,\text{off}}| < 40\,\text{LSB} \\
+\Rightarrow\; g_{z,\text{off}} \leftarrow 0.995\, g_{z,\text{off}} + 0.005\, g_z
+\end{multline}
+\begin{align}
+\dot{\psi} &= -\operatorname{sign}(a_z) \cdot \frac{g_z - g_{z,\text{off}}}{65.5}, \qquad
+\dot{\psi}_{\text{clean}} = \begin{cases} \dot{\psi}, & |\dot{\psi}| \ge 1.5^\circ/\text{s} \\ 0, & \text{ngược lại} \end{cases} \\
+\psi_{\text{raw}}[k] &= \psi_{\text{raw}}[k-1] + \dot{\psi}_{\text{clean}}\, dt, \qquad \hat{\psi} = \text{Kalman}(\psi_{\text{raw}},\, \dot{\psi}_{\text{clean}})
+\end{align}
+Góc Yaw được đặt lại về 0 khi Start, sau Calib, hoặc khi nhận lệnh \texttt{0x06} không có dữ liệu.
+
+%=====================================================================
+\section{Vòng ngoài: vận tốc, vị trí \& kẹp chống bắn ngược}
+\begin{align}
+v &= \tfrac{1}{2}(\hat{v}_L + \hat{v}_R), \qquad v_f[k] = v_f[k-1] + 0.22\,\big(v[k] - v_f[k-1]\big) \quad (f_c \approx 7.9\,\text{Hz}) \\
+x_{\text{fw}} &= 0.5 \cdot \big(\textstyle\sum N_L + \sum N_R - N_{\text{ref}}\big) \cdot 0.01547\,\text{cm}, \qquad v_{\text{cms}} = 0.34034 \cdot v_f
+\end{align}
+Điểm đích vị trí và bộ kẹp chống bắn ngược (\textit{Anti-Slingshot \& Brake-in-Place}):
+\begin{align}
+\text{Đang lái } (|v_{\text{cmd}}| > 0.1\,\text{RPM}):&\quad x_{\text{target}} \leftarrow \clamp\big(x_{\text{target}} + v_{\text{cmd,cms}}\, dt,\; x_{\text{fw}} - 12,\; x_{\text{fw}} + 12\big) \\
+\text{Vừa nhả lệnh lái}:&\quad x_{\text{target}} = x_{\text{fw}} \\
+\text{Đứng yên}:&\quad x_{\text{target}} \leftarrow \clamp\big(x_{\text{target}},\; x_{\text{fw}} - 4,\; x_{\text{fw}} + 4\big) \label{eq:hold}
+\end{align}
+Sai số đưa vào \texttt{FuzzyPD\_Pos} và góc đặt vòng trong:
+\begin{align}
+e_{\text{pos}} &= x_{\text{fw}} - x_{\text{target}}\;[\text{cm}], \qquad de_{\text{pos}} = \clamp\big(v_{\text{cms}} - v_{\text{cmd,cms}},\, -30,\, 30\big)\;[\text{cm/s}] \\
+\Delta\theta_f[k] &= \Delta\theta_f[k-1] + 0.25\,\big(u_{\text{pos}}[k] - \Delta\theta_f[k-1]\big) \\
+\Delta\theta &= \clamp(\Delta\theta_f, \pm 3.2^\circ), \qquad \theta_{\text{ref}} = \theta_0 - \Delta\theta
+\end{align}
+Khi xe bị đẩy mạnh và lăn đi xa, nếu giữ nguyên điểm đích cũ thì sai số vị trí lớn sẽ ép vòng ngoài nghiêng xe mạnh về phía ngược lại ngay lúc xe vừa phanh (hiệu ứng ``dây ná''), làm xe ngã. Kẹp~\eqref{eq:hold} cho điểm đích trượt theo xe để vòng ngoài tập trung hãm vận tốc về 0.
+
+%=====================================================================
+\section{Bộ điều khiển mờ kép nối tiếp (Cascaded Dual-FuzzyPD)}
+Hai bộ \texttt{FuzzyPD\_Pos} và \texttt{FuzzyPD\_Pitch} dùng chung \texttt{FuzzyPD\_Compute()} trong \texttt{MY\_LIB/fuzzy.c}: bộ Fuzzy PD kiểu \textbf{Sugeno bậc 0} với 2 đầu vào $\times$ 5 tập mờ, 25 luật, đầu ra 7 singleton --- tương đương FIS của MATLAB với \texttt{AndMethod = prod}, \texttt{DefuzzificationMethod = wtaver}. Bộ điều khiển không có trạng thái nội (không tích phân).
+
+\begin{table}[htbp]
+\centering
+\caption{Đầu vào/đầu ra của hai bộ Fuzzy PD (sai số lấy theo \textbf{đo $-$ đặt})}
+\footnotesize
+\begin{tabular}{l l l l}
+\toprule
+\textbf{Bộ điều khiển} & \textbf{Sai số $e$} & \textbf{Đạo hàm $de$} & \textbf{Đầu ra $u$} \\
+\midrule
+\texttt{FuzzyPD\_Pitch} & $\theta - \theta_{\text{ref}}$ ($^\circ$) & $\dot{\theta}$ đã trừ bias Kalman ($^\circ$/s) & Điện áp (V) \\
+\texttt{FuzzyPD\_Pos} & $x_{\text{fw}} - x_{\text{target}}$ (cm) & $v - v_{\text{cmd}}$ (cm/s) & Góc nghiêng bù $\Delta\theta$ ($^\circ$) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Ở vòng Pitch, $de$ là đạo hàm của \textbf{đại lượng đo} chứ không phải của sai số, nên khi vòng ngoài thay đổi $\theta_{\text{ref}}$ thì đầu ra không bị giật (không có \textit{derivative kick}).
+
+\subsection{Năm khâu xử lý}
+Đỉnh 5 tập đầu vào đặt tại $p = \{-\text{NB}, -\text{NS}, 0, +\text{NS}, +\text{NB}\}$ trên miền chuẩn hóa $[-1, +1]$: NB/PB là hình thang vai, NS/ZE/PS là tam giác (ZE: $(-\text{NS}, 0, +\text{NS})$).
+\begin{align}
+&\text{Khâu 1:}\quad e = y - y_{\text{ref}}, \qquad e_n = \sat(k_e\, e), \qquad de_n = \sat(k_{de}\, de), \qquad \sat(\cdot) = \text{kẹp về } [-1, +1] \\
+&\text{Khâu 2:}\quad p_k \le x \le p_{k+1} \;\Rightarrow\; \mu_k(x) = 1 - t, \quad \mu_{k+1}(x) = t, \quad t = \frac{x - p_k}{p_{k+1} - p_k} \\
+&\text{Khâu 3:}\quad w_{ij} = \mu_{e,i}(e_n) \cdot \mu_{de,j}(de_n), \qquad i, j \in \{\text{NB}, \text{NS}, \text{ZE}, \text{PS}, \text{PB}\} \\
+&\text{Khâu 4:}\quad u_n = \frac{\sum_i \sum_j w_{ij}\, U_{R(i,j)}}{\sum_i \sum_j w_{ij}}, \qquad U = \{-1, -U_M, -U_S, 0, +U_S, +U_M, +1\} \\
+&\text{Khâu 5:}\quad u = k_u \cdot u_n \in [-k_u, +k_u]
+\end{align}
+Hàm liên thuộc là \textbf{phân hoạch chuẩn} ($\sum \mu = 1$, tối đa 2 tập kề nhau khác 0, yêu cầu $0 < \text{NS} < \text{NB} \le 1$), nên $\sum w_{ij} = 1$ và mỗi chu kỳ có tối đa 4 luật được kích hoạt.
+
+\begin{table}[htbp]
+\centering
+\caption{Bảng luật 5 $\times$ 5 \texttt{FUZZY\_RULE\_PD} (dùng chung cho hai bộ)}
 \label{tab:rules}
 \footnotesize
 \begin{tabular}{c|ccccc}
 \toprule
-$e_{\text{norm}} \backslash de_{\text{norm}}$ & \textbf{NB} & \textbf{NS} & \textbf{ZE} & \textbf{PS} & \textbf{PB} \\
+$e_n \backslash de_n$ & \textbf{NB} & \textbf{NS} & \textbf{ZE} & \textbf{PS} & \textbf{PB} \\
 \midrule
 \textbf{NB} & NB & NB & NM & NS & ZE \\
 \textbf{NS} & NB & NM & NS & ZE & PS \\
@@ -145,42 +169,65 @@ $e_{\text{norm}} \backslash de_{\text{norm}}$ & \textbf{NB} & \textbf{NS} & \tex
 \bottomrule
 \end{tabular}
 \end{table}
+Bảng luật đối xứng lẻ qua tâm, $u(-e, -de) = -u(e, de)$; đường chéo phụ $e_n = -de_n$ cho $u = \text{ZE}$ (sai số đang tự giảm đúng tốc độ thì không can thiệp).
 
 \begin{table}[htbp]
 \centering
-\caption{Thông Số Bộ Điều Khiển Mờ Kép Trong \texttt{MDK\_ARM/main.c}}
+\caption{Thông số cấu hình trong \texttt{MDK\_ARM/main.c}}
 \label{tab:params}
 \footnotesize
-\begin{tabular}{lcc}
+\begin{tabular}{l l l}
 \toprule
-\textbf{Tham số cấu hình} & \textbf{\texttt{FuzzyPD\_Pitch} (Vòng trong)} & \textbf{\texttt{FuzzyPD\_Pos} (Vòng ngoài)} \\
+\textbf{Tham số} & \textbf{\texttt{FuzzyPD\_Pitch}} & \textbf{\texttt{FuzzyPD\_Pos}} \\
 \midrule
-Chu kỳ lấy mẫu $T_s$ & $5\,\text{ms}$ ($200\,\text{Hz}$) & $5\,\text{ms}$ ($200\,\text{Hz}$) \\
-Hệ số chuẩn hóa $k_e$ & $1/11.5\,\text{deg}^{-1}$ ($\pm 11.5^\circ$) & $0.025\,\text{cm}^{-1}$ ($\pm 40.0\,\text{cm}$) \\
-Hệ số chuẩn hóa $k_{de}$ & $1/320.0\,(\text{deg/s})^{-1}$ ($\pm 320^\circ/\text{s}$) & $0.060\,(\text{cm/s})^{-1}$ ($\pm 16.7\,\text{cm/s}$) \\
-Hệ số khuếch đại $k_u$ & $7560.0\,\text{PWM}$ (90\%) & $2.40^\circ$ \\
-Mốc tập mờ $e$: $(e_{\text{nb}}, e_{\text{ns}}, z_e)$ & $(0.46, 0.20, 0.002)$ & $(0.44, 0.16, 0.002)$ \\
-Mốc tập mờ $de$: $(de_{\text{nb}}, de_{\text{ns}}, z_{de})$ & $(0.46, 0.20, 0.005)$ & $(0.46, 0.18, 0.010)$ \\
-Singleton đầu ra $(u_s, u_m)$ & $(0.25, 0.65)$ & $(0.26, 0.62)$ \\
-Độ lợi tuyến tính tương đương & $K_p \approx 822\,\text{PWM}/^\circ, K_d \approx 29.5$ & $K_p \approx 0.098^\circ/\text{cm}, K_d \approx 0.208$ \\
+$k_e$ & $1/11.5\,(^\circ)^{-1}$ (bão hòa $\pm 11.5^\circ$) & $0.025\,\text{cm}^{-1}$ (bão hòa $\pm 40\,\text{cm}$) \\
+$k_{de}$ & $1/320\,(^\circ/\text{s})^{-1}$ (bão hòa $\pm 320^\circ/\text{s}$) & $0.060\,(\text{cm/s})^{-1}$ (bão hòa $\pm 16.7\,\text{cm/s}$) \\
+$k_u$ & $10.8\,\text{V}$ ($\approx 7560\,\text{PWM}$) & $2.40^\circ$ (lọc IIR, kẹp $\pm 3.2^\circ$) \\
+Đỉnh tập $e$ (NB, NS) & $(0.46,\ 0.20)$ & $(0.44,\ 0.16)$ \\
+Đỉnh tập $de$ (NB, NS) & $(0.46,\ 0.20)$ & $(0.46,\ 0.18)$ \\
+Singleton $(U_S, U_M)$ & $(0.25,\ 0.65)$ & $(0.26,\ 0.62)$ \\
+$K_p$ tương đương & $1.174\,\text{V}/^\circ$ ($\approx 822\,\text{PWM}/^\circ$) & $0.098^\circ/\text{cm}$ \\
+$K_d$ tương đương & $0.0422\,\text{V}/(^\circ/\text{s})$ ($\approx 29.5\,\text{PWM}/(^\circ/\text{s})$) & $0.208^\circ/(\text{cm/s})$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\section{Bộ Điều Khiển Yaw PID Kép \& Xử Lý Công Suất Động Cơ}
-\begin{enumerate}
-    \item \textbf{Bộ điều khiển \texttt{Yaw PID} vi phân kép (10\% công suất = $\pm 840\,\text{PWM}$):} Kết hợp thành phần cản dịu từ vận tốc vi sai hai bánh xe ($K_{d,\text{wheel}} = 6.30$) và vận tốc góc trực tiếp từ IMU ($K_{d,\text{imu}} = 3.78$), cùng $K_{p,\text{yaw}} = 25.20$, $K_{i,\text{yaw}} = 4.20$ (vùng chết tích phân $\pm 0.35^\circ$, xả nhanh tích phân $I_{\text{yaw}} \leftarrow 0.85 I_{\text{yaw}}$ mỗi khi sai số đảo dấu):
-    \begin{equation}
-        u_{\text{yaw}} = \operatorname{clamp}\!\big(K_{p,\text{yaw}} e_\psi + K_{i,\text{yaw}} I_\psi + K_{d,\text{wheel}}(-v_L + v_R) + K_{d,\text{imu}}\dot{\hat{\psi}},\; \pm 840\big)
-    \end{equation}
-    \item \textbf{Bù vùng chết bất đối xứng 4 góc phần tư có độ dốc chuyển tiếp (4-Quadrant Soft-Knee Deadband):} Với ngưỡng ma sát động thực đo ($D_L^+ = 190, D_L^- = 190, D_R^+ = 260, D_R^- = 240\,\text{PWM}$) và vùng chuyển tiếp tuyến tính $U_{\text{knee}} = 120\,\text{PWM}$:
-    \begin{equation}
-        u_{\text{comp}} = u + \operatorname{sign}(u) \cdot D_{\text{L/R}}^{\pm} \cdot \min\!\left(1.0,\; \frac{|u|}{120.0}\right)
-    \end{equation}
-    \item \textbf{Giới hạn tốc độ biến thiên xung (PWM Slew-Rate Limiter):} Kẹp bước nhảy $|\Delta\text{PWM}| \le 1000\,\text{PWM}/5\,\text{ms}$ trước khi xuất ra cầu H.
-\end{enumerate}
+\subsection{Tính chất \& độ lợi tương đương}
+Mặt điều khiển là \textbf{nội suy song tuyến tính của bảng luật} trên lưới các đỉnh tập mờ; đầu ra là tổ hợp lồi của các singleton nên luôn nằm trong $[-k_u, +k_u]$, đơn điệu không giảm theo $e$, $de$ và đối xứng lẻ. Trong vùng tâm ($|e_n| \le \text{NS}_e$, $|de_n| \le \text{NS}_{de}$, bỏ qua số hạng chéo nhỏ), bộ mờ tương đương một bộ PD tuyến tính:
+\begin{equation}
+u \approx K_p\, e + K_d\, de, \qquad K_p = k_u\, k_e\, \frac{U_S}{\text{NS}_e}, \qquad K_d = k_u\, k_{de}\, \frac{U_S}{\text{NS}_{de}}
+\end{equation}
+Ra khỏi vùng tâm, độ lợi thay đổi theo bảng luật (phi tuyến) và bão hòa ở $\pm k_u$. Do kẹp điểm đích, $|e_{\text{pos}}| \le 12\,\text{cm}$ khi lái ($|e_n| \le 0.30$) và $\le 4\,\text{cm}$ khi đứng yên ($|e_n| \le 0.10$), đều nhỏ hơn $\text{NB} = 0.44$: hai hàng NB/PB theo $e$ của vòng ngoài không được kích hoạt, vòng ngoài kéo vị trí nhẹ và ưu tiên phanh theo $de$. Đầu vào NaN làm mọi $\mu = 0$ nên $\sum w = 0$ và đầu ra $u = 0$.
 
-\section{Kết Quả Thực Nghiệm (\texttt{lan39.csv})}
-Thử nghiệm thực tế với góc cân bằng chuẩn $\theta_0 = -3.56^\circ$ trong $403\,\text{s}$ liên tục ($8.063$ mẫu Telemetry $50\,\text{Hz}$) ghi nhận: (i) ở trạng thái đứng yên, độ lệch chuẩn góc nghiêng đạt $\sigma_\theta = 0.11^\circ$ (đỉnh-đỉnh $0.51^\circ$), độ lệch chuẩn vận tốc $\sigma_v = 0.70\,\text{cm/s}$, sai số vị trí giữ chặt trong $\pm 0.2\,\text{cm}$ ($\pm 2\,\text{mm}$) và độ trôi góc Yaw bằng $0.000^\circ/\text{s}$; (ii) dưới tác động của hàng loạt xung lực đẩy mạnh liên tiếp từ hai phía (vận tốc bị đẩy đạt đỉnh $78.9\,\text{cm/s}$), robot hoàn toàn không bị bắn ngược vị trí và tự phục hồi cân bằng sau $1.2\text{--}1.8\,\text{s}$ với 0 lần ngã.
+\textbf{Kiểm chứng:} \texttt{fuzzy.c} được biên dịch trên PC (gcc) và so sánh với một bản tham chiếu độc lập viết theo công thức FIS Sugeno của MATLAB (\texttt{trimf}/\texttt{trapmf}, \texttt{prod}, \texttt{wtaver}) trên khoảng 570\,000 cặp $(e, de)$ cho cả hai bộ: sai lệch lớn nhất $2 \cdot 10^{-6}\,\text{V}$ (sai số làm tròn), đồng thời thỏa $\sum\mu = 1$, đối xứng lẻ, đơn điệu và $|u| \le k_u$.
+
+%=====================================================================
+\section{PID\_Yaw \& xử lý công suất động cơ}
+\subsection{PID\_Yaw dạng gia số (\texttt{pid.c}, $\pm 840\,\text{PWM}$)}
+\begin{align}
+\psi_{\text{ref}} &\leftarrow \psi_{\text{ref}} + \clamp(\psi_{\text{target}} - \psi_{\text{ref}},\, \pm 0.25^\circ), \qquad e_k = \psi_{\text{ref}} - \hat{\psi} \\
+\Delta u_k &= K_p (e_k - e_{k-1}) + \frac{K_i T_s}{2}(e_k + e_{k-1}) + \frac{K_d}{T_s}(e_k - 2e_{k-1} + e_{k-2}) \\
+u_k &= \clamp(u_{k-1} + \Delta u_k,\, \pm 840)
+\end{align}
+$K_p = 18.0$, $K_i = 8.0$, $K_d = 0.35$. Vì $u_{k-1}$ được lưu sau khi kẹp, dạng gia số tự chống bão hòa tích phân.
+
+\subsection{Quy đổi điện áp, trộn PWM, bù vùng chết \& Slew-Rate}
+\begin{align}
+u_p &= \clamp\!\Big(\tfrac{8400}{12} \cdot \clamp(u_{\text{pitch}}, \pm 10.8\,\text{V}),\; \pm 7560\Big) \\
+u_L &= u_p + u_y, \qquad u_R = u_p - u_y \\
+u_{\text{comp}} &= u + \operatorname{sign}(u) \cdot DB_{\pm} \cdot \min\!\Big(1,\; \frac{|u|}{U_{\text{knee}}}\Big), \qquad U_{\text{knee}} = 120 \quad (u_{\text{comp}} = 0 \text{ khi } |u| < 1) \\
+\text{PWM}[k] &= \clamp\big(\clamp(u_{\text{comp}}, \pm 8400),\; \text{PWM}[k-1] - 1000,\; \text{PWM}[k-1] + 1000\big)
+\end{align}
+Bù vùng chết (khoảng 80\% ngưỡng dừng quay đo từ \texttt{lan1.csv}): bánh trái $DB^+ = 280$, $DB^- = 260$; bánh phải $DB^+ = 440$, $DB^- = 400\,\text{PWM}$. Kẹp $\pm 10.8\,\text{V}$ được giữ vì $k_u$ có thể bị nạp nóng từ GUI. Bảo vệ: $|\theta - \theta_0| > 15^\circ \Rightarrow$ \texttt{Robot\_Stop()}.
+
+%=====================================================================
+\section{Kết quả thực nghiệm}
+\textbf{Lưu ý:} các số liệu sau đo bằng \texttt{lan39.csv} (8\,063 mẫu, $403\,\text{s}$ tại $\theta_0 = -3.56^\circ$) với \textbf{phiên bản firmware trước} (còn tách trọng tâm CoM, tự học góc cân bằng theo mặt trượt, hợp nhất Yaw với encoder và Yaw PID vi phân kép); cần đo lại với firmware hiện tại.
+\begin{itemize}
+    \item Độ lệch chuẩn góc Pitch khi đứng yên: $\sigma_\theta = 0.11^\circ$ (đỉnh-đỉnh $0.51^\circ$).
+    \item Giữ vị trí khi đứng yên: $\sigma_v = 0.70\,\text{cm/s}$, $\Delta x \le \pm 0.2\,\text{cm}$.
+    \item Chịu đẩy liên tiếp tới vận tốc đỉnh $78.9\,\text{cm/s}$, hồi phục sau $1.2$--$1.8\,\text{s}$, 0 lần ngã.
+    \item Độ trôi hướng Yaw khi đứng yên: $0.000^\circ/\text{s}$ (sai số $< 0.08^\circ$).
+\end{itemize}
 
 \end{document}
