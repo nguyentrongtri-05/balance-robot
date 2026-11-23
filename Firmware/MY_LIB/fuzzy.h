@@ -3,103 +3,33 @@
 
 #include <stdint.h>
 
-/* Số lượng tập mờ đầu vào (5 tập: NB, NS, ZE, PS, PB) & đầu ra (7 tập: NB, NM, NS, ZE, PS, PM, PB) */
-#define FUZZY_NUM_STATES             5u
-#define FUZZY_NUM_OUT_STATES         7u
+/* Bộ điều khiển Fuzzy PD kiểu Sugeno bậc 0: 2 đầu vào (e, de) x 5 tập -> đầu ra u gồm 7 singleton */
+#define FUZZY_N_IN    5u   /* Tập mờ đầu vào e, de : NB NS ZE PS PB         */
+#define FUZZY_N_OUT   7u   /* Tập mờ đầu ra u      : NB NM NS ZE PS PM PB   */
 
-/* 5 biến ngôn ngữ đầu vào (e, de) */
-typedef enum {
-    IN_NB = 0,
-    IN_NS = 1,
-    IN_ZE = 2,
-    IN_PS = 3,
-    IN_PB = 4
-} FuzzyInputState_t;
+/* Nhãn 7 tập đầu ra u (dùng để viết bảng luật) */
+typedef enum { NB = 0, NM, NS, ZE, PS, PM, PB } FuzzyState_t;
 
-/* 7 biến ngôn ngữ đầu ra u: { NB, NM, NS, ZE, PS, PM, PB } */
-typedef enum {
-    NB = 0,
-    NM = 1,
-    NS = 2,
-    ZE = 3,
-    PS = 4,
-    PM = 5,
-    PB = 6
-} FuzzyState_t;
-
-/* Cấu trúc dữ liệu tổng quát của bộ điều khiển Fuzzy PD (Dùng chung cho cả 2 khâu FuzzyPD_Pitch và FuzzyPD_Pos nối tiếp) */
 typedef struct {
-    /* 1. Tham số Khâu Tiền Xử Lý (Pre-processing) & Bão hòa đầu vào [-1..+1] */
-    float ke;
-    float kde;
-    float e_min;
-    float e_max;
-    float de_min;
-    float de_max;
-
-    /* 2. Tham số Khâu Mờ Hóa (Fuzzification Membership Limits) */
-    float e_limit_nb_ns;
-    float e_limit_ns_ze;
-    float e_ze_flat_min;
-    float e_ze_flat_max;
-    float e_limit_ze_ps;
-    float e_limit_ps_pb;
-
-    float de_limit_nb_ns;
-    float de_limit_ns_ze;
-    float de_ze_flat_min;
-    float de_ze_flat_max;
-    float de_limit_ze_ps;
-    float de_limit_ps_pb;
-
-    /* 3. Tham số Khâu Giải Mờ (Defuzzification - 7 biến ngôn ngữ đầu ra u) & Bão hòa trước Ku [-1..+1] */
-    float defuzz_min;
-    float defuzz_max;
-    float out_nb;
-    float out_nm;
-    float out_ns;
-    float out_ze;
-    float out_ps;
-    float out_pm;
-    float out_pb;
-
-    /* 4. Tham số Khâu Hậu Xử Lý (Post-processing: nhân hệ số khuếch đại Ku) */
-    float ku;
-
-    /* Giá trị e, de sau chuẩn hóa và bão hòa [-1..+1] của lần tính gần nhất (phục vụ debug / telemetry) */
-    float e_norm;
-    float de_norm;
-
-    /* 5. Mảng trạng thái mờ phục vụ tính toán các khâu */
-    float mu_e[FUZZY_NUM_STATES];
-    float mu_de[FUZZY_NUM_STATES];
-    float rule_weights[FUZZY_NUM_STATES][FUZZY_NUM_STATES];
+    float ke, kde, ku;          /* Tiền xử lý: e_n = e*ke, de_n = de*kde | Hậu xử lý: u = u_n*ku       */
+    float e_ns, e_nb;           /* Đỉnh tập NS/PS và NB/PB của e_n  (yêu cầu 0 < NS < NB <= 1)         */
+    float de_ns, de_nb;         /* Đỉnh tập NS/PS và NB/PB của de_n                                    */
+    float out[FUZZY_N_OUT];     /* 7 singleton đầu ra: {-1, -med, -small, 0, +small, +med, +1}         */
+    const FuzzyState_t (*rule)[FUZZY_N_IN];  /* Bảng luật 5x5: rule[e][de] = tập đầu ra             */
+    float e_norm, de_norm;      /* e_n, de_n (đã bão hòa [-1, 1]) của lần tính gần nhất -> telemetry   */
 } FuzzyController_t;
 
-/* ============================================================================
- * CÁC HÀM KHỞI TẠO, HÀM LIÊN THUỘC CƠ SỞ & CÁC KHÂU CỦA BỘ ĐIỀU KHIỂN FUZZY PD
- * ============================================================================ */
-void  Fuzzy_Init(FuzzyController_t *fc,
-                 float ke, float kde, float ku,
-                 float e_nb, float e_ns, float e_ze,
-                 float de_nb, float de_ns, float de_ze,
-                 float out_small, float out_med);
+/* Bảng luật PD chuẩn 5x5 (đối xứng lẻ qua tâm) */
+extern const FuzzyState_t FUZZY_RULE_PD[FUZZY_N_IN][FUZZY_N_IN];
+
+/* rule = NULL -> dùng FUZZY_RULE_PD */
+void  Fuzzy_Init(FuzzyController_t *fc, float ke, float kde, float ku,
+                 float e_nb, float e_ns, float de_nb, float de_ns,
+                 float out_small, float out_med,
+                 const FuzzyState_t rule[FUZZY_N_IN][FUZZY_N_IN]);
 void  Fuzzy_Reset(FuzzyController_t *fc);
 
-/* Nhóm hàm tính toán Hàm Liên Thuộc (Membership Function Primitives) */
-float Fuzzy_MF_Triangle(float x, float a, float b, float c);
-float Fuzzy_MF_TrapezoidLeft(float x, float a, float b);
-float Fuzzy_MF_TrapezoidRight(float x, float a, float b);
-float Fuzzy_MF_Trapezoid(float x, float a, float b, float c, float d);
-
-/* Các khâu xử lý tổng quát của bộ điều khiển Fuzzy PD */
-void  Fuzzy_PreProcess(FuzzyController_t *fc, float setpoint, float currentVal, float dCurrentVal, float *out_eNorm, float *out_deNorm);
-void  Fuzzy_Fuzzify(FuzzyController_t *fc, float eNorm, float deNorm, float mu_e[FUZZY_NUM_STATES], float mu_de[FUZZY_NUM_STATES]);
-void  Fuzzy_Inference(const float mu_e[FUZZY_NUM_STATES], const float mu_de[FUZZY_NUM_STATES], float ruleWeights[FUZZY_NUM_STATES][FUZZY_NUM_STATES]);
-float Fuzzy_Defuzzify(FuzzyController_t *fc, float ruleWeights[FUZZY_NUM_STATES][FUZZY_NUM_STATES]);
-float Fuzzy_PostProcess(FuzzyController_t *fc, float defuzzOutput);
-
-/* Hàm thực thi bộ điều khiển Fuzzy PD (dùng chung cho cả vòng ngoài FuzzyPD_Pos và vòng trong FuzzyPD_Pitch) */
-float FuzzyPD_Compute(FuzzyController_t *fc, float setpoint, float currentVal, float dCurrentVal);
+/* e = measured - setpoint, de = dMeasured (đạo hàm của đại lượng đo). Trả về u ∈ [-ku, +ku] */
+float FuzzyPD_Compute(FuzzyController_t *fc, float setpoint, float measured, float dMeasured);
 
 #endif /* __FUZZY_H */

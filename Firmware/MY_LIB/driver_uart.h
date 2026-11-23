@@ -64,7 +64,7 @@ typedef struct __attribute__((packed)) {
     float kp_yaw;                   /* 1. Hệ số Kp khóa hướng xoay PID_Yaw (10% PWM)     */
     float ki_yaw;                   /* 2. Hệ số Ki tích phân hướng xoay PID_Yaw          */
     float kd_yaw;                   /* 3. Hệ số Kd giảm chấn hướng xoay PID_Yaw          */
-    float targetAngle;              /* 4. Góc cân bằng tĩnh gốc (từ Code / Flash)        */
+    float targetAngle;              /* 4. Góc cân bằng tĩnh gốc (từ Code / Calib)        */
     float targetYaw;                /* 5. Góc hướng đích Yaw (độ)                        */
     float controlMode;              /* 6. Kiến trúc điều khiển (1.0f = Dual FuzzyPD)     */
     float pitch_ke;                 /* 7. FuzzyPD_Pitch ke  (1/deg)                      */

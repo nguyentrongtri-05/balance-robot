@@ -499,11 +499,6 @@
           <GroupName>MY LIB</GroupName>
           <Files>
             <File>
-              <FileName>driver_flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\MY_LIB\driver_flash.c</FilePath>
-            </File>
-            <File>
               <FileName>driver_uart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\MY_LIB\driver_uart.c</FilePath>

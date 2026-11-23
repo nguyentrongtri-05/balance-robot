@@ -473,9 +473,9 @@ class DeadzoneDialog:
 # GIAO DIỆN CHÍNH
 # =============================================================================
 class RobotControlGUI:
-    C_BG, C_PANEL, C_CARD, C_BORDER = "#181825", "#1e1e2e", "#26283b", "#3b3e5b"
+    C_BG, C_PANEL, C_CARD, C_BORDER = "#181825", "#1e1e2e", "#9da5e9", "#3b3e5b"
     C_TEXT, C_DIM = "#cdd6f4", "#9399b2"
-    C_ACCENT, C_GREEN, C_RED, C_YELLOW = "#89b4fa", "#a6e3a1", "#f38ba8", "#f9e2af"
+    C_ACCENT, C_GREEN, C_RED, C_YELLOW = "#89b4fa", "#6bc746", "#f38ba8", "#f9f1af"
     C_ORANGE, C_PURPLE, C_CYAN = "#fab387", "#cba6f7", "#89dceb"
 
     # Độ dốc quanh 0 = out_small / ns của từng kênh (khớp Fuzzy_Init trong main.c)
@@ -1276,10 +1276,10 @@ class RobotControlGUI:
             yaw_rate = max(-90.0, min(90.0, 3.0 * err)) if run else 0.0
             yaw += yaw_rate * dt
             pitch = self.tgt_pitch + (0.4 * math.sin(t * 3.0) - 0.25 * spd / ROBOT_MAX_SPEED_RPM if run else 2.5 * math.sin(t * 0.8))
-            kL, kR = -(spd - yaw_rate * 0.01), -(spd + yaw_rate * 0.01)
+            kL, kR = (spd - yaw_rate * 0.01), (spd + yaw_rate * 0.01)
             if not run:
                 # Mô phỏng vùng chết có trễ (ma sát tĩnh > động): bắt đầu quay khi |PWM| >= Zs, dừng khi |PWM| < Zk.
-                # Bánh trái Zs = 280, bánh phải Zs = 620 (hộp số cứng), Zk = 250 cả hai. Tốc độ tiến = âm.
+                # Bánh trái Zs = 280, bánh phải Zs = 620 (hộp số cứng), Zk = 250 cả hai. Tốc độ tiến = dương (+).
                 tp = self.test_pwm
                 live = (time.time() - tp[2]) < 0.5
 
@@ -1292,7 +1292,7 @@ class RobotControlGUI:
                             mv[i] = False
                     elif abs(pw) >= zs:
                         mv[i] = True
-                    return -math.copysign(8.0 + (abs(pw) - zk) * 0.05, pw) if mv[i] else 0.0
+                    return math.copysign(8.0 + (abs(pw) - zk) * 0.05, pw) if mv[i] else 0.0
                 swL += (_w(0, tp[0], 280.0, 250.0) - swL) * 0.3
                 swR += (_w(1, tp[1], 620.0, 250.0) - swR) * 0.3
                 kL, kR = swL, swR
@@ -1310,8 +1310,8 @@ class RobotControlGUI:
                  rL, rR, kL, kR,
                  pwm_f - out_y, pwm_f + out_y, self.tgt_pitch - tilt,
                  out_f, out_y, tilt,
-                 -v_cmd, 0.0, sat((pitch - self.tgt_pitch) / 11.3) if run else 0.0, 0.0,
-                 0.0, sat(-(v_meas + v_cmd) * WHEEL_RPM_TO_CMS / 25.1) if run else 0.0)
+                 v_cmd, 0.0, sat((pitch - self.tgt_pitch) / 11.3) if run else 0.0, 0.0,
+                 0.0, sat((v_meas - v_cmd) * WHEEL_RPM_TO_CMS / 25.1) if run else 0.0)
             self.data_queue.put((time.time(), f))
             time.sleep(dt)
 
@@ -1644,8 +1644,8 @@ class RobotControlGUI:
             d = dict(zip(TELEM_FIELDS, f))
             dt = 0.02 if self.last_pkt_ts is None else max(0.001, min(0.1, ts - self.last_pkt_ts))
             self.last_pkt_ts = ts
-            # Vận tốc tịnh tiến (xe tiến => tốc độ encoder âm) & odometry
-            v_cms = -0.5 * (d["kal_L"] + d["kal_R"]) * WHEEL_RPM_TO_CMS
+            # Vận tốc tịnh tiến (đã thống nhất tiến = dương ở firmware) & odometry
+            v_cms = 0.5 * (d["kal_L"] + d["kal_R"]) * WHEEL_RPM_TO_CMS
             th = math.radians(d["yaw"])
             self.pos_x += v_cms * math.cos(th) * dt
             self.pos_y += v_cms * math.sin(th) * dt
@@ -1721,12 +1721,12 @@ class RobotControlGUI:
             self._set_lbl(self.d_yaw, f"{self.tgt_yaw:+.1f} | {c['yaw']:+.1f}")
             self._set_lbl(self.d_pos, f"{self.pos_x:+.1f} | {self.pos_y:+.1f}")
             self._set_lbl(self.d_pitch, f"{c['pitch']:+.2f}")
-            wl, wr = -c["kal_L"], -c["kal_R"]
+            wl, wr = c["kal_L"], c["kal_R"]
             self._set_lbl(self.d_whl_L, f"{wl:+.1f} | {wl * WHEEL_RPM_TO_CMS:+.2f}")
             self._set_lbl(self.d_whl_R, f"{wr:+.1f} | {wr * WHEEL_RPM_TO_CMS:+.2f}")
         else:
             sat = lambda v: abs(v) >= 0.999
-            self._set_lbl(self.f_vel, f"{-c['vel_cmd']:+.1f} | {-0.5 * (c['kal_L'] + c['kal_R']):+.1f}")
+            self._set_lbl(self.f_vel, f"{c['vel_cmd']:+.1f} | {0.5 * (c['kal_L'] + c['kal_R']):+.1f}")
             self._set_lbl(self.f_tilt, f"{c['tgt_ang']:+.2f} | {c['out_pos']:+.2f}°",
                           self.C_RED if abs(c["out_pos"]) >= self.TILT_MAX_DEG - 0.01 else self.C_ORANGE)
             self._set_lbl(self.f_pd, f"{c['pitch_e']:+.2f} | {c['pitch_de']:+.2f}",
@@ -1830,11 +1830,11 @@ class RobotControlGUI:
                 sc_cmd, sc_meas = h("speed_cmd_cms"), h("speed_cms")
                 self.l_v_cmd.set_data(t, sc_cmd)
                 self.l_v_meas.set_data(t, sc_meas)
-                # Tốc độ từng bánh: đổi dấu để tiến = dương (firmware báo tiến = âm)
-                wl_raw = [-v for v in h("raw_L")]
-                wr_raw = [-v for v in h("raw_R")]
-                wl = [-v for v in h("kal_L")]
-                wr = [-v for v in h("kal_R")]
+                # Tốc độ từng bánh (đã thống nhất tiến = dương từ firmware)
+                wl_raw = h("raw_L")
+                wr_raw = h("raw_R")
+                wl = h("kal_L")
+                wr = h("kal_R")
                 ty_h, y_h = h("tgt_yaw"), h("yaw")
                 self.l_wL_raw.set_data(t, wl_raw)
                 self.l_wR_raw.set_data(t, wr_raw)
@@ -1850,8 +1850,8 @@ class RobotControlGUI:
             else:
                 p, v, pd, pi = self.axes3
                 kp, ta = h("pitch"), h("tgt_ang")
-                vcmd = [-x for x in h("vel_cmd")]
-                vmeas = [-0.5 * (a + b) for a, b in zip(h("kal_L"), h("kal_R"))]
+                vcmd = h("vel_cmd")
+                vmeas = [0.5 * (a + b) for a, b in zip(h("kal_L"), h("kal_R"))]
                 self.l3_pitch.set_data(t, kp)
                 self.l3_tgt.set_data(t, ta)
                 self.l3_base.set_ydata([self.tgt_pitch, self.tgt_pitch])

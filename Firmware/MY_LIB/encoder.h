@@ -7,6 +7,10 @@
 #define ENCODER_COUNTS_PER_REV  1320.0f     /* Chế độ TI12 x4: 330 * 4 = 1320 xung/vòng */
 #define ENCODER_SAMPLE_TIME     0.005f      /* Chu kỳ lấy mẫu vTaskEncoder: 5ms (200Hz) */
 
+/* Đảo chiều đếm xung Encoder để quy ước thống nhất toàn hệ thống: xe chạy TIẾN = DƯƠNG (+) */
+#define ENCODER_LEFT_INVERT     1
+#define ENCODER_RIGHT_INVERT    1
+
 /* Thông số vật lý bánh xe đường kính D = 65mm (6.5cm) & Khoảng cách 2 bánh W = 19.21cm */
 #define WHEEL_CIRCUMFERENCE_CM  20.420352f  /* Chu vi 1 vòng bánh: pi * 6.5cm = 20.420352 cm */
 #define WHEEL_CM_PER_PULSE      (WHEEL_CIRCUMFERENCE_CM / ENCODER_COUNTS_PER_REV)

@@ -8,7 +8,6 @@
 #include "driver_uart.h"
 #include "fuzzy.h"
 #include "kalman.h"
-#include "driver_flash.h"
 #include "pid.h"
 #include <math.h>
 #include <string.h>
@@ -81,19 +80,23 @@ volatile float g_posError       = 0.0f;   /* debug: sai số vị trí vòng ngo
 #define CONTROL_LOOP_DT                  0.005f
 #define POS_TARGET_LEAD_MAX_CM           12.0f   /* Giới hạn điểm đích lệch xa vị trí hiện tại tối đa khi đang lái (12 cm) */
 #define POS_HOLD_MAX_ERR_CM              4.0f    /* Giới hạn sai số vị trí khi đứng yên (chống tích lũy lỗi bắn ngược khi bị đẩy) */
-#define COM_PITCH_RATE_COMP_RPM_PER_DPS  0.42f   /* Bù vận tốc quay của bánh xe khi thân xe nghiêng (RPM / (°/s)) */
-#define COM_PITCH_POS_COMP_CM_PER_DEG    0.15f   /* Bù dịch chuyển bánh xe theo góc nghiêng thân xe (cm / °) */
 #define BALANCE_MAX_PWM_DELTA            1000.0f /* Giới hạn bước nhảy PWM mỗi 5ms */
-#define MOTOR_DEADBAND_PWM_L_POS         190.0f  /* Bù vùng chết bánh Trái chiều + (quay: +240, dừng: +220) */
-#define MOTOR_DEADBAND_PWM_L_NEG         190.0f  /* Bù vùng chết bánh Trái chiều - (quay: -260, dừng: -220) */
-#define MOTOR_DEADBAND_PWM_R_POS         260.0f  /* Bù vùng chết bánh Phải chiều + (quay: +360, dừng: +300) */
-#define MOTOR_DEADBAND_PWM_R_NEG         240.0f  /* Bù vùng chết bánh Phải chiều - (quay: -280, dừng: -280) */
-#define MOTOR_DEADBAND_KNEE              120.0f  /* Đoạn dốc tuyến tính mượt quanh 0 để tránh giật xung khi đảo chiều */
+
+/* Bù vùng chết động cơ (PWM cộng thêm theo chiều lệnh, thang 8400). Giá trị ~80% ngưỡng DỪNG
+ * đo từ log lan1.csv (xe chạy có tải, không bù):
+ *   Trái +: bắt đầu quay ~370, dừng ~352   | Trái -: bắt đầu quay ~354, dừng ~328
+ *   Phải +: bắt đầu quay ~564, dừng ~557   | Phải -: bắt đầu quay ~518, dừng ~501
+ * Chiều +/- là dấu lệnh PWM đưa vào Motor_SetPWM_x (trước khi đảo chiều MOTOR_x_INVERT). */
+#define MOTOR_DEADBAND_PWM_L_POS         280.0f
+#define MOTOR_DEADBAND_PWM_L_NEG         260.0f
+#define MOTOR_DEADBAND_PWM_R_POS         440.0f
+#define MOTOR_DEADBAND_PWM_R_NEG         400.0f
+#define MOTOR_DEADBAND_KNEE              120.0f  /* Đoạn dốc tuyến tính quanh 0: |pwm| < KNEE thì bù tăng dần, tránh giật khi đảo chiều */
 
 static float s_prevBalancePWM_L   = 0.0f;
 static float s_prevBalancePWM_R   = 0.0f;
 static float s_tiltOffsetFiltered = 0.0f;   /* Bộ lọc thông thấp góc nghiêng đặt vòng ngoài */
-static float s_velCoMFiltered     = 0.0f;   /* Vận tốc tịnh tiến trọng tâm (RPM) đã lọc thông thấp */
+static float s_velFiltered        = 0.0f;   /* Vận tốc trung bình 2 bánh (RPM) đã lọc thông thấp */
 
 static volatile float    s_testPwmL       = 0.0f;
 static volatile float    s_testPwmR       = 0.0f;
@@ -111,6 +114,8 @@ static float Clamp_Float(float val, float minVal, float maxVal) {
     return val;
 }
 
+/* Bù vùng chết bất đối xứng: |pwm| >= KNEE -> cộng đủ deadband theo chiều; |pwm| < KNEE -> cộng tỉ lệ
+ * (liên tục qua 0, không có bước nhảy khi đảo chiều); |pwm| < 1 -> 0 */
 static float Compensate_MotorDeadband(float pwm, float dbPos, float dbNeg) {
     float absPwm = fabsf(pwm);
     if (absPwm < 1.0f) return 0.0f;
@@ -130,7 +135,7 @@ static void Reset_OdometryAndStates(void) {
     s_prevBalancePWM_L   = 0.0f;
     s_prevBalancePWM_R   = 0.0f;
     s_tiltOffsetFiltered = 0.0f;
-    s_velCoMFiltered     = 0.0f;
+    s_velFiltered        = 0.0f;
     PID_Reset(&PID_Yaw);
     Fuzzy_Reset(&FuzzyPD_Pitch);
     Fuzzy_Reset(&FuzzyPD_Pos);
@@ -160,16 +165,11 @@ void System_Tasks_Init(void) {
         }
         for (volatile uint32_t w = 0; w < 70000u; w++); /* ~2ms mỗi mẫu */
     }
+    /* Calib Offset Gyro Y (Pitch) & Gyro Z (Yaw) mỗi lần khởi động: trung bình 50 mẫu lúc xe đứng yên.
+     * Nháy LED xanh dương báo calib gyro khởi động thành công. */
     if (validInit > 0) {
+        g_gyroOffset  = (float)sumGyInit / (float)validInit;
         g_gyroZOffset = (float)sumGzInit / (float)validInit;
-    }
-
-    RobotFlashConfig_t savedConfig;
-    if (Flash_ReadConfig(&savedConfig)) {
-        g_gyroOffset = savedConfig.gyroOffset;
-        if (validInit > 0 && fabsf((float)init_gy) < 500.0f && fabsf((float)init_gy - g_gyroOffset) > 120.0f) {
-            g_gyroOffset = (float)sumGyInit / (float)validInit;
-        }
 
         GPIO_SetBits(GPIOD, GPIO_Pin_15);
         for (volatile int d = 0; d < 500000; d++);
@@ -232,7 +232,7 @@ void Robot_Stop(void) {
     s_prevBalancePWM_L   = 0.0f;
     s_prevBalancePWM_R   = 0.0f;
     s_tiltOffsetFiltered = 0.0f;
-    s_velCoMFiltered     = 0.0f;
+    s_velFiltered        = 0.0f;
     PID_Reset(&PID_Yaw);
     Fuzzy_Reset(&FuzzyPD_Pitch);
     Fuzzy_Reset(&FuzzyPD_Pos);
@@ -418,10 +418,6 @@ uint8_t Robot_AutoCalibrate(void) {
     KalmanAngle_Init(&kalmanYaw);
     Reset_OdometryAndStates();
 
-    GPIO_SetBits(GPIOD, GPIO_Pin_15 | GPIO_Pin_13);
-    Flash_SaveConfig(g_targetAngle, g_gyroOffset);
-    GPIO_ResetBits(GPIOD, GPIO_Pin_15 | GPIO_Pin_13);
-
     for (int k = 0; k < 3; k++) {
         GPIO_SetBits(GPIOD, GPIO_Pin_12);
         Calib_DelayMs(200);
@@ -478,7 +474,7 @@ static void vTaskIMU(void *pvParameters)
             g_rawYawRate = YAW_GYRO_SIGN * azSign * (((float)gz - g_gyroZOffset) / 65.5f);
 
             /* Tích phân vận tốc góc Yaw thuần Gyro Z (chỉ cắt nhiễu tĩnh rất nhỏ < 0.20 °/s) */
-            float yawRateClean = (fabsf(g_rawYawRate) >= 0.20f) ? g_rawYawRate : 0.0f;
+            float yawRateClean = (fabsf(g_rawYawRate) >= 1.50f) ? g_rawYawRate : 0.0f;
             g_rawYawAngle += yawRateClean * 0.005f;
 
             if (isFirstSample) {
@@ -547,7 +543,7 @@ static void vTaskControl(void *pvParameters)
     uint8_t beat = 0;
 
     float vel = 0.0f, vel_cmd = 0.0f;
-    /* Vòng ngoài giữ vị trí: e = sai số vị trí (cm), de = sai số vận tốc (cm/s). Dấu theo firmware: tiến = âm. */
+    /* Vòng ngoài giữ vị trí: e = sai số vị trí (cm), de = sai số vận tốc (cm/s). Thống nhất: tiến = dương (+). */
     int32_t posRefSum  = 0;     /* tổng xung L+R tại gốc vị trí */
     float   xTarget    = 0.0f;  /* vị trí đích (cm), tự dịch chuyển theo vận tốc đặt */
     uint8_t wasDriving = 0;     /* cờ ghi nhận trạng thái đang nhận lệnh di chuyển */
@@ -574,14 +570,12 @@ static void vTaskControl(void *pvParameters)
             {
                 /* 2. Vòng Ngoài Vị trí / Vận tốc (5ms / 200Hz): FuzzyPD_Pos -> tiltOffset (°) */
                 vel      = (g_motorSpeedfiltered_left + g_motorSpeedfiltered_right) * 0.5f;
-                vel_cmd  = -Clamp_Float(g_targetSpeed, -ROBOT_MAX_SPEED_RPM, ROBOT_MAX_SPEED_RPM);
+                vel_cmd  = Clamp_Float(g_targetSpeed, -ROBOT_MAX_SPEED_RPM, ROBOT_MAX_SPEED_RPM);
                 g_velCmd = vel_cmd;
                 g_dVel   = (kalmanSpeed_L.accel + kalmanSpeed_R.accel) * 0.5f;
 
-                /* Tách vận tốc tịnh tiến của trọng tâm (CoM) = vận tốc bánh xe trừ đi thành phần lắc thân xe */
-                float pitchRateClamped = Clamp_Float(kalmanPitch.rate, -60.0f, 60.0f);
-                float vel_com = vel - (COM_PITCH_RATE_COMP_RPM_PER_DPS * pitchRateClamped);
-                s_velCoMFiltered += 0.22f * (vel_com - s_velCoMFiltered);
+                /* Lọc thông thấp vận tốc trung bình 2 bánh (RPM) */
+                s_velFiltered += 0.22f * (vel - s_velFiltered);
 
                 if (s_posResetReq) {
                     s_posResetReq        = 0;
@@ -590,12 +584,11 @@ static void vTaskControl(void *pvParameters)
                     wasDriving           = 0;
                     yawSetpoint          = g_targetYaw;
                     s_tiltOffsetFiltered = 0.0f;
-                    s_velCoMFiltered     = 0.0f;
+                    s_velFiltered        = 0.0f;
                 }
 
                 float x_fw     = (float)(s_encTotalSum - posRefSum) * 0.5f * WHEEL_CM_PER_PULSE;
-                float x_com    = x_fw - COM_PITCH_POS_COMP_CM_PER_DEG * (g_filteredPitch - g_targetAngle);
-                float v_cms    = s_velCoMFiltered * WHEEL_RPM_TO_CMS;
+                float v_cms    = s_velFiltered * WHEEL_RPM_TO_CMS;
                 float vcmd_cms = vel_cmd * WHEEL_RPM_TO_CMS;
 
                 if (fabsf(vel_cmd) > 0.1f) {
@@ -605,7 +598,7 @@ static void vTaskControl(void *pvParameters)
                 } else {
                     if (wasDriving) {
                         wasDriving = 0;
-                        xTarget    = x_com;
+                        xTarget    = x_fw;
                     }
                     /* Kẹp khoảng trượt điểm đích tối đa 4cm khi bị đẩy đứng yên để ưu tiên phanh vận tốc về 0 */
                     xTarget = Clamp_Float(xTarget, x_fw - POS_HOLD_MAX_ERR_CM, x_fw + POS_HOLD_MAX_ERR_CM);
@@ -614,7 +607,7 @@ static void vTaskControl(void *pvParameters)
                 g_posError = x_fw - xTarget;
 
                 float v_err_cms = Clamp_Float(v_cms - vcmd_cms, -30.0f, 30.0f);
-                float rawTilt   = -FuzzyPD_Compute(&FuzzyPD_Pos, xTarget, x_com, v_err_cms);
+                float rawTilt   = FuzzyPD_Compute(&FuzzyPD_Pos, xTarget, x_fw, v_err_cms);
                 s_tiltOffsetFiltered += 0.25f * (rawTilt - s_tiltOffsetFiltered);
                 tiltOffset = Clamp_Float(s_tiltOffsetFiltered, -CASCADE_MAX_TOTAL_TILT_DEG, CASCADE_MAX_TOTAL_TILT_DEG);
 
@@ -627,11 +620,11 @@ static void vTaskControl(void *pvParameters)
 
                 /* 4. Vòng Hướng xoay Yaw thuần IMU qua bộ PID_Yaw (pid.c, 10% OutPWM = +-840) */
                 yawSetpoint += Clamp_Float(g_targetYaw - yawSetpoint, -0.25f, 0.25f);
-                pwm_yaw      = -PID_Compute(&PID_Yaw, yawSetpoint, g_filteredYaw, CONTROL_LOOP_DT);
+                pwm_yaw      = PID_Compute(&PID_Yaw, yawSetpoint, g_filteredYaw, CONTROL_LOOP_DT);
 
-                /* 5. Tổng hợp xung PWM 2 bánh (Trái / Phải), bù bất đối xứng vùng chết & giới hạn bước nhảy PWM */
-                outpwm_L = Compensate_MotorDeadband(pwm_fuzzy - pwm_yaw, MOTOR_DEADBAND_PWM_L_POS, MOTOR_DEADBAND_PWM_L_NEG);
-                outpwm_R = Compensate_MotorDeadband(pwm_fuzzy + pwm_yaw, MOTOR_DEADBAND_PWM_R_POS, MOTOR_DEADBAND_PWM_R_NEG);
+                /* 5. Tổng hợp xung PWM 2 bánh (Trái / Phải), bù vùng chết từng bánh, giới hạn biên & bước nhảy PWM */
+                outpwm_L = Compensate_MotorDeadband(pwm_fuzzy + pwm_yaw, MOTOR_DEADBAND_PWM_L_POS, MOTOR_DEADBAND_PWM_L_NEG);
+                outpwm_R = Compensate_MotorDeadband(pwm_fuzzy - pwm_yaw, MOTOR_DEADBAND_PWM_R_POS, MOTOR_DEADBAND_PWM_R_NEG);
 
                 outpwm_L = Clamp_Float(outpwm_L, -(float)MOTOR_PWM_PERIOD, (float)MOTOR_PWM_PERIOD);
                 outpwm_R = Clamp_Float(outpwm_R, -(float)MOTOR_PWM_PERIOD, (float)MOTOR_PWM_PERIOD);
@@ -676,7 +669,7 @@ static void vTaskControl(void *pvParameters)
             yawSetpoint          = g_targetYaw;
             u_pitch_volt         = 0.0f;
             s_tiltOffsetFiltered = 0.0f;
-            s_velCoMFiltered     = 0.0f;
+            s_velFiltered        = 0.0f;
             g_velCmd             = 0.0f;
             g_dVel               = 0.0f;
             g_posError           = 0.0f;

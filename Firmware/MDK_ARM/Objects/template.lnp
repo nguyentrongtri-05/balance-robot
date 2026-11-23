@@ -18,7 +18,6 @@
 ".\objects\stm32f4xx_syscfg.o"
 ".\objects\stm32f4xx_usart.o"
 ".\objects\stm32f4xx_wwdg.o"
-".\objects\driver_flash.o"
 ".\objects\driver_uart.o"
 ".\objects\driver_i2c.o"
 ".\objects\encoder.o"

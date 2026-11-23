@@ -62,6 +62,10 @@ void Encoder_ReadStruct(MOTOR *motorLeft, MOTOR *motorRight)
         if (dPulse > 32767)       dPulse -= 65536;
         else if (dPulse < -32768) dPulse += 65536;
 
+#if ENCODER_LEFT_INVERT
+        dPulse = -dPulse;
+#endif
+
         /* Lọc chống nhiễu gai phần cứng bất thường (> 45 xung/5ms) */
         if (dPulse > 45 || dPulse < -45) {
             dPulse = motorLeft->delta_pulse;
@@ -79,6 +83,10 @@ void Encoder_ReadStruct(MOTOR *motorLeft, MOTOR *motorRight)
 
         if (dPulse > 32767)       dPulse -= 65536;
         else if (dPulse < -32768) dPulse += 65536;
+
+#if ENCODER_RIGHT_INVERT
+        dPulse = -dPulse;
+#endif
 
         if (dPulse > 45 || dPulse < -45) {
             dPulse = motorRight->delta_pulse;
